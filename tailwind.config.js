@@ -1,0 +1,2 @@
+/** @type {import('tailwindcss').Config} */
+export default { content: ['./index.html', './src/**/*.{ts,tsx}'], theme: { extend: { colors: { ink:'#0A0A0A', paper:'#F5F4F1', 'paper-dark':'#0A0A0A', amber:'#E8620C', gray:'#5C5B57' }, fontFamily: { display:['Archivo Narrow','Arial Narrow','sans-serif'], body:['Inter','Liberation Sans','sans-serif'], mono:['JetBrains Mono','monospace'] } } }, plugins: [] };
