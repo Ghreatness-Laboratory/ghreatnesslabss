@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BadgeCheck, Bookmark, Building2, ChartNoAxesCombined, Code2, Globe2, PenTool, Play, Quote, Search, Shapes, ShieldCheck, UserRound, UsersRound, ArrowUpRight, MapPin, Menu, X, Mail, Send, Phone, Linkedin, Instagram, Twitter, Target, Eye, type LucideIcon } from 'lucide-react';
+import { BadgeCheck, Building2, ChartNoAxesCombined, Code2, Globe2, House, PenTool, Play, Quote, Search, Shapes, ShieldCheck, UsersRound, ArrowUpRight, MapPin, Menu, X, Mail, Send, Phone, Linkedin, Instagram, Twitter, Target, Eye, type LucideIcon } from 'lucide-react';
 import { site } from './content';
 import './styles.css';
 const icons: Record<string, LucideIcon> = {'building-2':Building2,'users-round':UsersRound,'badge-check':BadgeCheck,'globe-2':Globe2,'pen-tool':PenTool,'code-2':Code2,shapes:Shapes,play:Play,'chart-no-axes-combined':ChartNoAxesCombined,'shield-check':ShieldCheck};
@@ -8,7 +8,28 @@ const pages=[['/','Home'],['/about','About Us'],['/services','Services'],['/hold
 const Label=({children}:{children:React.ReactNode})=><p className="label">{children}</p>;
 const Link=({to,children,className=''}:{to:string;children:React.ReactNode;className?:string})=><a className={className} href={to}>{children}</a>;
 const Button=({children,solid=false,href='/contact'}:{children:React.ReactNode;solid?:boolean;href?:string})=><Link to={href} className={`button ${solid?'button-solid':''}`}>{children}</Link>;
-function Header({path}:{path:string}){const [open,setOpen]=useState(false);useEffect(()=>setOpen(false),[path]);return <header><div className="announcement"><span>{site.status}</span><a href="mailto:studio@ghreatness.io">studio@ghreatness.io</a></div><nav><Link className="wordmark" to="/">GHREATNESSLABS</Link><div className="navicons"><button aria-label={open?'Close navigation':'Open navigation'} onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button><a aria-label="Search services" href="/services"><Search/></a><a aria-label="Saved work" href="/projects"><Bookmark/></a><a aria-label="Contact" href="/contact"><UserRound/></a></div></nav>{open&&<div className="nav-drawer"><span className="label">Navigate</span>{pages.map(([to,name])=><Link key={to} to={to} className={path===to?'active':''}>{name}</Link>)}</div>}</header>}
+function Header({path}:{path:string}){
+  const [navOpen,setNavOpen]=useState(false);
+  const [searchOpen,setSearchOpen]=useState(false);
+  const [query,setQuery]=useState('');
+  const results=pages.filter(([,name])=>name.toLowerCase().includes(query.trim().toLowerCase()));
+  useEffect(()=>{setNavOpen(false);setSearchOpen(false);setQuery('')},[path]);
+  return <header>
+    <div className="announcement"><span>{site.status}</span><a href="mailto:studio@ghreatness.io">studio@ghreatness.io</a></div>
+    <nav>
+      <Link className="wordmark" to="/">GHREATNESSLABS</Link>
+      <div className="navicons">
+        <Link className="navicon" aria-label="Home" to="/"><House/></Link>
+        <button className="navicon" aria-label="Search site" aria-expanded={searchOpen} onClick={()=>{setSearchOpen(!searchOpen);setNavOpen(false)}}><Search/></button>
+        <Link className="navicon" aria-label="Contact Us" to="/contact"><Phone/></Link>
+        <span className="nav-divider" aria-hidden="true"/>
+        <button className="navicon nav-menu" aria-label={navOpen?'Close navigation':'Open navigation'} aria-expanded={navOpen} onClick={()=>{setNavOpen(!navOpen);setSearchOpen(false)}}>{navOpen?<X/>:<Menu/>}</button>
+      </div>
+    </nav>
+    {searchOpen&&<div className="search-panel" role="dialog" aria-label="Site search"><label htmlFor="site-search">Search site</label><div className="search-field"><Search/><input id="site-search" autoFocus value={query} onChange={e=>setQuery(e.target.value)} placeholder="Find a page"/><button aria-label="Close search" onClick={()=>setSearchOpen(false)}><X/></button></div><div className="search-results">{results.length?results.map(([to,name])=><Link key={to} to={to}>{name}</Link>):<p>No pages match “{query}”.</p>}</div></div>}
+    {navOpen&&<div className="nav-drawer"><span className="label">Navigate</span>{pages.map(([to,name])=><Link key={to} to={to} className={path===to?'active':''}>{name}</Link>)}</div>}
+  </header>
+}
 function Stats(){return <section className="stats">{site.stats.map(([tag,num,caption,icon])=>{const Icon=icons[icon];return <article key={tag}><span className="icon-badge"><Icon/></span><div><strong>{num}</strong><p>{tag}<span>{caption}</span></p></div></article>})}</section>}
 function SectionHead({label,title,accent,copy}:{label:string;title:string;accent?:string;copy?:string}){return <><Label>{label}</Label><h1 className="section-heading">{title} {accent&&<em>{accent}</em>}</h1>{copy&&<p className="section-intro">{copy}</p>}</>}
 function Capabilities({limit}:{limit?:number}){return <div className="cap-grid">{site.capabilities.slice(0,limit).map(([spec,title,desc,tags,icon],index)=>{const Icon=icons[icon];return <article className={`cap ${index%2?'cap-dark':''}`} key={title}><div className="cap-header"><span className="icon-badge"><Icon/></span><small>{spec}</small><span className="cap-index">{String(index+1).padStart(2,'0')}</span></div><h3>{title}</h3><p>{desc}</p><div className="tags">{tags.map(tag=><span key={tag}>{tag}</span>)}</div></article>})}</div>}
