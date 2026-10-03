@@ -10,6 +10,33 @@ export const site = {
     ['Growth', 'Social Media & Growth', 'Channel programs built around audience intelligence and action.', ['Content', 'Analytics', 'Campaigns'], 'chart-no-axes-combined'],
     ['Infrastructure', 'Cybersecurity & IT Infrastructure', 'Secure foundations for teams that cannot afford downtime.', ['Security', 'Cloud', 'Networks'], 'shield-check']
   ],
+  digitalServices: [
+    ['Graphic Designing', 'Clear, versatile visual communication for campaigns, products, and brands.', 'shapes'],
+    ['Video Editing', 'Purposeful edits and moving-image stories that hold attention.', 'play'],
+    ['Social Media Marketing', 'Audience-led channel plans designed to build momentum.', 'chart-no-axes-combined'],
+    ['Copywriting', 'Voice, messaging, and words that make the work easier to understand.', 'pen-tool'],
+    ['Consulting', 'Focused direction for teams navigating a meaningful next move.', 'badge-check'],
+    ['Content Management', 'Practical systems for planning, publishing, and maintaining content.', 'globe-2']
+  ],
+  technologyServices: [
+    ['Front-End Development', 'Fast, accessible interfaces that faithfully carry the product vision.', 'code-2'],
+    ['UI/UX Design', 'Research-informed journeys that make every interaction feel obvious.', 'pen-tool'],
+    ['Software Development', 'Reliable bespoke software for operationally important work.', 'code-2'],
+    ['QA Testing', 'Deliberate quality assurance before a product reaches its people.', 'badge-check'],
+    ['Cybersecurity Services', 'Protection and guidance for systems that need to stay trusted.', 'shield-check'],
+    ['Web Application Development', 'Connected web products built for usefulness and scale.', 'globe-2']
+  ],
+  holding: [
+    ['FragNaija', 'Competitive gaming and community for Nigeria’s next generation of players.', 'play'],
+    ['FragAfrica', 'A platform connecting the wider African gaming ecosystem.', 'globe-2'],
+    ['Univyx', 'Better digital workflows for modern higher education.', 'building-2'],
+    ['Univyx Arena', 'Campus competition, events, and community in one arena.', 'users-round'],
+    ['AthleGame Esports', 'Esports experiences built around competitive play and culture.', 'play'],
+    ['MisplaceMe', 'A useful layer for recovering, reporting, and reconnecting.', 'shapes'],
+    ['Sonariq Sounds', 'A home for artist-led sound, culture, and creative direction.', 'pen-tool'],
+    ['Prothlete Esports', 'Infrastructure for talented players pursuing competitive progress.', 'chart-no-axes-combined'],
+    ['Civyn', 'Digital civic tools for more connected communities.', 'building-2']
+  ],
   ventures: [
     ['FragNaija / AthleGame', 'Esports platform', 'A competitive gaming ecosystem constructed for Africa’s next generation of players.', 'A digital arena that brings player profiles, tournaments, live moments, and community into one focused experience.'],
     ['Civyn', 'Civic technology', 'Digital public infrastructure that helps communities participate and organize.', 'A civic operating layer designed to make local action, services, and feedback easier to access and understand.'],
