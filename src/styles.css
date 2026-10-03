@@ -66,3 +66,73 @@ nav{height:auto;padding:14px 16px;border-bottom-color:#eee}
 .process-step{position:absolute;z-index:1;top:0;left:-50px;display:grid;width:44px;height:44px;place-items:center;border-radius:12px;background:#fff;color:#111;font:700 16px/1 'Space Grotesk',Inter,sans-serif}
 .process h3{margin:0 0 8px;color:#fff;font-size:19px;line-height:1.2}
 .process p{margin:0;max-width:440px;color:#999;font-size:13px;line-height:1.55}
+
+/* Shared major-heading treatment keeps every section at the same visual scale. */
+.section-heading{
+  max-width:620px;
+  margin:0 0 18px;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:24px;
+  font-weight:700;
+  line-height:1.2;
+  letter-spacing:-.045em;
+}
+.hero .section-heading{max-width:620px}
+.process-section .section-heading{color:#fff}
+.cta .section-heading{margin-inline:auto;color:#fff}
+.cta .section-heading em{color:#c5c5c5}
+
+/* Testimonial cards echo the depth and rounded geometry of capability cards. */
+.trust-grid blockquote{
+  min-height:245px;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 8px 24px rgba(0,0,0,.06);
+}
+.testimonial-quote{
+  width:22px;
+  height:22px;
+  margin-bottom:14px;
+  color:#ddd;
+}
+.trust-grid blockquote > p{
+  margin:28px 0 20px;
+  font:700 17px/1.4 'Space Grotesk',sans-serif;
+  letter-spacing:-.035em;
+}
+.trust-grid footer{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#888;
+  font:400 12px/1.4 Inter,Arial,sans-serif;
+}
+.testimonial-avatar{
+  display:grid;
+  flex:0 0 36px;
+  width:36px;
+  height:36px;
+  place-items:center;
+  border-radius:50%;
+  background:#111;
+  color:#fff;
+  font:500 13px/1 Inter,Arial,sans-serif;
+}
+.trust-grid footer b{
+  display:block;
+  color:#111;
+  font:500 13px/1.4 Inter,Arial,sans-serif;
+}
+.trust-grid footer small{
+  display:block;
+  color:#888;
+  font:400 12px/1.4 Inter,Arial,sans-serif;
+  letter-spacing:0;
+  text-transform:none;
+}
+@media(max-width:639px){
+  .section-heading{font-size:24px}
+}
+
+/* Override legacy element selectors so the shared heading scale always wins. */
+.hero .section-heading{font-size:24px}
