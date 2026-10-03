@@ -40,3 +40,13 @@ nav{height:auto;padding:14px 16px;border-bottom-color:#eee}
 .cap .tags span{border:0;background:#111;color:#fff;border-radius:20px;padding:6px 13px;font-size:11.5px;line-height:1}
 .cap-dark .tags span{background:#fff;color:#111}
 @media(max-width:639px){.cap .icon-badge{flex-basis:46px;width:46px;height:46px}}
+
+/* Connected process timeline */
+.process-section h2{font-size:24px;letter-spacing:-.045em}
+.process{display:block;position:relative;margin-top:40px;padding-left:50px}
+.process::before{position:absolute;top:22px;bottom:22px;left:21.25px;width:1.5px;background:rgba(255,255,255,.15);content:""}
+.process article{position:relative;margin-bottom:28px;min-height:72px;border:0;padding:0}
+.process article:last-child{margin-bottom:0}
+.process-step{position:absolute;z-index:1;top:0;left:-50px;display:grid;width:44px;height:44px;place-items:center;border-radius:12px;background:#fff;color:#111;font:700 16px/1 'Space Grotesk',Inter,sans-serif}
+.process h3{margin:0 0 8px;color:#fff;font-size:19px;line-height:1.2}
+.process p{margin:0;max-width:440px;color:#999;font-size:13px;line-height:1.55}
