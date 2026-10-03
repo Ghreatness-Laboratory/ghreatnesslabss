@@ -231,3 +231,64 @@ nav{height:auto;padding:14px 16px;border-bottom-color:#eee}
 .search-results p{margin:12px 0 0;color:#555;font-size:13px}
 @media(max-width:639px){.navicons{gap:4px}.nav-divider{margin-inline:2px}.nav-drawer,.search-panel{top:100%}}
 header{position:relative}
+
+/* Homepage About Us preview */
+.about-preview-intro{
+  max-width:590px;
+  margin:0;
+  color:#555;
+  font:400 13px/1.7 Inter,Arial,sans-serif;
+}
+.about-preview-cards{
+  display:grid;
+  gap:12px;
+  max-width:680px;
+  margin-top:28px;
+}
+.about-preview-card{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  padding:18px;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 6px 18px rgba(0,0,0,.05);
+}
+.about-preview-icon{
+  display:grid;
+  flex:0 0 40px;
+  width:40px;
+  height:40px;
+  place-items:center;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+}
+.about-preview-icon svg{width:20px;height:20px}
+.about-preview-card h3{
+  margin:1px 0 7px;
+  font:700 16px/1.2 'Space Grotesk',Inter,sans-serif;
+  letter-spacing:-.035em;
+}
+.about-preview-card p{
+  margin:0;
+  color:#555;
+  font:400 12.5px/1.6 Inter,Arial,sans-serif;
+}
+.about-preview-card-dark{
+  background:#111;
+  color:#fff;
+  box-shadow:0 6px 18px rgba(0,0,0,.15);
+}
+.about-preview-card-dark .about-preview-icon{background:#fff;color:#111}
+.about-preview-card-dark p{color:#c5c5c5}
+.about-preview-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:18px;
+  padding-bottom:3px;
+  border-bottom:1.5px solid #111;
+  font:500 12px/1.2 Inter,Arial,sans-serif;
+}
+.about-preview-link svg{width:14px;height:14px}
