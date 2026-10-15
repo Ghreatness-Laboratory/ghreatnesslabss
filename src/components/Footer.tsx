@@ -1,8 +1,12 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Shield } from 'lucide-react';
 import { pages, Label, Button, Link } from './SharedSections';
+import { useCms } from '../context/CmsContext';
 
 export function Footer() {
+  const { data } = useCms();
+  const { settings } = data;
+
   return (
     <footer>
       <section className="cta">
@@ -13,16 +17,16 @@ export function Footer() {
         <p>Start with a confidential, no-obligation consultation.</p>
         <div className="actions">
           <Button solid>Book a consultation</Button>
-          <a className="button" href="mailto:studio@ghreatness.io">
-            studio@ghreatness.io
+          <a className="button" href={`mailto:${settings.contactEmail}`}>
+            {settings.contactEmail}
           </a>
         </div>
       </section>
 
       <div className="footer-grid">
         <div>
-          <b className="wordmark">GHREATNESSLABS</b>
-          <p>Digital systems and brand experiences built from Lagos for the world.</p>
+          <b className="wordmark">{settings.wordmark || 'GHREATNESSLABS'}</b>
+          <p>{settings.footerTagline}</p>
         </div>
         <div className="footer-links">
           {pages.slice(1).map(([to, name]) => (
@@ -32,21 +36,27 @@ export function Footer() {
           ))}
         </div>
         <div>
-          <small>Lagos HQ</small>
+          <small>{settings.officeCity} HQ</small>
           <p className="footer-address">
             <MapPin />{' '}
             <span>
-              Victoria Island
+              {settings.officeAddress}
               <br />
-              Lagos, Nigeria
+              {settings.officeCity}
             </span>
           </p>
         </div>
       </div>
 
       <div className="legal">
-        <span>© 2026 GHREATNESSLABS. All rights reserved.</span>
-        <span>Privacy · Terms · Accessibility</span>
+        <span>{settings.copyrightText}</span>
+        <div className="legal-links">
+          <span>Privacy · Terms · Accessibility</span>
+          <Link to="/admin" className="admin-footer-link">
+            <Shield size={12} />
+            <span>Admin CMS</span>
+          </Link>
+        </div>
       </div>
     </footer>
   );

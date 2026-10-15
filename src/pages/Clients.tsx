@@ -1,19 +1,30 @@
 import React from 'react';
-import { site } from '../content';
+import { useCms } from '../context/CmsContext';
 import { SectionHead, Testimonials } from '../components/SharedSections';
 
 export default function Clients() {
+  const { data } = useCms();
+  const pageCopy = data.pages.find((p) => p.page_slug === 'clients' && p.section_key === 'hero');
+
+  const title = pageCopy?.title || 'Partners with';
+  const subtitle = pageCopy?.subtitle || 'a point of view.';
+  const intro =
+    pageCopy?.content ||
+    'We work with organizations that see design and technology as a meaningful advantage.';
+
+  const sortedClients = [...data.clients].sort((a, b) => a.sort_order - b.sort_order);
+
   return (
     <section className="section page-intro">
       <SectionHead
         label="Clients"
-        title="Partners with"
-        accent="a point of view."
-        copy="We work with organizations that see design and technology as a meaningful advantage."
+        title={title}
+        accent={subtitle}
+        copy={intro}
       />
       <div className="client-list">
-        {site.clients.map((client) => (
-          <span key={client}>{client}</span>
+        {sortedClients.map((client) => (
+          <span key={client.id || client.name}>{client.name}</span>
         ))}
       </div>
       <div className="testimonials-section">

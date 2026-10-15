@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   BadgeCheck,
   Building2,
@@ -15,10 +15,12 @@ import {
   Target,
   Eye,
   Telescope,
-  ShieldCheck as ShieldStar,
+  Mail,
+  Phone,
+  Send,
   type LucideIcon,
 } from 'lucide-react';
-import { site } from '../content';
+import { useCms } from '../context/CmsContext';
 
 export const icons: Record<string, LucideIcon> = {
   'building-2': Building2,
@@ -31,6 +33,12 @@ export const icons: Record<string, LucideIcon> = {
   play: Play,
   'chart-no-axes-combined': ChartNoAxesCombined,
   'shield-check': ShieldCheck,
+  target: Target,
+  eye: Eye,
+  telescope: Telescope,
+  mail: Mail,
+  phone: Phone,
+  send: Send,
 };
 
 export const pages = [
@@ -42,6 +50,7 @@ export const pages = [
   ['/leadership', 'Leadership'],
   ['/clients', 'Clients'],
   ['/contact', 'Contact Us'],
+  ['/admin', 'Admin CMS'],
 ] as const;
 
 export const Label = ({ children }: { children: React.ReactNode }) => (
@@ -84,7 +93,10 @@ export function CountUp({ value }: { value: string }) {
   useEffect(() => {
     const target = Number(value);
     const element = ref.current;
-    if (!element || isNaN(target)) return;
+    if (!element || isNaN(target)) {
+      if (element) element.textContent = value;
+      return;
+    }
 
     let frame = 0;
     let started = false;
@@ -99,15 +111,13 @@ export function CountUp({ value }: { value: string }) {
         const duration = 1000;
 
         const tick = (now: number) => {
-          if (document.hidden) {
-            frame = requestAnimationFrame(tick);
-            return;
-          }
-          const progress = Math.min((now - start) / duration, 1);
-          const current = Math.round(target * (1 - Math.pow(1 - progress, 3)));
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const current = Math.floor(progress * target);
           if (element) {
-            element.textContent = String(current);
+            element.textContent = current.toLocaleString();
           }
+
           if (progress < 1) {
             frame = requestAnimationFrame(tick);
           }
@@ -140,20 +150,23 @@ export function CountUp({ value }: { value: string }) {
 }
 
 export function Stats() {
+  const { data } = useCms();
+  const sortedStats = [...data.stats].sort((a, b) => a.sort_order - b.sort_order);
+
   return (
     <section className="stats">
-      {site.stats.map(([tag, num, caption, icon]) => {
-        const Icon = icons[icon];
+      {sortedStats.map((item) => {
+        const Icon = icons[item.icon_name] || icons['building-2'];
         return (
-          <article key={tag}>
+          <article key={item.id}>
             <span className="icon-badge">
-              {Icon && <Icon />}
+              <Icon />
             </span>
             <div>
-              <CountUp value={num} />
+              <CountUp value={item.value} />
               <p>
-                {tag}
-                <span>{caption}</span>
+                {item.label}
+                <span>{item.caption}</span>
               </p>
             </div>
           </article>
@@ -186,23 +199,27 @@ export function SectionHead({
 }
 
 export function Capabilities({ limit }: { limit?: number }) {
+  const { data } = useCms();
+  const sorted = [...data.capabilities].sort((a, b) => a.sort_order - b.sort_order);
+  const items = limit ? sorted.slice(0, limit) : sorted;
+
   return (
     <div className="cap-grid">
-      {site.capabilities.slice(0, limit).map(([spec, title, desc, tags, icon], index) => {
-        const Icon = icons[icon];
+      {items.map((item, index) => {
+        const Icon = icons[item.icon_name] || icons['pen-tool'];
         return (
-          <article className={`cap ${index % 2 ? 'cap-dark' : ''}`} key={title}>
+          <article className={`cap ${index % 2 ? 'cap-dark' : ''}`} key={item.id || item.title}>
             <div className="cap-header">
               <span className="icon-badge">
-                {Icon && <Icon />}
+                <Icon />
               </span>
-              <small>{spec}</small>
+              <small>{item.category_label}</small>
               <span className="cap-index">{String(index + 1).padStart(2, '0')}</span>
             </div>
-            <h3>{title}</h3>
-            <p>{desc}</p>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
             <div className="tags">
-              {tags.map((tag) => (
+              {item.tags.map((tag) => (
                 <span key={tag}>{tag}</span>
               ))}
             </div>
@@ -216,20 +233,23 @@ export function Capabilities({ limit }: { limit?: number }) {
 export function ServiceList({
   items,
 }: {
-  items: ReadonlyArray<readonly [string, string, string]>;
+  items: Array<{ id: string; title: string; description: string; icon_name: string }>;
 }) {
   return (
     <div className="service-list">
-      {items.map(([title, desc, icon], index) => {
-        const Icon = icons[icon];
+      {items.map((item, index) => {
+        const Icon = icons[item.icon_name] || icons['shapes'];
         return (
-          <article className={`service-item ${index % 2 ? 'service-dark' : ''}`} key={title}>
+          <article
+            className={`service-item ${index % 2 ? 'service-dark' : ''}`}
+            key={item.id || item.title}
+          >
             <span className="icon-badge">
-              {Icon && <Icon />}
+              <Icon />
             </span>
             <div>
-              <h3>{title}</h3>
-              <p>{desc}</p>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
             </div>
             <span className="cap-index">{String(index + 1).padStart(2, '0')}</span>
           </article>
@@ -240,22 +260,26 @@ export function ServiceList({
 }
 
 export function Ventures({ limit }: { limit?: number }) {
+  const { data } = useCms();
+  const sorted = [...data.projects].sort((a, b) => a.sort_order - b.sort_order);
+  const items = limit ? sorted.slice(0, limit) : sorted;
+
   return (
     <div className="venture-grid">
-      {site.ventures.slice(0, limit).map(([name, cat, desc, detail], i) => (
-        <article className={`venture v${i}`} key={name}>
+      {items.map((item, i) => (
+        <article className={`venture v${i}`} key={item.id || item.title}>
           <div className="venture-visual">
-            <span className="venture-badge">{cat}</span>
+            <span className="venture-badge">{item.category_tag}</span>
             <span className="venture-mark">
               <i />
               <b />
             </span>
           </div>
           <div className="venture-body">
-            <h3>{name}</h3>
-            <p>{desc}</p>
-            {detail && <p className="venture-detail">{detail}</p>}
-            <Link to="/contact">
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            {item.detail && <p className="venture-detail">{item.detail}</p>}
+            <Link to={item.project_url || '/contact'}>
               Discuss this kind of work <ArrowUpRight />
             </Link>
           </div>
@@ -266,23 +290,30 @@ export function Ventures({ limit }: { limit?: number }) {
 }
 
 export function Testimonials({ limit }: { limit?: number }) {
+  const { data } = useCms();
+  const sorted = [...data.testimonials].sort((a, b) => a.sort_order - b.sort_order);
+  const items = limit ? sorted.slice(0, limit) : sorted;
+
   return (
     <div className="trust-grid">
-      {site.testimonials.slice(0, limit).map(([where, quote, name, title]) => {
-        const initials = name
+      {items.map((item) => {
+        const initials = item.author_name
           .split(' ')
           .map((x) => x[0])
           .join('');
         return (
-          <blockquote key={name}>
+          <blockquote key={item.id || item.author_name}>
             <Quote className="testimonial-quote" />
-            <small>{where}</small>
-            <p>{quote}</p>
+            <small>{item.location}</small>
+            <p>{item.quote}</p>
             <footer>
               <span className="testimonial-avatar">{initials}</span>
               <span>
-                <b>{name}</b>
-                <small>{title}</small>
+                <b>{item.author_name}</b>
+                <small>
+                  {item.author_role}
+                  {item.author_company ? `, ${item.author_company}` : ''}
+                </small>
               </span>
             </footer>
           </blockquote>
@@ -293,23 +324,9 @@ export function Testimonials({ limit }: { limit?: number }) {
 }
 
 export function AboutPreview() {
-  const cards = [
-    [
-      'Core Values',
-      'We work with curiosity, clear thinking, accountability, and respect for the people who use what we build.',
-      ShieldStar,
-    ],
-    [
-      'Mission',
-      'Make high-impact work more coherent by bringing strategy, design, engineering, and infrastructure into one accountable studio practice.',
-      Target,
-    ],
-    [
-      'Vision',
-      'Be the trusted African studio behind the digital systems and brands shaping what comes next.',
-      Telescope,
-    ],
-  ] as const;
+  const { data } = useCms();
+  const sortedCards = [...data.aboutCards].sort((a, b) => a.sort_order - b.sort_order);
+  const cards = sortedCards.slice(0, 3);
 
   return (
     <section className="section about-preview">
@@ -322,20 +339,23 @@ export function AboutPreview() {
         GhreatnessLabs is an independent digital and IT solutions studio, founded in Lagos in 2024 to create high-impact systems and brands for ambitious teams.
       </p>
       <div className="about-preview-cards">
-        {cards.map(([title, copy, Icon], index) => (
-          <article
-            key={title}
-            className={`about-preview-card ${index % 2 ? 'about-preview-card-dark' : ''}`}
-          >
-            <span className="about-preview-icon">
-              <Icon />
-            </span>
-            <div>
-              <h3>{title}</h3>
-              <p>{copy}</p>
-            </div>
-          </article>
-        ))}
+        {cards.map((item, index) => {
+          const Icon = icons[item.icon_name] || icons['target'];
+          return (
+            <article
+              key={item.id || item.title}
+              className={`about-preview-card ${index % 2 ? 'about-preview-card-dark' : ''}`}
+            >
+              <span className="about-preview-icon">
+                <Icon />
+              </span>
+              <div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
+            </article>
+          );
+        })}
       </div>
       <Link to="/about" className="about-preview-link">
         Learn more about us <ArrowUpRight />
@@ -345,20 +365,23 @@ export function AboutPreview() {
 }
 
 export function LeadershipPreview() {
+  const { data } = useCms();
+  const sortedLeaders = [...data.leadership].sort((a, b) => a.sort_order - b.sort_order);
+
   return (
     <section className="section leadership-preview">
       <SectionHead label="Leadership" title="The brains behind the work" />
       <div className="leadership-row" aria-label="Leadership team">
-        {site.team.map(([name, role]) => (
-          <Link key={name} to="/leadership" className="leader-preview-card">
+        {sortedLeaders.map((leader) => (
+          <Link key={leader.id || leader.name} to="/leadership" className="leader-preview-card">
             <span className="leader-preview-avatar">
-              {name
+              {leader.name
                 .split(' ')
                 .map((part) => part[0])
                 .join('')}
             </span>
-            <b>{name}</b>
-            <small>{role}</small>
+            <b>{leader.name}</b>
+            <small>{leader.role}</small>
           </Link>
         ))}
       </div>
@@ -370,6 +393,9 @@ export function LeadershipPreview() {
 }
 
 export function Partners() {
+  const { data } = useCms();
+  const sortedClients = [...data.clients].sort((a, b) => a.sort_order - b.sort_order);
+
   return (
     <section className="section partners-section soft-section">
       <SectionHead
@@ -378,9 +404,9 @@ export function Partners() {
         copy="A few of the ambitious teams and ventures we are proud to work alongside."
       />
       <div className="partner-row" aria-label="Partners and clients">
-        {site.clients.map((partner) => (
-          <span className="partner-logo" key={partner}>
-            {partner}
+        {sortedClients.map((partner) => (
+          <span className="partner-logo" key={partner.id || partner.name}>
+            {partner.name}
           </span>
         ))}
       </div>

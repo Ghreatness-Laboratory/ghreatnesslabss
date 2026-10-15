@@ -11,6 +11,7 @@ import { Footer } from './components/Footer';
 import { LoadingScreen } from './components/LoadingScreen';
 import { AmbientBrandMark } from './components/AmbientBrandMark';
 import { CursorDot } from './components/CursorDot';
+import { CmsProvider } from './context/CmsContext';
 import './styles.css';
 
 // Lazy-loaded route pages for optimal bundle splitting
@@ -22,6 +23,7 @@ const Projects = lazy(() => import('./pages/Projects'));
 const Leadership = lazy(() => import('./pages/Leadership'));
 const Clients = lazy(() => import('./pages/Clients'));
 const Contact = lazy(() => import('./pages/Contact'));
+const Admin = lazy(() => import('./pages/Admin'));
 
 // Lazy-loaded non-critical widgets
 const ChatBubble = lazy(() =>
@@ -37,6 +39,7 @@ const routes: Record<string, React.LazyExoticComponent<() => React.JSX.Element>>
   '/leadership': Leadership,
   '/clients': Clients,
   '/contact': Contact,
+  '/admin': Admin,
 };
 
 function App() {
@@ -44,6 +47,8 @@ function App() {
   const [isPending, startTransition] = useTransition();
   const [initialLoading, setInitialLoading] = useState(true);
   const [showChat, setShowChat] = useState(false);
+
+  const isAdminRoute = path === '/admin';
 
   // Handle browser back/forward buttons
   useEffect(() => {
@@ -66,6 +71,8 @@ function App() {
 
   // Defer non-critical JavaScript (chat widget) until after first paint & idle
   useEffect(() => {
+    if (isAdminRoute) return;
+
     if ('requestIdleCallback' in window) {
       const handle = (
         window as unknown as {
@@ -83,7 +90,7 @@ function App() {
       const timer = setTimeout(() => setShowChat(true), 600);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [isAdminRoute]);
 
   // Handle client-side routing when links are clicked
   const navigate = (to: string) => {
@@ -110,8 +117,9 @@ function App() {
   }, [path]);
 
   // High-performance batched IntersectionObserver for section reveal
-  // Avoids querying or animating dozens of nested cards individually
   useEffect(() => {
+    if (isAdminRoute) return;
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
       return;
@@ -147,12 +155,22 @@ function App() {
     }, 60);
 
     return () => clearTimeout(timer);
-  }, [path]);
+  }, [path, isAdminRoute]);
 
   const ActivePage = routes[path] || Home;
 
+  if (isAdminRoute) {
+    return (
+      <CmsProvider>
+        <Suspense fallback={<LoadingScreen isLoading delayMs={0} />}>
+          <Admin />
+        </Suspense>
+      </CmsProvider>
+    );
+  }
+
   return (
-    <>
+    <CmsProvider>
       {/* Branded loading state: shows on initial asset load or route transitions if >220ms */}
       <LoadingScreen isLoading={initialLoading || isPending} delayMs={220} />
 
@@ -176,7 +194,7 @@ function App() {
           <ChatBubble />
         </Suspense>
       )}
-    </>
+    </CmsProvider>
   );
 }
 

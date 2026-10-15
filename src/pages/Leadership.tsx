@@ -1,51 +1,78 @@
 import React from 'react';
 import { Linkedin, Twitter } from 'lucide-react';
-import { site } from '../content';
+import { useCms } from '../context/CmsContext';
 import { SectionHead } from '../components/SharedSections';
 
 export default function Leadership() {
+  const { data } = useCms();
+  const pageCopy = data.pages.find((p) => p.page_slug === 'leadership' && p.section_key === 'hero');
+
+  const title = pageCopy?.title || 'A small team for';
+  const subtitle = pageCopy?.subtitle || 'high-stakes work.';
+  const intro =
+    pageCopy?.content ||
+    'Senior thinking stays close to the brief, the details, and the people making decisions.';
+
+  const sortedLeaders = [...data.leadership].sort((a, b) => a.sort_order - b.sort_order);
+
   return (
     <section className="section soft-section page-intro">
       <SectionHead
         label="Leadership"
-        title="A small team for"
-        accent="high-stakes work."
-        copy="Senior thinking stays close to the brief, the details, and the people making decisions."
+        title={title}
+        accent={subtitle}
+        copy={intro}
       />
       <div className="team-grid">
-        {site.team.map(([name, role, bio], i) => (
-          <article className={`team-card ${i % 2 ? 'team-dark' : ''}`} key={name}>
-            <span className="team-avatar">
-              {name
-                .split(' ')
-                .map((x) => x[0])
-                .join('')}
-            </span>
-            <div>
-              <h3>{name}</h3>
-              <small>{role}</small>
-              <p>{bio}</p>
-              <div className="social-row">
-                <a
-                  aria-label={`${name} on LinkedIn`}
-                  href="https://www.linkedin.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Linkedin />
-                </a>
-                <a
-                  aria-label={`${name} on X`}
-                  href="https://x.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Twitter />
-                </a>
+        {sortedLeaders.map((leader, i) => {
+          const initials = leader.name
+            .split(' ')
+            .map((x) => x[0])
+            .join('');
+
+          return (
+            <article className={`team-card ${i % 2 ? 'team-dark' : ''}`} key={leader.id || leader.name}>
+              <span className="team-avatar">
+                {leader.avatar_url ? (
+                  <img
+                    src={leader.avatar_url}
+                    alt={leader.name}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  initials
+                )}
+              </span>
+              <div>
+                <h3>{leader.name}</h3>
+                <small>{leader.role}</small>
+                <p>{leader.bio}</p>
+                <div className="social-row">
+                  {leader.social_links?.linkedin && (
+                    <a
+                      aria-label={`${leader.name} on LinkedIn`}
+                      href={leader.social_links.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Linkedin />
+                    </a>
+                  )}
+                  {leader.social_links?.twitter && (
+                    <a
+                      aria-label={`${leader.name} on X`}
+                      href={leader.social_links.twitter}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Twitter />
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

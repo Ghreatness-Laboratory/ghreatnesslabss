@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { House, Search, Phone, Menu, X } from 'lucide-react';
-import { site } from '../content';
+import { House, Search, Phone, Menu, X, ShieldAlert } from 'lucide-react';
 import { pages, Link } from './SharedSections';
+import { useCms } from '../context/CmsContext';
 
 export function Header({
   path,
@@ -10,6 +10,8 @@ export function Header({
   path: string;
   onNavigate?: (to: string) => void;
 }) {
+  const { data } = useCms();
+  const { settings } = data;
   const [navOpen, setNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -33,12 +35,18 @@ export function Header({
   return (
     <header>
       <div className="announcement">
-        <span>{site.status}</span>
-        <a href="mailto:studio@ghreatness.io">studio@ghreatness.io</a>
+        <span>{settings.status}</span>
+        <div className="announcement-actions">
+          <a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
+          <Link to="/admin" className="admin-quick-link" aria-label="Open Studio CMS Admin">
+            <ShieldAlert size={12} />
+            <span>Admin CMS</span>
+          </Link>
+        </div>
       </div>
       <nav>
         <Link className="wordmark" to="/">
-          GHREATNESSLABS
+          {settings.wordmark || 'GHREATNESSLABS'}
         </Link>
         <div className="navicons">
           <Link className="navicon" aria-label="Home" to="/">

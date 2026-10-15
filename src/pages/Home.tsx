@@ -1,5 +1,5 @@
 import React from 'react';
-import { site } from '../content';
+import { useCms } from '../context/CmsContext';
 import {
   SectionHead,
   Button,
@@ -13,15 +13,18 @@ import {
 } from '../components/SharedSections';
 
 export default function Home() {
+  const { data } = useCms();
+  const { settings } = data;
+
   return (
     <>
       <section className="hero section">
         <div className="hero-copy">
           <SectionHead
-            label={site.hero.eyebrow}
-            title={site.hero.title.primary}
-            accent={site.hero.title.secondary}
-            copy={site.hero.body}
+            label={settings.heroEyebrow}
+            title={settings.heroTitlePrimary}
+            accent={settings.heroTitleSecondary}
+            copy={settings.heroBody}
           />
           <div className="actions">
             <Button solid>Book a consultation</Button>
@@ -52,10 +55,10 @@ export default function Home() {
           <div className="dispatch">
             <b>Studio at a glance</b>
             <p>
-              Current availability <strong>Q2 projects</strong>
+              Current availability <strong>{settings.availabilityText}</strong>
             </p>
             <p>
-              Based in <strong>Lagos, Nigeria</strong>
+              Based in <strong>{settings.officeCity}</strong>
             </p>
             <p>
               Working with <strong>Global teams</strong>
