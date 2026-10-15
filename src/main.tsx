@@ -1,69 +1,178 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  Suspense,
+  useEffect,
+  useState,
+  useTransition,
+  lazy,
+} from 'react';
 import { createRoot } from 'react-dom/client';
-import { BadgeCheck, Building2, ChartNoAxesCombined, Code2, Globe2, House, PenTool, Play, Quote, Search, Shapes, ShieldCheck, UsersRound, ArrowUpRight, MapPin, Menu, X, Mail, Send, Phone, Linkedin, Instagram, Twitter, Target, Eye, Telescope, ShieldCheck as ShieldStar, MessageCircle, type LucideIcon } from 'lucide-react';
-import { site } from './content';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { LoadingScreen } from './components/LoadingScreen';
+import { AmbientBrandMark } from './components/AmbientBrandMark';
+import { CursorDot } from './components/CursorDot';
 import './styles.css';
-const icons: Record<string, LucideIcon> = {'building-2':Building2,'users-round':UsersRound,'badge-check':BadgeCheck,'globe-2':Globe2,'pen-tool':PenTool,'code-2':Code2,shapes:Shapes,play:Play,'chart-no-axes-combined':ChartNoAxesCombined,'shield-check':ShieldCheck};
-const pages=[['/','Home'],['/about','About Us'],['/services','Services'],['/holding-group','Holding Group'],['/projects','Projects'],['/leadership','Leadership'],['/clients','Clients'],['/contact','Contact Us']] as const;
-const Label=({children}:{children:React.ReactNode})=><p className="label">{children}</p>;
-const Link=({to,children,className=''}:{to:string;children:React.ReactNode;className?:string})=><a className={className} href={to}>{children}</a>;
-const Button=({children,solid=false,href='/contact'}:{children:React.ReactNode;solid?:boolean;href?:string})=><Link to={href} className={`button ${solid?'button-solid':''}`}>{children}</Link>;
-function Header({path}:{path:string}){
-  const [navOpen,setNavOpen]=useState(false);
-  const [searchOpen,setSearchOpen]=useState(false);
-  const [query,setQuery]=useState('');
-  const results=pages.filter(([,name])=>name.toLowerCase().includes(query.trim().toLowerCase()));
-  useEffect(()=>{setNavOpen(false);setSearchOpen(false);setQuery('')},[path]);
-  return <header>
-    <div className="announcement"><span>{site.status}</span><a href="mailto:studio@ghreatness.io">studio@ghreatness.io</a></div>
-    <nav>
-      <Link className="wordmark" to="/">GHREATNESSLABS</Link>
-      <div className="navicons">
-        <Link className="navicon" aria-label="Home" to="/"><House/></Link>
-        <button className="navicon" aria-label="Search site" aria-expanded={searchOpen} onClick={()=>{setSearchOpen(!searchOpen);setNavOpen(false)}}><Search/></button>
-        <Link className="navicon" aria-label="Contact Us" to="/contact"><Phone/></Link>
-        <span className="nav-divider" aria-hidden="true"/>
-        <button className="navicon nav-menu" aria-label={navOpen?'Close navigation':'Open navigation'} aria-expanded={navOpen} onClick={()=>{setNavOpen(!navOpen);setSearchOpen(false)}}>{navOpen?<X/>:<Menu/>}</button>
-      </div>
-    </nav>
-    {searchOpen&&<div className="search-panel" role="dialog" aria-label="Site search"><label htmlFor="site-search">Search site</label><div className="search-field"><Search/><input id="site-search" autoFocus value={query} onChange={e=>setQuery(e.target.value)} placeholder="Find a page"/><button aria-label="Close search" onClick={()=>setSearchOpen(false)}><X/></button></div><div className="search-results">{results.length?results.map(([to,name])=><Link key={to} to={to}>{name}</Link>):<p>No pages match “{query}”.</p>}</div></div>}
-    {navOpen&&<div className="nav-drawer"><span className="label">Navigate</span>{pages.map(([to,name])=><Link key={to} to={to} className={path===to?'active':''}>{name}</Link>)}</div>}
-  </header>
+
+// Lazy-loaded route pages for optimal bundle splitting
+const Home = lazy(() => import('./pages/Home'));
+const About = lazy(() => import('./pages/About'));
+const Services = lazy(() => import('./pages/Services'));
+const HoldingGroup = lazy(() => import('./pages/HoldingGroup'));
+const Projects = lazy(() => import('./pages/Projects'));
+const Leadership = lazy(() => import('./pages/Leadership'));
+const Clients = lazy(() => import('./pages/Clients'));
+const Contact = lazy(() => import('./pages/Contact'));
+
+// Lazy-loaded non-critical widgets
+const ChatBubble = lazy(() =>
+  import('./components/ChatBubble').then((mod) => ({ default: mod.ChatBubble }))
+);
+
+const routes: Record<string, React.LazyExoticComponent<() => React.JSX.Element>> = {
+  '/': Home,
+  '/about': About,
+  '/services': Services,
+  '/holding-group': HoldingGroup,
+  '/projects': Projects,
+  '/leadership': Leadership,
+  '/clients': Clients,
+  '/contact': Contact,
+};
+
+function App() {
+  const [path, setPath] = useState(location.pathname);
+  const [isPending, startTransition] = useTransition();
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [showChat, setShowChat] = useState(false);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      startTransition(() => {
+        setPath(location.pathname);
+      });
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Clear initial loading state after initial paint
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Defer non-critical JavaScript (chat widget) until after first paint & idle
+  useEffect(() => {
+    if ('requestIdleCallback' in window) {
+      const handle = (window as unknown as { requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => number })
+        .requestIdleCallback(() => setShowChat(true), { timeout: 1500 });
+      return () => {
+        if ('cancelIdleCallback' in window) {
+          (window as unknown as { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(handle);
+        }
+      };
+    } else {
+      const timer = setTimeout(() => setShowChat(true), 600);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // Handle client-side routing when links are clicked
+  const navigate = (to: string) => {
+    if (to === path) return;
+    window.history.pushState({}, '', to);
+    startTransition(() => {
+      setPath(to);
+      window.scrollTo(0, 0);
+    });
+  };
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const anchor = (e.target as Element).closest('a[href^="/"]') as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const targetPath = anchor.getAttribute('href');
+      if (targetPath && targetPath.startsWith('/') && !targetPath.startsWith('//')) {
+        e.preventDefault();
+        navigate(targetPath);
+      }
+    };
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, [path]);
+
+  // Scroll reveal animations initialized after layout paints
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const major = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          'main > .section, main > .stats, main .service-category, main .testimonials-section, footer .cta'
+        )
+      );
+      const cards = 'article, blockquote, .partner-logo, .leader-preview-card, .client-list > span';
+
+      major.forEach((section) => {
+        section.classList.add('reveal');
+        section.querySelectorAll<HTMLElement>(cards).forEach((card, index) => {
+          card.classList.add('reveal-stagger');
+          card.style.setProperty('--stagger-index', String(index));
+        });
+      });
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -30px' }
+      );
+
+      major.forEach((section) => observer.observe(section));
+      return () => observer.disconnect();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [path]);
+
+  const ActivePage = routes[path] || Home;
+
+  return (
+    <>
+      {/* Branded loading state: shows on initial asset load or route transitions if >220ms */}
+      <LoadingScreen isLoading={initialLoading || isPending} delayMs={220} />
+
+      {/* Ambient background watermark and cursor dot */}
+      <AmbientBrandMark />
+      <CursorDot />
+
+      <Header path={path} onNavigate={navigate} />
+
+      <main>
+        <Suspense fallback={null}>
+          <ActivePage />
+        </Suspense>
+      </main>
+
+      <Footer />
+
+      {/* Deferred non-critical chat assistant */}
+      {showChat && (
+        <Suspense fallback={null}>
+          <ChatBubble />
+        </Suspense>
+      )}
+    </>
+  );
 }
-function CountUp({value}:{value:string}){const [count,setCount]=useState(0);const ref=useRef<HTMLElement>(null);useEffect(()=>{const target=Number(value);const element=ref.current;if(!element)return;let frame=0;let started=false;const observer=new IntersectionObserver(([entry])=>{if(!entry.isIntersecting||started)return;started=true;const start=performance.now();const tick=(now:number)=>{const progress=Math.min((now-start)/1200,1);setCount(Math.round(target*(1-Math.pow(1-progress,3))));if(progress<1)frame=requestAnimationFrame(tick)};frame=requestAnimationFrame(tick);observer.disconnect()},{threshold:.45});observer.observe(element);return()=>{observer.disconnect();cancelAnimationFrame(frame)}},[value]);return <strong ref={ref}>{count}</strong>}
-function Stats(){return <section className="stats">{site.stats.map(([tag,num,caption,icon])=>{const Icon=icons[icon];return <article key={tag}><span className="icon-badge"><Icon/></span><div><CountUp value={num}/><p>{tag}<span>{caption}</span></p></div></article>})}</section>}
-function SectionHead({label,title,accent,copy}:{label:string;title:string;accent?:string;copy?:string}){return <><Label>{label}</Label><h1 className="section-heading">{title} {accent&&<em>{accent}</em>}</h1>{copy&&<p className="section-intro">{copy}</p>}</>}
-function Capabilities({limit}:{limit?:number}){return <div className="cap-grid">{site.capabilities.slice(0,limit).map(([spec,title,desc,tags,icon],index)=>{const Icon=icons[icon];return <article className={`cap ${index%2?'cap-dark':''}`} key={title}><div className="cap-header"><span className="icon-badge"><Icon/></span><small>{spec}</small><span className="cap-index">{String(index+1).padStart(2,'0')}</span></div><h3>{title}</h3><p>{desc}</p><div className="tags">{tags.map(tag=><span key={tag}>{tag}</span>)}</div></article>})}</div>}
-function ServiceList({items}:{items:ReadonlyArray<readonly [string,string,string]>}){return <div className="service-list">{items.map(([title,desc,icon],index)=>{const Icon=icons[icon];return <article className={`service-item ${index%2?'service-dark':''}`} key={title}><span className="icon-badge"><Icon/></span><div><h3>{title}</h3><p>{desc}</p></div><span className="cap-index">{String(index+1).padStart(2,'0')}</span></article>})}</div>}
-function Ventures({limit}:{limit?:number}){return <div className="venture-grid">{site.ventures.slice(0,limit).map(([name,cat,desc,detail],i)=><article className={`venture v${i}`} key={name}><div className="venture-visual"><span className="venture-badge">{cat}</span><span className="venture-mark"><i/><b/></span></div><div className="venture-body"><h3>{name}</h3><p>{desc}</p>{detail&&<p className="venture-detail">{detail}</p>}<Link to="/contact">Discuss this kind of work <ArrowUpRight/></Link></div></article>)}</div>}
-function Testimonials({limit}:{limit?:number}){return <div className="trust-grid">{site.testimonials.slice(0,limit).map(([where,quote,name,title])=>{const initials=name.split(' ').map(x=>x[0]).join('');return <blockquote key={name}><Quote className="testimonial-quote"/><small>{where}</small><p>{quote}</p><footer><span className="testimonial-avatar">{initials}</span><span><b>{name}</b><small>{title}</small></span></footer></blockquote>})}</div>}
-function AboutPreview(){const cards=[['Core Values','We work with curiosity, clear thinking, accountability, and respect for the people who use what we build.',ShieldStar],['Mission','Make high-impact work more coherent by bringing strategy, design, engineering, and infrastructure into one accountable studio practice.',Target],['Vision','Be the trusted African studio behind the digital systems and brands shaping what comes next.',Telescope]] as const;return <section className="section about-preview"><SectionHead label="About us" title="A studio built on" accent="purpose and precision."/><p className="about-preview-intro">GhreatnessLabs is an independent digital and IT solutions studio, founded in Lagos in 2024 to create high-impact systems and brands for ambitious teams.</p><div className="about-preview-cards">{cards.map(([title,copy,Icon],index)=><article key={title} className={`about-preview-card ${index%2?'about-preview-card-dark':''}`}><span className="about-preview-icon"><Icon/></span><div><h3>{title}</h3><p>{copy}</p></div></article>)}</div><Link to="/about" className="about-preview-link">Learn more about us <ArrowUpRight/></Link></section>}
-function LeadershipPreview(){return <section className="section leadership-preview">
-  <SectionHead label="Leadership" title="The brains behind the work"/>
-  <div className="leadership-row" aria-label="Leadership team">{site.team.map(([name,role])=><Link key={name} to="/leadership" className="leader-preview-card"><span className="leader-preview-avatar">{name.split(' ').map(part=>part[0]).join('')}</span><b>{name}</b><small>{role}</small></Link>)}</div>
-  <Link to="/leadership" className="about-preview-link">View full leadership team <ArrowUpRight/></Link>
-</section>}
-function Partners(){return <section className="section partners-section soft-section">
-  <SectionHead label="Partners & clients" title="In good company." copy="A few of the ambitious teams and ventures we are proud to work alongside."/>
-  <div className="partner-row" aria-label="Partners and clients">{site.clients.map(partner=><span className="partner-logo" key={partner}>{partner}</span>)}</div>
-</section>}
-function ChatBubble(){const defaultPosition={right:20,bottom:20};const [position,setPosition]=useState(defaultPosition);const [open,setOpen]=useState(false);const dragging=useRef(false);const moved=useRef(false);useEffect(()=>{const saved=sessionStorage.getItem('ghreatness-chat-position');if(saved){try{const value=JSON.parse(saved);if(typeof value.right==='number'&&typeof value.bottom==='number')setPosition(value)}catch{sessionStorage.removeItem('ghreatness-chat-position')}}},[]);const drag=(event:React.PointerEvent<HTMLButtonElement>)=>{event.currentTarget.setPointerCapture(event.pointerId);dragging.current=true;moved.current=false};const move=(event:React.PointerEvent<HTMLButtonElement>)=>{if(!dragging.current)return;const size=56;const right=Math.max(12,Math.min(innerWidth-size-12,innerWidth-event.clientX-size/2));const bottom=Math.max(12,Math.min(innerHeight-size-12,innerHeight-event.clientY-size/2));moved.current=true;setPosition({right,bottom})};const end=()=>{if(!dragging.current)return;dragging.current=false;setPosition(value=>{sessionStorage.setItem('ghreatness-chat-position',JSON.stringify(value));return value})};return <div className="chat-widget" style={{right:position.right,bottom:position.bottom}}><div className={`chat-panel ${open?'chat-panel-open':''}`} role="dialog" aria-label="GhreatnessLabs assistant" aria-hidden={!open}><div><b>Ghreatness assistant</b><button aria-label="Close chat" onClick={()=>setOpen(false)}><X/></button></div><p>How can we help with your next digital project?</p><a href="/contact">Start a conversation <ArrowUpRight/></a></div><button className="chat-bubble" aria-label={open?'Close assistant':'Open assistant'} aria-expanded={open} onPointerDown={drag} onPointerMove={move} onPointerUp={end} onPointerCancel={end} onClick={()=>{if(!moved.current)setOpen(value=>!value);moved.current=false}}><MessageCircle/></button></div>}
-function Home(){return <>
-  <section className="hero section"><div className="hero-copy"><SectionHead label={site.hero.eyebrow} title={site.hero.title.primary} accent={site.hero.title.secondary} copy={site.hero.body}/><div className="actions"><Button solid>Book a consultation</Button><Button href="/projects">Explore case studies</Button></div></div><div className="hero-aside"><div className="infrastructure-mark"><span className="infrastructure-ring infrastructure-ring-outer"/><span className="infrastructure-ring infrastructure-ring-middle"/><span className="infrastructure-dot"/><span className="infrastructure-badge">Infrastructure</span></div><div className="dispatch"><b>Studio at a glance</b><p>Current availability <strong>Q2 projects</strong></p><p>Based in <strong>Lagos, Nigeria</strong></p><p>Working with <strong>Global teams</strong></p></div></div></section>
-  <Stats/>
-  <AboutPreview/>
-  <section className="section soft-section"><SectionHead label="Practice areas" title="Core capabilities" accent="for ambitious teams." copy="Cross-disciplinary expertise for organizations that need a system, not just a surface."/><Capabilities limit={3}/><Button href="/services">View all services</Button></section>
-  <LeadershipPreview/>
-  <Partners/>
-  <section className="section"><SectionHead label="Selected ventures" title="Products with" accent="purpose."/><Ventures limit={3}/><Button href="/projects">View all projects</Button></section>
-  <section className="section soft-section"><SectionHead label="Client perspectives" title="Trusted by teams" accent="around the world."/><Testimonials limit={2}/><Button href="/clients">Read all perspectives</Button></section>
-</>}
-function About(){return <><section className="section page-intro"><SectionHead label="About GhreatnessLabs" title="Built in Lagos for" accent="important work." copy="We are an independent digital and IT solutions studio for teams that need clarity, craft, and capable delivery in equal measure."/><div className="story-grid"><article><span className="icon-badge"><Building2/></span><h3>How we started</h3><p>Founded in Lagos in 2024, GhreatnessLabs began with a simple belief: the digital systems African and global teams rely on should be as considered as their ambition.</p></article><article className="story-dark"><span className="icon-badge"><Target/></span><h3>Our mission</h3><p>Make high-impact work more coherent—bringing strategy, identity, product design, engineering, and infrastructure into one accountable studio practice.</p></article><article><span className="icon-badge"><Eye/></span><h3>Our vision</h3><p>To be the trusted African studio behind the digital systems and brands shaping what comes next.</p></article><article className="story-dark"><span className="icon-badge"><Shapes/></span><h3>What we do</h3><p>We partner with founders, institutions, and established teams to create products, brands, and operational foundations made to endure.</p></article></div></section><Stats/></>}
-function Services(){return <section className="section soft-section page-intro"><SectionHead label="Practice areas" title="Full-spectrum capabilities" accent="under one roof." copy="Digital craft and technology delivery, brought together around the work that will make the greatest difference."/><div className="service-category"><SectionHead label="01 / Digital services" title="Creative work that" accent="carries further."/><ServiceList items={site.digitalServices}/></div><div className="service-category"><SectionHead label="02 / Information technology" title="Systems made" accent="to perform."/><ServiceList items={site.technologyServices}/></div><div className="center-action"><Button solid>Book a consultation</Button></div></section>}
-function HoldingGroup(){return <section className="section page-intro"><SectionHead label="Holding group" title="Companies built for" accent="distinct worlds." copy="GhreatnessLabs owns and supports ventures where thoughtful technology, culture, and community can create enduring value."/><div className="holding-grid">{site.holding.map(([name,description,icon],index)=>{const Icon=icons[icon];return <article className={index%2?'holding-dark':''} key={name}><span className="icon-badge"><Icon/></span><span className="cap-index">{String(index+1).padStart(2,'0')}</span><h3>{name}</h3><p>{description}</p></article>})}</div></section>}
-function Projects(){return <section className="section page-intro"><SectionHead label="Portfolio" title="Ventures and case studies" accent="made to move." copy="We use systems thinking to make products, platforms, and brands more useful in the real world."/><Ventures/></section>}
-function Leadership(){return <section className="section soft-section page-intro"><SectionHead label="Leadership" title="A small team for" accent="high-stakes work." copy="Senior thinking stays close to the brief, the details, and the people making decisions."/><div className="team-grid">{site.team.map(([name,role,bio],i)=><article className={`team-card ${i%2?'team-dark':''}`} key={name}><span className="team-avatar">{name.split(' ').map(x=>x[0]).join('')}</span><div><h3>{name}</h3><small>{role}</small><p>{bio}</p><div className="social-row"><a aria-label={`${name} on LinkedIn`} href="https://www.linkedin.com"><Linkedin/></a><a aria-label={`${name} on X`} href="https://x.com"><Twitter/></a></div></div></article>)}</div></section>}
-function Clients(){return <section className="section page-intro"><SectionHead label="Clients" title="Partners with" accent="a point of view." copy="We work with organizations that see design and technology as a meaningful advantage."/><div className="client-list">{site.clients.map(client=><span key={client}>{client}</span>)}</div><div className="testimonials-section"><SectionHead label="Client perspectives" title="Trusted across" accent="markets and moments."/><Testimonials/></div></section>}
-function Contact(){const [sent,setSent]=useState(false);return <section className="section soft-section page-intro"><SectionHead label="Contact us" title="Start the" accent="conversation." copy="Tell us what you are building. We will reply with the right next step."/><div className="contact-grid"><form onSubmit={e=>{e.preventDefault();setSent(true)}}><label>Name<input required name="name" placeholder="Your name"/></label><label>Email<input required type="email" name="email" placeholder="you@company.com"/></label><label>Company<input name="company" placeholder="Company or organization"/></label><label>Service category<select name="service" defaultValue=""><option value="" disabled>Choose a service</option>{[...site.digitalServices,...site.technologyServices].map(([title])=><option key={title}>{title}</option>)}</select></label><label className="form-message">Message<textarea required name="message" placeholder="A little about the opportunity" rows={5}/></label><button className="button button-solid" type="submit">{sent?'Inquiry received':<>Send inquiry <Send/></>}</button></form><aside className="contact-details"><span className="icon-badge"><Mail/></span><h3>Studio contact</h3><a href="mailto:studio@ghreatness.io">studio@ghreatness.io</a><span className="icon-badge"><Phone/></span><h3>Hotline</h3><a href="tel:+2348000000000">+234 800 000 0000</a><span className="icon-badge"><MapPin/></span><h3>Lagos HQ</h3><p>Victoria Island<br/>Lagos, Nigeria</p><div className="contact-social"><a aria-label="Instagram" href="https://instagram.com"><Instagram/></a><a aria-label="X" href="https://x.com"><Twitter/></a><a aria-label="LinkedIn" href="https://linkedin.com"><Linkedin/></a></div><div className="contact-choice"><a className="button button-solid" href="mailto:studio@ghreatness.io">Email us</a><a className="button" href="https://wa.me/2348000000000">WhatsApp us</a></div></aside></div></section>}
-function Footer(){return <footer><section className="cta"><Label>Start a conversation</Label><h2 className="section-heading">Let us build your <em>next important thing.</em></h2><p>Start with a confidential, no-obligation consultation.</p><div className="actions"><Button solid>Book a consultation</Button><a className="button" href="mailto:studio@ghreatness.io">studio@ghreatness.io</a></div></section><div className="footer-grid"><div><b className="wordmark">GHREATNESSLABS</b><p>Digital systems and brand experiences built from Lagos for the world.</p></div><div className="footer-links">{pages.slice(1).map(([to,name])=><Link key={to} to={to}>{name}</Link>)}</div><div><small>Lagos HQ</small><p className="footer-address"><MapPin/> <span>Victoria Island<br/>Lagos, Nigeria</span></p></div></div><div className="legal"><span>© 2026 GHREATNESSLABS. All rights reserved.</span><span>Privacy · Terms · Accessibility</span></div></footer>}
-function App(){const [path,setPath]=useState(location.pathname);useEffect(()=>{const go=()=>setPath(location.pathname);addEventListener('popstate',go);return()=>removeEventListener('popstate',go)},[]);useEffect(()=>{const major=Array.from(document.querySelectorAll<HTMLElement>('main > .section, main > .stats, main .service-category, main .testimonials-section, footer .cta'));const cards='article, blockquote, .partner-logo, .leader-preview-card, .client-list > span';major.forEach(section=>{section.classList.add('reveal');section.querySelectorAll<HTMLElement>(cards).forEach((card,index)=>{card.classList.add('reveal-stagger');card.style.setProperty('--stagger-index',String(index))})});const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target)}}),{threshold:.12,rootMargin:'0px 0px -30px'});major.forEach(section=>observer.observe(section));return()=>observer.disconnect()},[path]);useEffect(()=>{const click=(e:MouseEvent)=>{const a=(e.target as Element).closest('a[href^="/"]') as HTMLAnchorElement|null;if(a){e.preventDefault();history.pushState({},'',a.pathname);setPath(a.pathname);scrollTo(0,0)}};addEventListener('click',click);return()=>removeEventListener('click',click)},[]);const Page=({'/':Home,'/about':About,'/services':Services,'/holding-group':HoldingGroup,'/projects':Projects,'/leadership':Leadership,'/clients':Clients,'/contact':Contact}[path]||Home);return <><Header path={path}/><main><Page/></main><Footer/><ChatBubble/></>};createRoot(document.getElementById('root')!).render(<App/>);
+
+const rootElement = document.getElementById('root');
+if (rootElement) {
+  createRoot(rootElement).render(<App />);
+}

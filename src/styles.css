@@ -346,3 +346,188 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
 .legal{padding-bottom:calc(15px + var(--chat-clearance))}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal,.reveal .reveal-stagger{opacity:1;transform:none;transition:none}.chat-bubble{animation:none}.button,.navicons .navicon,.chat-bubble,.cap,.venture,.trust-grid blockquote,.story-grid article,.service-item,.holding-grid article,.team-card,.about-preview-card,.leader-preview-card,.partner-logo,.client-list span{transition:none}}
 @media(max-width:639px){.section{padding-top:32px;padding-bottom:32px}.service-category,.testimonials-section{margin-top:40px}.cap-grid,.venture-grid,.trust-grid,.story-grid,.team-grid,.client-list,.contact-grid,.holding-grid{margin-top:28px}.legal{padding-bottom:calc(15px + var(--chat-clearance))}}
+
+
+/* ==========================================================================
+   Branded Loading Screen, Ambient Moving Elements & Layout Shift Fixes
+   ========================================================================== */
+
+/* Branded loading screen */
+.branded-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #111111;
+  pointer-events: all;
+  transition: opacity 350ms cubic-bezier(0.16, 1, 0.3, 1), visibility 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.loading-screen-fade-in {
+  opacity: 1;
+  visibility: visible;
+}
+
+.loading-screen-fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 70px, 2px border, rgba(255,255,255,0.15) base with solid white top segment */
+.branded-spinner {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-top-color: #ffffff;
+  animation: ghreatness-spin 1s linear infinite;
+  box-sizing: border-box;
+}
+
+.branded-loader-wordmark {
+  margin-top: 24px;
+  color: #888888;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@keyframes ghreatness-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Ambient rotating concentric brand mark in background */
+.ambient-mark-container {
+  position: fixed;
+  right: -50px;
+  bottom: -50px;
+  width: 360px;
+  height: 360px;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+  opacity: 0.07;
+  user-select: none;
+}
+
+.ambient-mark-spin {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  animation: ambient-drift-spin 75s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.ambient-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid #111;
+  box-sizing: border-box;
+}
+
+.ambient-ring-outer {
+  width: 340px;
+  height: 340px;
+  border-style: dashed;
+}
+
+.ambient-ring-mid {
+  width: 220px;
+  height: 220px;
+  border-width: 2px;
+}
+
+.ambient-ring-inner {
+  width: 120px;
+  height: 120px;
+  border-width: 1.5px;
+}
+
+.ambient-mark-dot {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #111;
+}
+
+@keyframes ambient-drift-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Desktop cursor dot: 8px, trails with 0.15s ease-out, inverts color on dark/light surfaces */
+.cursor-trail-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffffff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease-out;
+  will-change: transform;
+}
+
+.cursor-visible {
+  opacity: 1;
+}
+
+.cursor-hidden {
+  opacity: 0;
+}
+
+@media (hover: none) or (pointer: coarse) {
+  .cursor-trail-dot {
+    display: none !important;
+  }
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .branded-spinner {
+    animation-duration: 3s;
+  }
+  .ambient-mark-spin {
+    animation: none;
+  }
+  .cursor-trail-dot {
+    display: none !important;
+  }
+}
+
+/* Minimize layout shifts across all devices */
+.testimonial-avatar,
+.leader-preview-avatar,
+.team-avatar {
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+}
+
+.venture-visual {
+  aspect-ratio: 16 / 9;
+  min-height: 205px;
+}
+
+.infrastructure-mark {
+  aspect-ratio: 16 / 9;
+  min-height: 220px;
+}
+
+.partner-logo {
+  flex-shrink: 0;
+  aspect-ratio: 13 / 9;
+}

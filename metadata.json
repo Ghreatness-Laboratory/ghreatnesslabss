@@ -1,0 +1,8 @@
+{
+  "name": "GhreatnessLabs — Lagos Systems Studio",
+  "description": "GhreatnessLabs is a Lagos digital systems studio for brands, products, and infrastructure.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
