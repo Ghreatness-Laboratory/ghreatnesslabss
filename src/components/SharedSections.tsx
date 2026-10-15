@@ -79,7 +79,6 @@ export const Button = ({
 );
 
 export function CountUp({ value }: { value: string }) {
-  const [count, setCount] = useState(0);
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -89,21 +88,36 @@ export function CountUp({ value }: { value: string }) {
 
     let frame = 0;
     let started = false;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting || started) return;
         started = true;
-        const start = performance.now();
-        const tick = (now: number) => {
-          const progress = Math.min((now - start) / 1200, 1);
-          setCount(Math.round(target * (1 - Math.pow(1 - progress, 3))));
-          if (progress < 1) frame = requestAnimationFrame(tick);
-        };
-        frame = requestAnimationFrame(tick);
         observer.disconnect();
+
+        const start = performance.now();
+        const duration = 1000;
+
+        const tick = (now: number) => {
+          if (document.hidden) {
+            frame = requestAnimationFrame(tick);
+            return;
+          }
+          const progress = Math.min((now - start) / duration, 1);
+          const current = Math.round(target * (1 - Math.pow(1 - progress, 3)));
+          if (element) {
+            element.textContent = String(current);
+          }
+          if (progress < 1) {
+            frame = requestAnimationFrame(tick);
+          }
+        };
+
+        frame = requestAnimationFrame(tick);
       },
-      { threshold: 0.45 }
+      { threshold: 0.2 }
     );
+
     observer.observe(element);
     return () => {
       observer.disconnect();
@@ -111,7 +125,18 @@ export function CountUp({ value }: { value: string }) {
     };
   }, [value]);
 
-  return <strong ref={ref}>{count}</strong>;
+  return (
+    <strong
+      ref={ref}
+      style={{
+        fontVariantNumeric: 'tabular-nums',
+        display: 'inline-block',
+        minWidth: '2ch',
+      }}
+    >
+      0
+    </strong>
+  );
 }
 
 export function Stats() {

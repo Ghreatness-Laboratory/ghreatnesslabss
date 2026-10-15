@@ -67,11 +67,16 @@ function App() {
   // Defer non-critical JavaScript (chat widget) until after first paint & idle
   useEffect(() => {
     if ('requestIdleCallback' in window) {
-      const handle = (window as unknown as { requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => number })
-        .requestIdleCallback(() => setShowChat(true), { timeout: 1500 });
+      const handle = (
+        window as unknown as {
+          requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => number;
+        }
+      ).requestIdleCallback(() => setShowChat(true), { timeout: 1500 });
       return () => {
         if ('cancelIdleCallback' in window) {
-          (window as unknown as { cancelIdleCallback: (id: number) => void }).cancelIdleCallback(handle);
+          (
+            window as unknown as { cancelIdleCallback: (id: number) => void }
+          ).cancelIdleCallback(handle);
         }
       };
     } else {
@@ -86,7 +91,7 @@ function App() {
     window.history.pushState({}, '', to);
     startTransition(() => {
       setPath(to);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'instant' });
     });
   };
 
@@ -104,23 +109,22 @@ function App() {
     return () => window.removeEventListener('click', handleClick);
   }, [path]);
 
-  // Scroll reveal animations initialized after layout paints
+  // High-performance batched IntersectionObserver for section reveal
+  // Avoids querying or animating dozens of nested cards individually
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      return;
+    }
+
     const timer = setTimeout(() => {
-      const major = Array.from(
+      const sections = Array.from(
         document.querySelectorAll<HTMLElement>(
           'main > .section, main > .stats, main .service-category, main .testimonials-section, footer .cta'
         )
       );
-      const cards = 'article, blockquote, .partner-logo, .leader-preview-card, .client-list > span';
 
-      major.forEach((section) => {
-        section.classList.add('reveal');
-        section.querySelectorAll<HTMLElement>(cards).forEach((card, index) => {
-          card.classList.add('reveal-stagger');
-          card.style.setProperty('--stagger-index', String(index));
-        });
-      });
+      if (!sections.length) return;
 
       const observer = new IntersectionObserver(
         (entries) => {
@@ -131,12 +135,16 @@ function App() {
             }
           });
         },
-        { threshold: 0.12, rootMargin: '0px 0px -30px' }
+        { threshold: 0.05, rootMargin: '120px 0px 40px 0px' }
       );
 
-      major.forEach((section) => observer.observe(section));
+      sections.forEach((section) => {
+        section.classList.add('reveal');
+        observer.observe(section);
+      });
+
       return () => observer.disconnect();
-    }, 100);
+    }, 60);
 
     return () => clearTimeout(timer);
   }, [path]);

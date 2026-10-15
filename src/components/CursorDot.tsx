@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export function CursorDot() {
-  const [coords, setCoords] = useState<{ x: number; y: number } | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isSupported, setIsSupported] = useState(false);
+  const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check if device has fine pointer (mouse/trackpad, not touch) and prefers motion
+    // Only enable on desktop devices with fine pointer and no reduced motion
     const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -14,41 +12,89 @@ export function CursorDot() {
       return;
     }
 
-    setIsSupported(true);
+    const dot = dotRef.current;
+    if (!dot) return;
+
+    let targetX = -100;
+    let targetY = -100;
+    let currentX = -100;
+    let currentY = -100;
+    let isVisible = false;
+    let isScrolling = false;
+    let scrollTimeout: number | null = null;
+    let rafId: number | null = null;
+
+    const updatePosition = () => {
+      // Linear interpolation (easing)
+      const ease = 0.22;
+      currentX += (targetX - currentX) * ease;
+      currentY += (targetY - currentY) * ease;
+
+      if (dot) {
+        dot.style.transform = `translate3d(${Math.round(currentX - 4)}px, ${Math.round(currentY - 4)}px, 0)`;
+        dot.style.opacity = isVisible && !isScrolling ? '1' : '0';
+      }
+
+      // Keep RAF loop active only while visible and tab active
+      if (!document.hidden) {
+        rafId = requestAnimationFrame(updatePosition);
+      }
+    };
+
+    rafId = requestAnimationFrame(updatePosition);
 
     const onMouseMove = (e: MouseEvent) => {
-      setCoords({ x: e.clientX, y: e.clientY });
-      setIsVisible(true);
+      targetX = e.clientX;
+      targetY = e.clientY;
+      isVisible = true;
     };
 
     const onMouseLeave = () => {
-      setIsVisible(false);
+      isVisible = false;
     };
 
     const onMouseEnter = () => {
-      setIsVisible(true);
+      isVisible = true;
+    };
+
+    // Pause cursor updates during scroll to free up 100% of GPU/CPU for scrolling
+    const onScroll = () => {
+      isScrolling = true;
+      if (dot) dot.style.opacity = '0';
+
+      if (scrollTimeout !== null) {
+        window.clearTimeout(scrollTimeout);
+      }
+      scrollTimeout = window.setTimeout(() => {
+        isScrolling = false;
+        if (isVisible && dot) dot.style.opacity = '1';
+      }, 120);
+    };
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        if (rafId) cancelAnimationFrame(rafId);
+      } else {
+        rafId = requestAnimationFrame(updatePosition);
+      }
     };
 
     window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('mouseleave', onMouseLeave);
     document.addEventListener('mouseenter', onMouseEnter);
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (scrollTimeout !== null) window.clearTimeout(scrollTimeout);
       window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('mouseleave', onMouseLeave);
       document.removeEventListener('mouseenter', onMouseEnter);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, []);
 
-  if (!isSupported || !coords) return null;
-
-  return (
-    <div
-      className={`cursor-trail-dot ${isVisible ? 'cursor-visible' : 'cursor-hidden'}`}
-      style={{
-        transform: `translate3d(${coords.x - 4}px, ${coords.y - 4}px, 0)`,
-      }}
-      aria-hidden="true"
-    />
-  );
+  return <div ref={dotRef} className="cursor-trail-dot" aria-hidden="true" />;
 }

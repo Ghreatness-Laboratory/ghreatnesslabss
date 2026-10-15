@@ -330,21 +330,19 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
 .nav-drawer a,.footer-links a{position:relative}
 .nav-drawer a::after,.footer-links a::after{position:absolute;bottom:5px;left:0;width:100%;height:1px;background:currentColor;content:"";transform:scaleX(0);transform-origin:left;transition:transform var(--motion-fast) var(--ease-out)}
 .nav-drawer a:hover::after,.nav-drawer a:focus-visible::after,.footer-links a:hover::after,.footer-links a:focus-visible::after{transform:scaleX(1)}
-.cap,.venture,.trust-grid blockquote,.story-grid article,.service-item,.holding-grid article,.team-card,.about-preview-card,.leader-preview-card,.partner-logo,.client-list span{transition:transform var(--motion-base) var(--ease-out),box-shadow var(--motion-base) ease-out}
-@media (hover:hover){.cap:hover,.venture:hover,.trust-grid blockquote:hover,.story-grid article:hover,.service-item:hover,.holding-grid article:hover,.team-card:hover,.about-preview-card:hover,.leader-preview-card:hover,.partner-logo:hover,.client-list span:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(0,0,0,.14)}}
-.reveal{opacity:0;transform:translateY(20px);transition:opacity 480ms var(--ease-out),transform 480ms var(--ease-out)}
+.cap,.venture,.trust-grid blockquote,.story-grid article,.service-item,.holding-grid article,.team-card,.about-preview-card,.leader-preview-card,.partner-logo,.client-list span{transition:transform 180ms var(--ease-out)}
+@media (hover:hover){.cap:hover,.venture:hover,.trust-grid blockquote:hover,.story-grid article:hover,.service-item:hover,.holding-grid article:hover,.team-card:hover,.about-preview-card:hover,.leader-preview-card:hover,.partner-logo:hover,.client-list span:hover{transform:translateY(-3px)}}
+.reveal{opacity:0;transform:translateY(12px);transition:opacity 280ms var(--ease-out),transform 280ms var(--ease-out)}
 .reveal.is-visible{opacity:1;transform:translateY(0)}
-.reveal .reveal-stagger{opacity:0;transform:translateY(20px);transition:opacity 420ms var(--ease-out) calc(var(--stagger-index) * 90ms),transform 420ms var(--ease-out) calc(var(--stagger-index) * 90ms)}
-.reveal.is-visible .reveal-stagger{opacity:1;transform:translateY(0)}
-.leadership-row,.partner-row{scroll-behavior:smooth;scroll-snap-type:x mandatory;scroll-padding-inline:var(--space-3)}
+.leadership-row,.partner-row{scroll-behavior:smooth;scroll-snap-type:x proximity;scroll-padding-inline:var(--space-3);touch-action:pan-y}
 .leader-preview-card,.partner-logo{scroll-snap-align:start}
 .chat-panel{display:block;visibility:hidden;opacity:0;transform:scale(.96) translateX(8px);pointer-events:none;transition:opacity var(--motion-base) var(--ease-out),transform var(--motion-base) var(--ease-out),visibility 0s linear var(--motion-base)}
 .chat-panel.chat-panel-open{visibility:visible;opacity:1;transform:scale(1) translateX(0);pointer-events:auto;transition-delay:0s}
-.chat-bubble{animation:chat-nudge 4s var(--ease-out) 2s infinite}
+.chat-bubble{animation:chat-nudge 1.2s var(--ease-out) 1.5s 1}
 .chat-widget:has(.chat-panel-open) .chat-bubble{animation:none}
 @keyframes chat-nudge{0%,88%,100%{transform:translateY(0)}92%{transform:translateY(-4px)}96%{transform:translateY(0)}}
 .legal{padding-bottom:calc(15px + var(--chat-clearance))}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal,.reveal .reveal-stagger{opacity:1;transform:none;transition:none}.chat-bubble{animation:none}.button,.navicons .navicon,.chat-bubble,.cap,.venture,.trust-grid blockquote,.story-grid article,.service-item,.holding-grid article,.team-card,.about-preview-card,.leader-preview-card,.partner-logo,.client-list span{transition:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.chat-bubble{animation:none}.button,.navicons .navicon,.chat-bubble,.cap,.venture,.trust-grid blockquote,.story-grid article,.service-item,.holding-grid article,.team-card,.about-preview-card,.leader-preview-card,.partner-logo,.client-list span{transition:none}}
 @media(max-width:639px){.section{padding-top:32px;padding-bottom:32px}.service-category,.testimonials-section{margin-top:40px}.cap-grid,.venture-grid,.trust-grid,.story-grid,.team-grid,.client-list,.contact-grid,.holding-grid{margin-top:28px}.legal{padding-bottom:calc(15px + var(--chat-clearance))}}
 
 
@@ -412,9 +410,10 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
   height: 360px;
   pointer-events: none;
   z-index: 0;
-  overflow: visible;
-  opacity: 0.07;
+  overflow: hidden;
+  opacity: 0.06;
   user-select: none;
+  contain: strict;
 }
 
 .ambient-mark-spin {
@@ -426,6 +425,10 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
   animation: ambient-drift-spin 75s linear infinite;
   will-change: transform;
   transform: translateZ(0);
+}
+
+.ambient-paused .ambient-mark-spin {
+  animation-play-state: paused;
 }
 
 .ambient-ring {
@@ -466,7 +469,7 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
   to { transform: rotate(360deg); }
 }
 
-/* Desktop cursor dot: 8px, trails with 0.15s ease-out, inverts color on dark/light surfaces */
+/* Desktop cursor dot: 8px, direct GPU transform without blend mode thrashing */
 .cursor-trail-dot {
   position: fixed;
   top: 0;
@@ -474,12 +477,12 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ffffff;
-  mix-blend-mode: difference;
+  background: #111111;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.85), 0 2px 4px rgba(0, 0, 0, 0.2);
   pointer-events: none;
   z-index: 9999;
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease-out;
-  will-change: transform;
+  transition: opacity 0.15s ease-out;
+  will-change: transform, opacity;
 }
 
 .cursor-visible {
