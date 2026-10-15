@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MessageCircle, X, ArrowUpRight } from 'lucide-react';
 
 export function ChatBubble() {
-  const defaultPosition = { right: 20, bottom: 20 };
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 639;
+  const defaultPosition = isMobile ? { right: 14, bottom: 14 } : { right: 20, bottom: 20 };
   const [position, setPosition] = useState(defaultPosition);
   const [open, setOpen] = useState(false);
   const dragging = useRef(false);
@@ -14,7 +15,12 @@ export function ChatBubble() {
       try {
         const value = JSON.parse(saved);
         if (typeof value.right === 'number' && typeof value.bottom === 'number') {
-          setPosition(value);
+          const maxRight = Math.max(10, window.innerWidth - 64);
+          const maxBottom = Math.max(10, window.innerHeight - 64);
+          setPosition({
+            right: Math.min(Math.max(12, value.right), maxRight),
+            bottom: Math.min(Math.max(12, value.bottom), maxBottom),
+          });
         }
       } catch {
         sessionStorage.removeItem('ghreatness-chat-position');
@@ -30,9 +36,9 @@ export function ChatBubble() {
 
   const move = (event: React.PointerEvent<HTMLButtonElement>) => {
     if (!dragging.current) return;
-    const size = 56;
-    const right = Math.max(12, Math.min(innerWidth - size - 12, innerWidth - event.clientX - size / 2));
-    const bottom = Math.max(12, Math.min(innerHeight - size - 12, innerHeight - event.clientY - size / 2));
+    const bubbleSize = window.innerWidth <= 639 ? 48 : 56;
+    const right = Math.max(10, Math.min(window.innerWidth - bubbleSize - 10, window.innerWidth - event.clientX - bubbleSize / 2));
+    const bottom = Math.max(10, Math.min(window.innerHeight - bubbleSize - 10, window.innerHeight - event.clientY - bubbleSize / 2));
     moved.current = true;
     setPosition({ right, bottom });
   };
