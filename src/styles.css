@@ -756,9 +756,9 @@ footer {
 .infrastructure-mark {
   position: relative;
   display: grid;
-  height: 220px;
+  height: 400px;
   place-items: center;
-  overflow: hidden;
+  overflow: hidden !important;
   border-radius: 16px;
   background-color: #111111;
   background-image:
@@ -766,6 +766,10 @@ footer {
     linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 28px 28px;
   background-position: center center;
+  contain: paint;
+  isolation: isolate;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
 }
 
 .infrastructure-live {
@@ -793,13 +797,13 @@ footer {
 }
 
 .infrastructure-ring-outer {
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
 }
 
 .infrastructure-ring-middle {
-  width: 90px;
-  height: 90px;
+  width: 105px;
+  height: 105px;
   border-color: rgba(255, 255, 255, 0.25);
 }
 
@@ -900,6 +904,72 @@ footer {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   z-index: 2;
+}
+
+/* Mobile scale down breakpoint for Infrastructure Visual (covers 375px, 390px, 430px, 480px) */
+@media (max-width: 480px) {
+  .infrastructure-mark {
+    height: 260px !important;
+    min-height: 260px !important;
+    background-size: 24px 24px;
+    overflow: hidden !important;
+  }
+
+  .infrastructure-ring-outer {
+    width: 110px;
+    height: 110px;
+  }
+
+  .infrastructure-ring-middle {
+    width: 72px;
+    height: 72px;
+  }
+
+  .infrastructure-orbit {
+    width: 150px;
+    height: 150px;
+  }
+
+  .infrastructure-dot {
+    width: 9px;
+    height: 9px;
+  }
+
+  .infrastructure-dot-ping {
+    width: 9px;
+    height: 9px;
+  }
+
+  .node-1 {
+    width: 6px;
+    height: 6px;
+  }
+
+  .node-2 {
+    width: 5px;
+    height: 5px;
+    right: 18px;
+    bottom: 18px;
+  }
+
+  .node-3 {
+    width: 5px;
+    height: 5px;
+    left: 12px;
+  }
+
+  .infrastructure-badge {
+    font-size: 10.5px;
+    padding: 5px 12px;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  .infrastructure-live {
+    font-size: 9.5px;
+    top: 10px;
+    right: 10px;
+  }
 }
 
 /* Core capability cards: alternating surfaces create a clear visual rhythm. */
@@ -1676,8 +1746,7 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
 }
 
 .infrastructure-mark {
-  aspect-ratio: 16 / 9;
-  min-height: 220px;
+  width: 100%;
 }
 
 .partner-logo {
