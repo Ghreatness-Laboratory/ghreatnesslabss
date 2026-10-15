@@ -36,7 +36,154 @@ nav{height:auto;padding:14px 16px;border-bottom-color:#eee}
 @media(prefers-reduced-motion:no-preference){.fade{animation:fade .7s ease-out both}@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}}
 
 /* Minimal infrastructure visual. */
-.infrastructure-mark{position:relative;display:grid;height:220px;place-items:center;overflow:hidden;border-radius:16px;background:#111}.infrastructure-ring,.infrastructure-dot{position:absolute;border-radius:50%}.infrastructure-ring{border:1px solid rgba(255,255,255,.15)}.infrastructure-ring-outer{width:140px;height:140px}.infrastructure-ring-middle{width:90px;height:90px;border-color:rgba(255,255,255,.25)}.infrastructure-dot{width:10px;height:10px;background:#fff}.infrastructure-badge{position:absolute;bottom:12px;left:12px;border-radius:20px;background:#fff;padding:6px 12px;color:#111;font:500 11px/1 Inter,Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.infrastructure-mark {
+  position: relative;
+  display: grid;
+  height: 220px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: #111111;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: center center;
+}
+
+.infrastructure-live {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.05em;
+  user-select: none;
+  pointer-events: none;
+  z-index: 2;
+  line-height: 1;
+}
+
+.infrastructure-ring,
+.infrastructure-dot {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.infrastructure-ring {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.infrastructure-ring-outer {
+  width: 140px;
+  height: 140px;
+}
+
+.infrastructure-ring-middle {
+  width: 90px;
+  height: 90px;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.infrastructure-dot {
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  z-index: 1;
+}
+
+.infrastructure-dot-ping {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  animation: infra-ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes infra-ping {
+  0% { transform: scale(1); opacity: 0.8; }
+  75%, 100% { transform: scale(2.8); opacity: 0; }
+}
+
+/* Orbiting nodes */
+.infrastructure-orbit {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.orbit-1 {
+  animation: orbit 12s linear infinite;
+}
+
+.orbit-2 {
+  animation: orbit 16s linear infinite reverse;
+}
+
+.orbit-3 {
+  animation: orbit 20s linear infinite;
+}
+
+@keyframes orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.orbit-node {
+  display: block;
+  border-radius: 50%;
+}
+
+.node-1 {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 7px;
+  height: 7px;
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}
+
+.node-2 {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.node-3 {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.infrastructure-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  border-radius: 20px;
+  background: #fff;
+  padding: 6px 12px;
+  color: #111;
+  font: 500 11px/1 Inter, Arial, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  z-index: 2;
+}
 
 /* Core capability cards: alternating surfaces create a clear visual rhythm. */
 .cap{
@@ -504,8 +651,12 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
   .branded-spinner {
     animation-duration: 3s;
   }
-  .ambient-mark-spin {
-    animation: none;
+  .ambient-mark-spin,
+  .orbit-1,
+  .orbit-2,
+  .orbit-3,
+  .infrastructure-dot-ping {
+    animation: none !important;
   }
   .cursor-trail-dot {
     display: none !important;

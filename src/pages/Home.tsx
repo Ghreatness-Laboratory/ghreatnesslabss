@@ -29,10 +29,24 @@ export default function Home() {
           </div>
         </div>
         <div className="hero-aside">
-          <div className="infrastructure-mark">
+          <div className="infrastructure-mark" aria-label="Live infrastructure status visual">
+            <span className="infrastructure-live">LIVE</span>
             <span className="infrastructure-ring infrastructure-ring-outer" />
             <span className="infrastructure-ring infrastructure-ring-middle" />
+            <span className="infrastructure-dot-ping" />
             <span className="infrastructure-dot" />
+
+            {/* Orbiting nodes */}
+            <div className="infrastructure-orbit orbit-1">
+              <span className="orbit-node node-1" />
+            </div>
+            <div className="infrastructure-orbit orbit-2">
+              <span className="orbit-node node-2" />
+            </div>
+            <div className="infrastructure-orbit orbit-3">
+              <span className="orbit-node node-3" />
+            </div>
+
             <span className="infrastructure-badge">Infrastructure</span>
           </div>
           <div className="dispatch">
