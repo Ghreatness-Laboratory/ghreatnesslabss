@@ -1,6 +1,7 @@
 import React from 'react';
+import { Building2 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
-import { SectionHead, Testimonials } from '../components/SharedSections';
+import { SectionHead, Testimonials, EmptyState } from '../components/SharedSections';
 
 export default function Clients() {
   const { data } = useCms();
@@ -22,11 +23,19 @@ export default function Clients() {
         accent={subtitle}
         copy={intro}
       />
-      <div className="client-list">
-        {sortedClients.map((client) => (
-          <span key={client.id || client.name}>{client.name}</span>
-        ))}
-      </div>
+      {sortedClients.length === 0 ? (
+        <EmptyState
+          icon={Building2}
+          title="Nothing here yet"
+          subtitle="Partners and client ventures will be featured here."
+        />
+      ) : (
+        <div className="client-list">
+          {sortedClients.map((client) => (
+            <span key={client.id || client.name}>{client.name}</span>
+          ))}
+        </div>
+      )}
       <div className="testimonials-section">
         <SectionHead
           label="Client perspectives"

@@ -1,6 +1,7 @@
 import React from 'react';
+import { Building2 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
-import { SectionHead, icons } from '../components/SharedSections';
+import { SectionHead, icons, EmptyState } from '../components/SharedSections';
 
 export default function HoldingGroup() {
   const { data } = useCms();
@@ -22,21 +23,29 @@ export default function HoldingGroup() {
         accent={subtitle}
         copy={intro}
       />
-      <div className="holding-grid">
-        {sortedHolding.map((company, index) => {
-          const Icon = icons[company.icon_name] || icons['building-2'];
-          return (
-            <article className={index % 2 ? 'holding-dark' : ''} key={company.id || company.company_name}>
-              <span className="icon-badge">
-                <Icon />
-              </span>
-              <span className="cap-index">{String(index + 1).padStart(2, '0')}</span>
-              <h3>{company.company_name}</h3>
-              <p>{company.description}</p>
-            </article>
-          );
-        })}
-      </div>
+      {sortedHolding.length === 0 ? (
+        <EmptyState
+          icon={Building2}
+          title="Nothing here yet"
+          subtitle="Holding group companies and ventures will appear here."
+        />
+      ) : (
+        <div className="holding-grid">
+          {sortedHolding.map((company, index) => {
+            const Icon = icons[company.icon_name] || icons['building-2'];
+            return (
+              <article className={index % 2 ? 'holding-dark' : ''} key={company.id || company.company_name}>
+                <span className="icon-badge">
+                  <Icon />
+                </span>
+                <span className="cap-index">{String(index + 1).padStart(2, '0')}</span>
+                <h3>{company.company_name}</h3>
+                <p>{company.description}</p>
+              </article>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

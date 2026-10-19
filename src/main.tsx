@@ -12,6 +12,8 @@ import { LoadingScreen } from './components/LoadingScreen';
 import { AmbientBrandMark } from './components/AmbientBrandMark';
 import { CursorDot } from './components/CursorDot';
 import { StickyConsultationCta } from './components/StickyConsultationCta';
+import { SiteToast } from './components/SiteToast';
+import { ScrollNavigation } from './components/ScrollNavigation';
 import { CmsProvider } from './context/CmsContext';
 import { updateDocumentMeta } from './lib/ogImage';
 import './styles.css';
@@ -254,6 +256,12 @@ function App() {
       {/* Ambient background watermark and cursor dot */}
       <AmbientBrandMark />
       <CursorDot />
+
+      {/* Global thin scroll progress bar & back-to-top button */}
+      <ScrollNavigation />
+
+      {/* Global toast notifications */}
+      <SiteToast />
 
       <Header path={path} onNavigate={navigate} />
 

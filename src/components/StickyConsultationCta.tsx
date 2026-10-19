@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Calendar, ArrowRight, MessageSquareCode } from 'lucide-react';
+import { Calendar, ArrowRight, MessageSquareCode, Loader2 } from 'lucide-react';
 import { ConsultationModal } from './ConsultationModal';
 
 export function StickyConsultationCta({
@@ -9,6 +9,7 @@ export function StickyConsultationCta({
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Check if user prefers reduced motion
@@ -102,12 +103,28 @@ export function StickyConsultationCta({
           <button
             type="button"
             className="sticky-cta-button"
-            onClick={() => setModalOpen(true)}
+            disabled={loading}
+            onClick={() => {
+              setLoading(true);
+              setTimeout(() => {
+                setLoading(false);
+                setModalOpen(true);
+              }, 220);
+            }}
             aria-label="Book a consultation with GhreatnessLabs"
           >
-            <span className="sticky-cta-icon-dot" />
-            <span className="sticky-cta-text">Book a Consultation</span>
-            <ArrowRight size={14} className="sticky-cta-arrow" />
+            {loading ? (
+              <span className="button-spinner-wrap">
+                <Loader2 size={14} className="animate-spin" />
+                <span>Opening...</span>
+              </span>
+            ) : (
+              <>
+                <span className="sticky-cta-icon-dot" />
+                <span className="sticky-cta-text">Book a Consultation</span>
+                <ArrowRight size={14} className="sticky-cta-arrow" />
+              </>
+            )}
           </button>
         </div>
 
@@ -116,12 +133,28 @@ export function StickyConsultationCta({
           <button
             type="button"
             className="sticky-cta-mobile-btn"
-            onClick={() => setModalOpen(true)}
+            disabled={loading}
+            onClick={() => {
+              setLoading(true);
+              setTimeout(() => {
+                setLoading(false);
+                setModalOpen(true);
+              }, 220);
+            }}
             aria-label="Book a consultation"
           >
-            <span className="sticky-cta-icon-dot" />
-            <span>Book a Consultation</span>
-            <ArrowRight size={15} />
+            {loading ? (
+              <span className="button-spinner-wrap">
+                <Loader2 size={14} className="animate-spin" />
+                <span>Opening...</span>
+              </span>
+            ) : (
+              <>
+                <span className="sticky-cta-icon-dot" />
+                <span>Book a Consultation</span>
+                <ArrowRight size={15} />
+              </>
+            )}
           </button>
         </div>
       </div>
