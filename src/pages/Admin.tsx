@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 import {
+  CmsData,
   SiteSettings,
   StatItem,
   AboutCard,
