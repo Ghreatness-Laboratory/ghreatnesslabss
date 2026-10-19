@@ -13,6 +13,7 @@ import {
 } from '../components/SharedSections';
 
 import { FaqSection } from '../components/FaqSection';
+import { GhreatnessMark } from '../components/GhreatnessLogo';
 
 export default function Home() {
   const { data } = useCms();
@@ -35,14 +36,13 @@ export default function Home() {
         </div>
         <div className="hero-aside">
           <div className="infrastructure-mark" aria-label="Live infrastructure status visual">
-            <div className="infrastructure-status-pill">
-              <span className="infrastructure-live">LIVE</span>
-              <span className="infrastructure-operational-text">Systems Operational</span>
-            </div>
+            <span className="infrastructure-live">LIVE</span>
             <span className="infrastructure-ring infrastructure-ring-outer" />
             <span className="infrastructure-ring infrastructure-ring-middle" />
             <span className="infrastructure-dot-ping" />
-            <span className="infrastructure-dot" />
+            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+              <GhreatnessMark size={34} fill="#000000" className="hero-center-mark" />
+            </div>
 
             {/* Orbiting nodes */}
             <div className="infrastructure-orbit orbit-1">
@@ -67,9 +67,6 @@ export default function Home() {
             </p>
             <p>
               Working with <strong>Global teams</strong>
-            </p>
-            <p className="dispatch-status-row">
-              Platform <span className="dispatch-operational-tag"><span className="operational-dot" /> Systems Operational</span>
             </p>
           </div>
         </div>

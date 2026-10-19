@@ -31,6 +31,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
+import { GhreatnessLogo, GhreatnessMark } from '../components/GhreatnessLogo';
 import {
   CmsData,
   SiteSettings,
@@ -261,10 +262,9 @@ export default function Admin() {
         <ToastContainer />
         <div className="admin-login-card">
           <div className="admin-login-head">
-            <span className="icon-badge">
-              <Lock size={22} />
-            </span>
-            <h1>GHREATNESSLABS CMS</h1>
+            <div className="flex justify-center mb-3">
+              <GhreatnessLogo variant="full" height={44} />
+            </div>
             <p>Studio content management & Supabase administration</p>
           </div>
 
@@ -369,9 +369,8 @@ export default function Admin() {
       {/* Admin Top Navigation Bar */}
       <header className="admin-topbar">
         <div className="admin-topbar-left">
-          <a href="/" className="admin-brand">
-            <span className="admin-brand-dot" />
-            <b className="wordmark">GHREATNESSLABS</b>
+          <a href="/" className="admin-brand flex items-center gap-2" title="Return to public site">
+            <GhreatnessLogo variant="full" height={28} />
             <span className="admin-badge">CMS STUDIO</span>
           </a>
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { GhreatnessMark } from './GhreatnessLogo';
 
 export function AmbientBrandMark() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,10 +38,7 @@ export function AmbientBrandMark() {
   return (
     <div ref={containerRef} className="ambient-mark-container" aria-hidden="true">
       <div className="ambient-mark-spin">
-        <span className="ambient-ring ambient-ring-outer" />
-        <span className="ambient-ring ambient-ring-mid" />
-        <span className="ambient-ring ambient-ring-inner" />
-        <span className="ambient-mark-dot" />
+        <GhreatnessMark size={320} fill="#111111" className="ambient-official-mark" />
       </div>
     </div>
   );

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 110" width="520" height="110" fill="currentColor">
+  <!-- Official Ghreatness Laboratory Logo -->
+  <g id="ghreatness-mark" transform="translate(0, 4)">
+    <!-- Layer 1: Top Ring -->
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M 60 4 L 112 34 L 112 43 L 60 73 L 8 43 L 8 34 L 60 4 Z M 60 18 L 94 37.5 L 60 57 L 26 37.5 L 60 18 Z"
+    />
+    <!-- Layer 2: Middle Tier & Crossbar -->
+    <path d="M 8 49 L 32 62.5 L 32 71.5 L 8 58 Z" />
+    <path d="M 112 49 L 112 58 L 88 71.5 L 88 62.5 Z" />
+    <path d="M 88 62.5 L 88 71.5 L 56 53 L 56 44 Z" />
+    <!-- Layer 3: Base -->
+    <path d="M 8 64 L 8 76 L 60 98 L 112 76 L 112 64 L 60 86 Z" />
+  </g>
+
+  <!-- Typography Block -->
+  <g id="ghreatness-type" transform="translate(132, 0)">
+    <!-- GHREATNESS -->
+    <text
+      x="0"
+      y="54"
+      font-family="'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+      font-weight="800"
+      font-size="44"
+      letter-spacing="-0.02em"
+    >GHREATNESS</text>
+
+    <!-- Horizontal Divider Line matching exact width of GHREATNESS -->
+    <line
+      x1="0"
+      y1="67"
+      x2="378"
+      y2="67"
+      stroke="currentColor"
+      stroke-width="3"
+    />
+
+    <!-- LABORATORY with extended tracking -->
+    <text
+      x="2"
+      y="94"
+      font-family="'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+      font-weight="500"
+      font-size="19"
+      letter-spacing="0.45em"
+    >LABORATORY</text>
+  </g>
+</svg>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { GhreatnessMark, GhreatnessLogo } from './GhreatnessLogo';
 
 interface LoadingScreenProps {
   isLoading: boolean;
@@ -53,8 +54,12 @@ export function LoadingScreen({ isLoading, delayMs = 220 }: LoadingScreenProps) 
       aria-live="polite"
       aria-label="Loading content"
     >
-      <div className="branded-spinner" />
-      <span className="branded-loader-wordmark">GHREATNESSLABS</span>
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative flex items-center justify-center">
+          <GhreatnessMark size={64} className="animate-pulse text-black" />
+        </div>
+        <GhreatnessLogo variant="full" height={28} />
+      </div>
     </div>
   );
 }

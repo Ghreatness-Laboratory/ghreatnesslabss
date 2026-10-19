@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 102" fill="none">
+  <!-- Official Ghreatness Laboratory Isometric 3D Mark -->
+  <!-- Layer 1: Top Tier Isometric Ring -->
+  <path
+    fill-rule="evenodd"
+    clip-rule="evenodd"
+    d="M 60 4 L 112 34 L 112 43 L 60 73 L 8 43 L 8 34 L 60 4 Z M 60 18 L 94 37.5 L 60 57 L 26 37.5 L 60 18 Z"
+    fill="currentColor"
+  />
+
+  <!-- Layer 2: Middle Tier Shelf & Inner Crossbar (G-spur) -->
+  <path
+    d="M 8 49 L 32 62.5 L 32 71.5 L 8 58 Z"
+    fill="currentColor"
+  />
+  <path
+    d="M 112 49 L 112 58 L 88 71.5 L 88 62.5 Z"
+    fill="currentColor"
+  />
+  <path
+    d="M 88 62.5 L 88 71.5 L 56 53 L 56 44 Z"
+    fill="currentColor"
+  />
+
+  <!-- Layer 3: Bottom Foundation Base -->
+  <path
+    d="M 8 64 L 8 76 L 60 98 L 112 76 L 112 64 L 60 86 Z"
+    fill="currentColor"
+  />
+</svg>

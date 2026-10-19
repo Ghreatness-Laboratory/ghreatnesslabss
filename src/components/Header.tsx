@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { House, Search, Phone, Menu, X, ShieldAlert, Lock } from 'lucide-react';
+import { House, Search, Phone, Menu, X, ShieldAlert } from 'lucide-react';
 import { pages, Link } from './SharedSections';
 import { useCms } from '../context/CmsContext';
+import { GhreatnessLogo } from './GhreatnessLogo';
 
 import { SearchModal } from './SearchModal';
 
@@ -33,10 +34,6 @@ export function Header({
       <div className="announcement">
         <span>{settings.status}</span>
         <div className="announcement-actions">
-          <Link to="/client-login" className="client-login-top-link" aria-label="Open Client Portal">
-            <Lock size={11} />
-            <span>Client Login</span>
-          </Link>
           <a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
           <Link to="/admin" className="admin-quick-link" aria-label="Open Studio CMS Admin">
             <ShieldAlert size={12} />
@@ -45,8 +42,8 @@ export function Header({
         </div>
       </div>
       <nav>
-        <Link className="wordmark" to="/">
-          {settings.wordmark || 'GHREATNESSLABS'}
+        <Link className="brand-logo-link group flex items-center py-2" to="/" aria-label="Ghreatness Laboratory — Return to homepage">
+          <GhreatnessLogo variant="full" height={36} />
         </Link>
         <div className="navicons">
           <Link className="navicon" aria-label="Home" to="/">
@@ -104,16 +101,6 @@ export function Header({
               {name}
             </a>
           ))}
-          <a
-            href="/client-login"
-            className={path === '/client-login' || path === '/portal' ? 'active' : ''}
-            onClick={(e) => {
-              e.preventDefault();
-              handleLinkClick('/client-login');
-            }}
-          >
-            Client Login
-          </a>
         </div>
       )}
     </header>
