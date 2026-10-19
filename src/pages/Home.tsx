@@ -35,7 +35,10 @@ export default function Home() {
         </div>
         <div className="hero-aside">
           <div className="infrastructure-mark" aria-label="Live infrastructure status visual">
-            <span className="infrastructure-live">LIVE</span>
+            <div className="infrastructure-status-pill">
+              <span className="infrastructure-live">LIVE</span>
+              <span className="infrastructure-operational-text">Systems Operational</span>
+            </div>
             <span className="infrastructure-ring infrastructure-ring-outer" />
             <span className="infrastructure-ring infrastructure-ring-middle" />
             <span className="infrastructure-dot-ping" />
@@ -64,6 +67,9 @@ export default function Home() {
             </p>
             <p>
               Working with <strong>Global teams</strong>
+            </p>
+            <p className="dispatch-status-row">
+              Platform <span className="dispatch-operational-tag"><span className="operational-dot" /> Systems Operational</span>
             </p>
           </div>
         </div>

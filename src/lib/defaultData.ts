@@ -21,6 +21,7 @@ export const defaultCmsData: CmsData = {
     footerTagline: 'Digital systems and brand experiences built from Lagos for the world.',
     copyrightText: '© 2026 GHREATNESSLABS. All rights reserved.',
     availabilityText: 'Q2 projects',
+    capabilityDeckUrl: '/GhreatnessLabs-Services-Overview.pdf',
   },
   stats: [
     {
@@ -325,96 +326,44 @@ export const defaultCmsData: CmsData = {
   projects: [
     {
       id: 'proj-1',
-      slug: 'fragnaija-athlegame',
       category_tag: 'Esports platform',
       title: 'FragNaija / AthleGame',
       description:
         'A competitive gaming ecosystem constructed for Africa’s next generation of players.',
       detail:
         'A digital arena that brings player profiles, tournaments, live moments, and community into one focused experience.',
-      hero_image_url:
-        'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80',
-      challenge:
-        'Competitive gaming across West Africa faced fragmented tournament organization, erratic matchmaking servers, and lack of verified talent records for international scouts.',
-      approach:
-        'We designed and architected an authoritative real-time esports platform featuring automated bracket generation, anti-cheat validation, low-latency match telemetry, and unified gamer identity cards.',
-      result:
-        'Over 48,000 active tournament participants onboarded within 90 days, with 99.98% platform uptime during continental championships and 4 collegiate esports partnerships established.',
-      tech_stack: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'Redis', 'WebSockets', 'Tailwind CSS'],
-      client_name: 'Lanre Balogun, Head of Operations at AthleGame',
-      client_quote:
-        'GhreatnessLabs built an infrastructure that stood up to tens of thousands of concurrent competitive gamers without breaking a sweat. It set the standard for African esports.',
-      project_url: '/projects/fragnaija-athlegame',
+      project_url: '/contact',
       sort_order: 1,
     },
     {
       id: 'proj-2',
-      slug: 'civyn',
       category_tag: 'Civic technology',
       title: 'Civyn',
       description:
         'Digital public infrastructure that helps communities participate and organize.',
       detail:
         'A civic operating layer designed to make local action, services, and feedback easier to access and understand.',
-      hero_image_url:
-        'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80',
-      challenge:
-        'Municipal stakeholders and community grassroots organizers lacked a secure, transparent medium for neighborhood budget tracking, public service reporting, and participatory governance.',
-      approach:
-        'Engineered a mobile-first civic operating layer with end-to-end audit logging, geospatial incident heatmaps, anonymous citizen feedback channels, and automated municipal ticket escalation.',
-      result:
-        'Deployed across 6 urban districts in Lagos, facilitating over 14,000 resolved civic tickets and increasing citizen participation by 310% within the first municipal fiscal cycle.',
-      tech_stack: ['Next.js', 'TypeScript', 'PostGIS', 'Tailwind CSS', 'Supabase', 'Cloudflare Workers'],
-      client_name: 'Dr. Amina Yusuf, Municipal Director of Civic Innovation',
-      client_quote:
-        'The Civyn platform turned bureaucratic logjams into an open, responsive civic dialogue. GhreatnessLabs understands public systems at a fundamental level.',
-      project_url: '/projects/civyn',
+      project_url: '/contact',
       sort_order: 2,
     },
     {
       id: 'proj-3',
-      slug: 'univyx',
       category_tag: 'Higher-ed workflow',
       title: 'Univyx',
       description: 'A coordinated operating layer for the modern university.',
       detail:
         'A clearer university experience for administrators, students, and faculty working across complex systems.',
-      hero_image_url:
-        'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=80',
-      challenge:
-        'Legacy tertiary institutions struggled with siloed student information systems, manual transcript verifications taking months, and disjointed course registration portals.',
-      approach:
-        'Constructed a unified higher-ed workflow platform combining cryptographic transcript generation, automated prerequisite enrollment engines, and multi-campus administrative analytics.',
-      result:
-        'Reduced transcript processing time from 42 days to under 3 minutes, while serving over 35,000 active university students across 4 pilot campuses with zero downtime during peak registration weeks.',
-      tech_stack: ['React', 'Express', 'GraphQL', 'PostgreSQL', 'Docker', 'AWS ECS'],
-      client_name: 'Prof. Emmanuel Cole, Vice Chancellor Academic Systems',
-      client_quote:
-        'Univyx removed the administrative friction that had burdened our faculties for a decade. The execution speed and design precision were exemplary.',
-      project_url: '/projects/univyx',
+      project_url: '/contact',
       sort_order: 3,
     },
     {
       id: 'proj-4',
-      slug: 'kora-systems',
       category_tag: 'Financial operations',
       title: 'Kora Systems',
       description: 'A simplified financial operations environment for distributed teams.',
       detail:
         'A unified product language for high-trust workflows, reporting, and everyday decision making.',
-      hero_image_url:
-        'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1600&q=80',
-      challenge:
-        'Multi-entity pan-African businesses suffered from fragmented treasury visibility, slow multi-currency payroll reconciliations, and high cross-border transaction failure rates.',
-      approach:
-        'Designed and implemented a high-security treasury control center with real-time multi-currency settlement rails, dual-approval workflow authorization, and instant ledger auditing.',
-      result:
-        'Over $120M in annualized corporate volume cleared through the system, decreasing reconciliation settlement errors by 98.4% and reducing month-end close time from 9 days to 4 hours.',
-      tech_stack: ['TypeScript', 'React', 'Go', 'PostgreSQL', 'Kafka', 'Terraform', 'Vault'],
-      client_name: 'Chidi Nnamdi, Chief Financial Officer',
-      client_quote:
-        'In financial operations, latency and ambiguity are unacceptable. GhreatnessLabs built an institutional-grade platform our treasury relies on daily.',
-      project_url: '/projects/kora-systems',
+      project_url: '/contact',
       sort_order: 4,
     },
   ],

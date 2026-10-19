@@ -17,6 +17,7 @@ export interface SiteSettings {
   footerTagline: string;
   copyrightText: string;
   availabilityText: string;
+  capabilityDeckUrl?: string;
 }
 
 export interface StatItem {
@@ -66,19 +67,11 @@ export interface HoldingItem {
 
 export interface ProjectItem {
   id: string;
-  slug: string;
   category_tag: string;
   title: string;
   description: string;
   detail?: string;
   image_url?: string;
-  hero_image_url?: string;
-  challenge?: string;
-  approach?: string;
-  result?: string;
-  tech_stack?: string[];
-  client_quote?: string;
-  client_name?: string;
   project_url?: string;
   sort_order: number;
 }

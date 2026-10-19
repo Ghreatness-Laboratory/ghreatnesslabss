@@ -129,6 +129,7 @@ function mapDbSettings(row: Record<string, unknown>): SiteSettings {
     footerTagline: String(row.footer_tagline || ''),
     copyrightText: String(row.copyright_text || '© 2026 GHREATNESSLABS. All rights reserved.'),
     availabilityText: String(row.availability_text || 'Q2 projects'),
+    capabilityDeckUrl: String(row.capability_deck_url || '/GhreatnessLabs-Services-Overview.pdf'),
   };
 }
 
@@ -153,8 +154,79 @@ function mapSettingsToDb(settings: SiteSettings): Record<string, unknown> {
     footer_tagline: settings.footerTagline,
     copyright_text: settings.copyrightText,
     availability_text: settings.availabilityText,
+    capability_deck_url: settings.capabilityDeckUrl || '/GhreatnessLabs-Services-Overview.pdf',
     updated_at: new Date().toISOString(),
   };
+}
+
+const STORAGE_KEY_NEWSLETTER = 'ghreatness_newsletter_subscribers';
+
+export async function subscribeToNewsletter(
+  rawEmail: string
+): Promise<{ success: boolean; message: string; alreadySubscribed?: boolean }> {
+  const email = (rawEmail || '').trim().toLowerCase();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    return { success: false, message: 'Please enter a valid email address.' };
+  }
+
+  const client = getSupabaseClient();
+  if (client) {
+    try {
+      const { error } = await client.from('newsletter_subscribers').insert({
+        email,
+        subscribed_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        if (
+          error.code === '23505' ||
+          error.message?.toLowerCase().includes('unique') ||
+          error.message?.toLowerCase().includes('duplicate') ||
+          error.message?.toLowerCase().includes('already exists')
+        ) {
+          return {
+            success: true,
+            alreadySubscribed: true,
+            message: "You're already subscribed.",
+          };
+        }
+        console.warn('[GhreatnessLabs] Supabase newsletter insert error:', error);
+      } else {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY_NEWSLETTER);
+          const list: string[] = raw ? JSON.parse(raw) : [];
+          if (!list.includes(email)) {
+            list.push(email);
+            localStorage.setItem(STORAGE_KEY_NEWSLETTER, JSON.stringify(list));
+          }
+        } catch {
+          // ignore
+        }
+        return { success: true, message: "Thanks — you're on the list." };
+      }
+    } catch (err) {
+      console.warn('[GhreatnessLabs] Exception during Supabase newsletter subscription:', err);
+    }
+  }
+
+  // Local fallback storage
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_NEWSLETTER);
+    const list: string[] = raw ? JSON.parse(raw) : [];
+    if (list.includes(email)) {
+      return {
+        success: true,
+        alreadySubscribed: true,
+        message: "You're already subscribed.",
+      };
+    }
+    list.push(email);
+    localStorage.setItem(STORAGE_KEY_NEWSLETTER, JSON.stringify(list));
+    return { success: true, message: "Thanks — you're on the list." };
+  } catch {
+    return { success: true, message: "Thanks — you're on the list." };
+  }
 }
 
 export async function fetchRemoteCmsData(): Promise<Partial<CmsData> | null> {

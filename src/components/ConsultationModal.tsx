@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Mail, MessageSquare, ArrowRight, X, PhoneCall, Sparkles } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
-import { trackConsultationClick } from '../lib/analytics';
 
 interface ConsultationModalProps {
   isOpen: boolean;
@@ -78,71 +77,11 @@ export function ConsultationModal({ isOpen, onClose, onNavigate }: ConsultationM
 
         {/* Options */}
         <div className="consultation-options">
-          {/* Primary Option: Start a Project Intake Brief */}
-          <button
-            type="button"
-            className="consultation-card consultation-card-primary"
-            onClick={() => {
-              trackConsultationClick('modal', 'start_project_intake');
-              onClose();
-              if (onNavigate) {
-                onNavigate('/start-project');
-              } else {
-                window.location.href = '/start-project';
-              }
-            }}
-          >
-            <div className="consultation-card-icon-badge badge-featured">
-              <Sparkles size={20} />
-            </div>
-            <div className="consultation-card-body">
-              <div className="consultation-card-heading">
-                <b>Start a Project Brief</b>
-                <span className="consultation-card-badge badge-primary-highlight">Recommended</span>
-              </div>
-              <p>
-                Structured scoping intake for service categories, target timeline, and budget parameters.
-              </p>
-              <span className="consultation-card-link-text">
-                Complete project brief <ArrowRight size={13} />
-              </span>
-            </div>
-          </button>
-
-          {/* WhatsApp Priority Option */}
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="consultation-card consultation-card-whatsapp"
-            onClick={() => {
-              trackConsultationClick('whatsapp', 'modal_whatsapp_link');
-              onClose();
-            }}
-          >
-            <div className="consultation-card-icon-badge badge-whatsapp">
-              <MessageSquare size={20} />
-            </div>
-            <div className="consultation-card-body">
-              <div className="consultation-card-heading">
-                <b>WhatsApp Priority Chat</b>
-                <span className="consultation-card-badge badge-fast">Fastest Response</span>
-              </div>
-              <p>Chat directly with our studio lead in Lagos for immediate scoping and availability.</p>
-              <span className="consultation-card-link-text">
-                Open WhatsApp Chat <ArrowRight size={13} />
-              </span>
-            </div>
-          </a>
-
           {/* Email Option */}
           <a
             href={emailUrl}
             className="consultation-card"
-            onClick={() => {
-              trackConsultationClick('email', 'modal_email_link');
-              onClose();
-            }}
+            onClick={onClose}
           >
             <div className="consultation-card-icon-badge">
               <Mail size={20} />
@@ -152,23 +91,46 @@ export function ConsultationModal({ isOpen, onClose, onNavigate }: ConsultationM
                 <b>Email Consultation</b>
                 <span className="consultation-card-badge">Direct Studio</span>
               </div>
-              <p>Send your project overview and receive an engineering reply within 24 hours.</p>
+              <p>Send your project overview and receive a scoping reply within 24 hours.</p>
               <span className="consultation-card-link-text">
                 {settings.contactEmail} <ArrowRight size={13} />
               </span>
             </div>
           </a>
+
+          {/* WhatsApp Option */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="consultation-card consultation-card-whatsapp"
+            onClick={onClose}
+          >
+            <div className="consultation-card-icon-badge badge-whatsapp">
+              <MessageSquare size={20} />
+            </div>
+            <div className="consultation-card-body">
+              <div className="consultation-card-heading">
+                <b>WhatsApp Priority Chat</b>
+                <span className="consultation-card-badge badge-fast">Fastest Response</span>
+              </div>
+              <p>Chat directly with our team in Lagos for immediate scoping and availability.</p>
+              <span className="consultation-card-link-text">
+                Open WhatsApp Chat <ArrowRight size={13} />
+              </span>
+            </div>
+          </a>
         </div>
 
-        {/* Alternative: General Contact Form */}
+        {/* Alternative: In-depth Contact Form */}
         <div className="consultation-modal-footer">
-          <span>General inquiry or studio partnerships?</span>
+          <span>Prefer a detailed written brief?</span>
           <button
             type="button"
             className="consultation-form-link"
             onClick={handleOpenForm}
           >
-            General Contact page <ArrowRight size={12} />
+            Fill out project form <ArrowRight size={12} />
           </button>
         </div>
       </div>

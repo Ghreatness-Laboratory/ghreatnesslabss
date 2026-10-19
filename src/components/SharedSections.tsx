@@ -266,39 +266,25 @@ export function Ventures({ limit }: { limit?: number }) {
 
   return (
     <div className="venture-grid">
-      {items.map((item, i) => {
-        const projectHref = item.slug
-          ? `/projects/${item.slug}`
-          : item.project_url && item.project_url.startsWith('/projects')
-          ? item.project_url
-          : `/projects/${item.id}`;
-
-        return (
-          <article className={`venture v${i}`} key={item.id || item.title}>
-            <Link to={projectHref} className="venture-visual-link" aria-label={`View ${item.title} case study`}>
-              <div className="venture-visual">
-                <span className="venture-badge">{item.category_tag}</span>
-                <span className="venture-mark">
-                  <i />
-                  <b />
-                </span>
-              </div>
+      {items.map((item, i) => (
+        <article className={`venture v${i}`} key={item.id || item.title}>
+          <div className="venture-visual">
+            <span className="venture-badge">{item.category_tag}</span>
+            <span className="venture-mark">
+              <i />
+              <b />
+            </span>
+          </div>
+          <div className="venture-body">
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            {item.detail && <p className="venture-detail">{item.detail}</p>}
+            <Link to={item.project_url || '/contact'}>
+              Discuss this kind of work <ArrowUpRight />
             </Link>
-            <div className="venture-body">
-              <h3>
-                <Link to={projectHref} className="venture-title-link">
-                  {item.title}
-                </Link>
-              </h3>
-              <p>{item.description}</p>
-              {item.detail && <p className="venture-detail">{item.detail}</p>}
-              <Link to={projectHref} className="venture-cta-link">
-                View case study <ArrowUpRight />
-              </Link>
-            </div>
-          </article>
-        );
-      })}
+          </div>
+        </article>
+      ))}
     </div>
   );
 }

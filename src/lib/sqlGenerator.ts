@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
     footer_tagline TEXT NOT NULL,
     copyright_text TEXT NOT NULL DEFAULT '© 2026 GHREATNESSLABS. All rights reserved.',
     availability_text TEXT NOT NULL DEFAULT 'Q2 projects',
+    capability_deck_url TEXT DEFAULT '/GhreatnessLabs-Services-Overview.pdf',
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -106,19 +107,11 @@ CREATE TABLE IF NOT EXISTS public.holding_group (
 -- Portfolio Projects & Ventures
 CREATE TABLE IF NOT EXISTS public.projects (
     id TEXT PRIMARY KEY,
-    slug TEXT UNIQUE,
     category_tag TEXT NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     detail TEXT,
     image_url TEXT,
-    hero_image_url TEXT,
-    challenge TEXT,
-    approach TEXT,
-    result TEXT,
-    tech_stack TEXT[] DEFAULT '{}'::text[],
-    client_quote TEXT,
-    client_name TEXT,
     project_url TEXT DEFAULT '/contact',
     sort_order INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -177,30 +170,11 @@ CREATE TABLE IF NOT EXISTS public.faqs (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- General Contact Submissions
-CREATE TABLE IF NOT EXISTS public.contact_submissions (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    company TEXT,
-    service_category TEXT,
-    message TEXT NOT NULL,
-    status TEXT DEFAULT 'new',
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Structured Project Intake Inquiries
-CREATE TABLE IF NOT EXISTS public.project_inquiries (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    company TEXT,
-    project_type TEXT NOT NULL,
-    budget_range TEXT NOT NULL,
-    timeline TEXT NOT NULL,
-    description TEXT NOT NULL,
-    status TEXT DEFAULT 'new',
-    created_at TIMESTAMPTZ DEFAULT NOW()
+-- Newsletter Subscribers
+CREATE TABLE IF NOT EXISTS public.newsletter_subscribers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT UNIQUE NOT NULL,
+    subscribed_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- 3. ROW LEVEL SECURITY (RLS)
@@ -217,8 +191,7 @@ ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.pages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.contact_submissions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.project_inquiries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.newsletter_subscribers ENABLE ROW LEVEL SECURITY;
 
 -- Clean existing policies if re-running
 DO $$
@@ -229,8 +202,7 @@ BEGIN
         SELECT unnest(ARRAY[
             'site_settings', 'stats', 'about_cards', 'capabilities', 
             'services', 'holding_group', 'projects', 'leadership', 
-            'clients', 'testimonials', 'pages', 'faqs',
-            'contact_submissions', 'project_inquiries'
+            'clients', 'testimonials', 'pages', 'faqs', 'newsletter_subscribers'
         ])
     LOOP
         EXECUTE format('DROP POLICY IF EXISTS "Public read access" ON public.%I', t);
@@ -253,6 +225,10 @@ CREATE POLICY "Public read access" ON public.clients FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.testimonials FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.pages FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.faqs FOR SELECT USING (true);
+CREATE POLICY "Public read access" ON public.newsletter_subscribers FOR SELECT USING (true);
+
+-- Public INSERT for newsletter subscription
+CREATE POLICY "Public insert access" ON public.newsletter_subscribers FOR INSERT TO anon, authenticated WITH CHECK (true);
 
 -- Admin WRITE access (authenticated users or service role)
 -- Allows authenticated Supabase users to insert, update, and delete
@@ -268,12 +244,6 @@ CREATE POLICY "Admin write access" ON public.clients FOR ALL TO authenticated US
 CREATE POLICY "Admin write access" ON public.testimonials FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin write access" ON public.pages FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin write access" ON public.faqs FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Admin write access" ON public.contact_submissions FOR ALL TO authenticated USING (true) WITH CHECK (true);
-CREATE POLICY "Admin write access" ON public.project_inquiries FOR ALL TO authenticated USING (true) WITH CHECK (true);
-
--- Public INSERT for visitors to submit inquiries
-CREATE POLICY "Public insert access" ON public.contact_submissions FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "Public insert access" ON public.project_inquiries FOR INSERT TO anon, authenticated WITH CHECK (true);
 
 -- Optional: If using anon key directly from the admin panel (client-side passcode security):
 CREATE POLICY "Anon modify for admin panel" ON public.site_settings FOR ALL TO anon USING (true) WITH CHECK (true);
@@ -288,8 +258,6 @@ CREATE POLICY "Anon modify for admin panel" ON public.clients FOR ALL TO anon US
 CREATE POLICY "Anon modify for admin panel" ON public.testimonials FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon modify for admin panel" ON public.pages FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon modify for admin panel" ON public.faqs FOR ALL TO anon USING (true) WITH CHECK (true);
-CREATE POLICY "Anon modify for admin panel" ON public.contact_submissions FOR ALL TO anon USING (true) WITH CHECK (true);
-CREATE POLICY "Anon modify for admin panel" ON public.project_inquiries FOR ALL TO anon USING (true) WITH CHECK (true);
 
 -- 4. SEED DATA
 
@@ -297,7 +265,7 @@ CREATE POLICY "Anon modify for admin panel" ON public.project_inquiries FOR ALL 
 INSERT INTO public.site_settings (
     id, wordmark, status, hero_eyebrow, hero_title_primary, hero_title_secondary,
     hero_body, contact_email, hotline, whatsapp_number, office_address, office_city,
-    social_instagram, social_twitter, social_linkedin, footer_tagline, copyright_text, availability_text
+    social_instagram, social_twitter, social_linkedin, footer_tagline, copyright_text, availability_text, capability_deck_url
 ) VALUES (
     ${escapeSql(defaultCmsData.settings.id)},
     ${escapeSql(defaultCmsData.settings.wordmark)},
@@ -316,7 +284,8 @@ INSERT INTO public.site_settings (
     ${escapeSql(defaultCmsData.settings.socialLinkedin)},
     ${escapeSql(defaultCmsData.settings.footerTagline)},
     ${escapeSql(defaultCmsData.settings.copyrightText)},
-    ${escapeSql(defaultCmsData.settings.availabilityText)}
+    ${escapeSql(defaultCmsData.settings.availabilityText)},
+    ${escapeSql(defaultCmsData.settings.capabilityDeckUrl || '/GhreatnessLabs-Services-Overview.pdf')}
 ) ON CONFLICT (id) DO UPDATE SET
     wordmark = EXCLUDED.wordmark,
     status = EXCLUDED.status,
@@ -334,7 +303,8 @@ INSERT INTO public.site_settings (
     social_linkedin = EXCLUDED.social_linkedin,
     footer_tagline = EXCLUDED.footer_tagline,
     copyright_text = EXCLUDED.copyright_text,
-    availability_text = EXCLUDED.availability_text;
+    availability_text = EXCLUDED.availability_text,
+    capability_deck_url = EXCLUDED.capability_deck_url;
 
 -- Stats
 ${defaultCmsData.stats
