@@ -87,6 +87,26 @@ export const Button = ({
   </Link>
 );
 
+export function EmptyState({
+  icon: Icon,
+  title,
+  subtitle,
+}: {
+  icon: LucideIcon;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <div className="empty-state" style={{ textAlign: 'center', padding: '48px 16px' }}>
+      <div className="icon-badge" style={{ margin: '0 auto 16px', display: 'inline-flex' }}>
+        <Icon />
+      </div>
+      <h3 style={{ margin: '0 0 8px', fontSize: 'var(--font-card-title)', lineHeight: 1.25 }}>{title}</h3>
+      <p style={{ margin: 0, color: '#666', fontSize: 'var(--font-body)', lineHeight: 1.6 }}>{subtitle}</p>
+    </div>
+  );
+}
+
 export function CountUp({ value }: { value: string }) {
   const ref = useRef<HTMLElement>(null);
 
