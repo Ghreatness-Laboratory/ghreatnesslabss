@@ -13,6 +13,8 @@ import { AmbientBrandMark } from './components/AmbientBrandMark';
 import { CursorDot } from './components/CursorDot';
 import { StickyConsultationCta } from './components/StickyConsultationCta';
 import { CmsProvider } from './context/CmsContext';
+import { Analytics } from '@vercel/analytics/react';
+import { updateDocumentMeta } from './lib/ogImage';
 import './styles.css';
 
 // Lazy-loaded route pages for optimal bundle splitting
@@ -21,6 +23,8 @@ const About = lazy(() => import('./pages/About'));
 const Services = lazy(() => import('./pages/Services'));
 const HoldingGroup = lazy(() => import('./pages/HoldingGroup'));
 const Projects = lazy(() => import('./pages/Projects'));
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
+const StartProject = lazy(() => import('./pages/StartProject'));
 const Leadership = lazy(() => import('./pages/Leadership'));
 const Clients = lazy(() => import('./pages/Clients'));
 const Contact = lazy(() => import('./pages/Contact'));
@@ -37,10 +41,59 @@ const routes: Record<string, React.LazyExoticComponent<() => React.JSX.Element>>
   '/services': Services,
   '/holding-group': HoldingGroup,
   '/projects': Projects,
+  '/start-project': StartProject,
   '/leadership': Leadership,
   '/clients': Clients,
   '/contact': Contact,
   '/admin': Admin,
+};
+
+const routeMetadata: Record<string, { title: string; description: string; category: string }> = {
+  '/': {
+    title: 'GhreatnessLabs — Lagos Systems Studio',
+    description: 'Lagos digital systems studio for brands, products, and enterprise infrastructure.',
+    category: 'Digital Systems Studio',
+  },
+  '/services': {
+    title: 'Services & Infrastructure Architecture',
+    description: 'Digital systems development, enterprise IT, and brand systems engineered in Lagos.',
+    category: 'Studio Services',
+  },
+  '/projects': {
+    title: 'Ventures & Case Studies',
+    description: 'Selected digital systems, platforms, and technological infrastructure case studies.',
+    category: 'Portfolio & Ventures',
+  },
+  '/start-project': {
+    title: 'Start a Project Brief',
+    description: 'Confidential project scoping intake for systems architecture, timelines, and budgets.',
+    category: 'Project Intake & Scoping',
+  },
+  '/holding-group': {
+    title: 'Holding Group & Portfolio Ecosystem',
+    description: 'Operating companies and ecosystem ventures under the GhreatnessLabs holding structure.',
+    category: 'Holding Group',
+  },
+  '/about': {
+    title: 'About the Studio',
+    description: 'Independent digital and IT solutions studio founded in Lagos in 2024.',
+    category: 'About Studio',
+  },
+  '/leadership': {
+    title: 'Studio Leadership & Governance',
+    description: 'Principals, systems architects, and technical directors at GhreatnessLabs.',
+    category: 'Leadership Team',
+  },
+  '/clients': {
+    title: 'Clients & Partner Perspectives',
+    description: 'High-trust brands and public institutions powered by GhreatnessLabs digital infrastructure.',
+    category: 'Client Partners',
+  },
+  '/contact': {
+    title: 'Contact Studio',
+    description: 'Inquire about digital systems consulting, project availability, and partnerships.',
+    category: 'Direct Contact',
+  },
 };
 
 function App() {
@@ -158,6 +211,30 @@ function App() {
     return () => clearTimeout(timer);
   }, [path, isAdminRoute]);
 
+  // Check for dynamic project detail route (e.g. /projects/[slug])
+  const isProjectDetail = path.startsWith('/projects/') && path.length > '/projects/'.length;
+  const projectSlug = isProjectDetail ? path.replace(/^\/projects\/?/, '').replace(/\/$/, '') : '';
+
+  // Synchronize document title and dynamic Open Graph card metadata on route change
+  useEffect(() => {
+    if (isAdminRoute) {
+      document.title = 'Studio CMS Admin — GhreatnessLabs';
+      return;
+    }
+    // If on a project detail page, ProjectDetail component updates its own specific meta
+    if (isProjectDetail) return;
+
+    const meta = routeMetadata[path] || routeMetadata['/'];
+    if (meta) {
+      updateDocumentMeta({
+        title: meta.title,
+        description: meta.description,
+        category: meta.category,
+        urlPath: path,
+      });
+    }
+  }, [path, isAdminRoute, isProjectDetail]);
+
   const ActivePage = routes[path] || Home;
 
   if (isAdminRoute) {
@@ -183,7 +260,7 @@ function App() {
 
       <main>
         <Suspense fallback={null}>
-          <ActivePage />
+          {isProjectDetail ? <ProjectDetail slug={projectSlug} /> : <ActivePage />}
         </Suspense>
       </main>
 
@@ -198,6 +275,9 @@ function App() {
           <ChatBubble />
         </Suspense>
       )}
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </CmsProvider>
   );
 }

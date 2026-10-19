@@ -3453,5 +3453,392 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
   color: #555;
 }
 
+/* Contact Form Validation & Success State */
+.contact-form label.has-error input,
+.contact-form label.has-error select,
+.contact-form label.has-error textarea {
+  border-color: #e11d48 !important;
+  background-color: #fff1f2 !important;
+}
+
+.field-required {
+  color: #e11d48;
+  font-weight: bold;
+}
+
+.field-error-msg {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #e11d48;
+  font-size: 11.5px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-top: 4px;
+}
+
+.contact-success-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 36px 28px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.07);
+  animation: search-fade-in 0.25s ease-out;
+}
+
+.contact-success-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: #111;
+  color: #10b981;
+  margin-bottom: 20px;
+}
+
+.contact-success-state h3 {
+  font-family: 'Space Grotesk', Inter, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 10px;
+  letter-spacing: -0.035em;
+}
+
+.contact-success-message {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #555;
+  margin: 0 0 28px;
+  max-width: 460px;
+}
+
+.contact-success-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Start a Project Structured Intake Form & Consultation Modal Highlights
+   ========================================================================== */
+
+.start-project-page {
+  position: relative;
+  width: 100%;
+}
+
+.intake-form-wrapper {
+  margin-top: 36px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.intake-form {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 36px 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.intake-form-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 20px;
+}
+
+.intake-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: #000000;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+
+.intake-form-header h3 {
+  font-family: 'Space Grotesk', Inter, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.intake-form-header p {
+  font-size: 13.5px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.intake-field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #222;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.form-field label .req {
+  color: #e11d48;
+}
+
+.form-field label .opt {
+  color: #888;
+  font-weight: 400;
+  text-transform: none;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon .field-icon {
+  position: absolute;
+  left: 14px;
+  color: #777;
+  pointer-events: none;
+}
+
+.input-with-icon input,
+.input-with-icon select {
+  padding-left: 42px !important;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  background: #fbfbfb;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #111;
+  font-family: inherit;
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+  box-sizing: border-box;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: #111111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.field-error input,
+.field-error select,
+.field-error textarea {
+  border-color: #e11d48 !important;
+  background: #fff8f8 !important;
+}
+
+.error-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #e11d48;
+  font-weight: 500;
+}
+
+.intake-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.intake-submit-btn {
+  padding: 13px 26px !important;
+  font-size: 14px !important;
+}
+
+.intake-sla-note {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Intake Success State */
+.intake-success-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  padding: 44px 36px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+  animation: search-fade-in 0.25s ease-out;
+}
+
+.intake-success-icon {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 16px;
+  background: #111111;
+  color: #10b981;
+  margin-bottom: 24px;
+}
+
+.intake-success-card h2 {
+  font-family: 'Space Grotesk', Inter, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 12px;
+  letter-spacing: -0.03em;
+}
+
+.intake-success-lead {
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: #333;
+  margin: 0 0 18px;
+}
+
+.intake-tag {
+  display: inline-block;
+  background: #f0f0f0;
+  color: #111;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.intake-success-details {
+  background: #f8f8f8;
+  border-left: 3px solid #111;
+  padding: 14px 18px;
+  border-radius: 4px;
+  margin-bottom: 28px;
+}
+
+.intake-success-details p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.intake-success-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Consultation Modal Primary Highlight */
+.consultation-card-primary {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border: 1px solid #111111 !important;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+
+.consultation-card-primary .consultation-card-heading b {
+  color: #ffffff !important;
+}
+
+.consultation-card-primary p {
+  color: #cccccc !important;
+}
+
+.consultation-card-primary .consultation-card-link-text {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.badge-featured {
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+
+.badge-primary-highlight {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* Venture Card Linking */
+.venture-visual-link {
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.venture-title-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.venture-title-link:hover {
+  opacity: 0.8;
+}
+
+.venture-cta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  text-decoration: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.venture-cta-link:hover {
+  transform: translateX(3px);
+  color: #444;
+}
+
+@media (max-width: 640px) {
+  .intake-form {
+    padding: 24px 18px;
+  }
+  .intake-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+
+
 
 

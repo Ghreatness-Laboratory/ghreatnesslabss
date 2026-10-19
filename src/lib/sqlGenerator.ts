@@ -106,11 +106,19 @@ CREATE TABLE IF NOT EXISTS public.holding_group (
 -- Portfolio Projects & Ventures
 CREATE TABLE IF NOT EXISTS public.projects (
     id TEXT PRIMARY KEY,
+    slug TEXT UNIQUE,
     category_tag TEXT NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     detail TEXT,
     image_url TEXT,
+    hero_image_url TEXT,
+    challenge TEXT,
+    approach TEXT,
+    result TEXT,
+    tech_stack TEXT[] DEFAULT '{}'::text[],
+    client_quote TEXT,
+    client_name TEXT,
     project_url TEXT DEFAULT '/contact',
     sort_order INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -169,6 +177,32 @@ CREATE TABLE IF NOT EXISTS public.faqs (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- General Contact Submissions
+CREATE TABLE IF NOT EXISTS public.contact_submissions (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    company TEXT,
+    service_category TEXT,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'new',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Structured Project Intake Inquiries
+CREATE TABLE IF NOT EXISTS public.project_inquiries (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    company TEXT,
+    project_type TEXT NOT NULL,
+    budget_range TEXT NOT NULL,
+    timeline TEXT NOT NULL,
+    description TEXT NOT NULL,
+    status TEXT DEFAULT 'new',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 3. ROW LEVEL SECURITY (RLS)
 -- Enable RLS across all tables
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
@@ -183,6 +217,8 @@ ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.pages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contact_submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.project_inquiries ENABLE ROW LEVEL SECURITY;
 
 -- Clean existing policies if re-running
 DO $$
@@ -193,12 +229,14 @@ BEGIN
         SELECT unnest(ARRAY[
             'site_settings', 'stats', 'about_cards', 'capabilities', 
             'services', 'holding_group', 'projects', 'leadership', 
-            'clients', 'testimonials', 'pages', 'faqs'
+            'clients', 'testimonials', 'pages', 'faqs',
+            'contact_submissions', 'project_inquiries'
         ])
     LOOP
         EXECUTE format('DROP POLICY IF EXISTS "Public read access" ON public.%I', t);
         EXECUTE format('DROP POLICY IF EXISTS "Admin write access" ON public.%I', t);
         EXECUTE format('DROP POLICY IF EXISTS "Anon modify for admin panel" ON public.%I', t);
+        EXECUTE format('DROP POLICY IF EXISTS "Public insert access" ON public.%I', t);
     END LOOP;
 END $$;
 
@@ -230,6 +268,12 @@ CREATE POLICY "Admin write access" ON public.clients FOR ALL TO authenticated US
 CREATE POLICY "Admin write access" ON public.testimonials FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin write access" ON public.pages FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin write access" ON public.faqs FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write access" ON public.contact_submissions FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write access" ON public.project_inquiries FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- Public INSERT for visitors to submit inquiries
+CREATE POLICY "Public insert access" ON public.contact_submissions FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "Public insert access" ON public.project_inquiries FOR INSERT TO anon, authenticated WITH CHECK (true);
 
 -- Optional: If using anon key directly from the admin panel (client-side passcode security):
 CREATE POLICY "Anon modify for admin panel" ON public.site_settings FOR ALL TO anon USING (true) WITH CHECK (true);
@@ -244,6 +288,8 @@ CREATE POLICY "Anon modify for admin panel" ON public.clients FOR ALL TO anon US
 CREATE POLICY "Anon modify for admin panel" ON public.testimonials FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon modify for admin panel" ON public.pages FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon modify for admin panel" ON public.faqs FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon modify for admin panel" ON public.contact_submissions FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon modify for admin panel" ON public.project_inquiries FOR ALL TO anon USING (true) WITH CHECK (true);
 
 -- 4. SEED DATA
 

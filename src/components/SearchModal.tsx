@@ -15,6 +15,7 @@ import {
 import { useCms } from '../context/CmsContext';
 import { getSupabaseClient } from '../lib/supabase';
 import { pages } from './SharedSections';
+import { trackSearchUsage } from '../lib/analytics';
 
 export interface SearchResultItem {
   id: string;
@@ -137,12 +138,18 @@ export function SearchModal({ isOpen, onClose, onNavigate }: SearchModalProps) {
 
         if (matchesTitle || matchesCat || matchesDesc || matchesDetail) {
           const id = `proj-${proj.id || proj.title}`;
+          const projectUrl = proj.slug
+            ? `/projects/${proj.slug}`
+            : proj.project_url && proj.project_url.startsWith('/projects')
+            ? proj.project_url
+            : `/projects/${proj.id}`;
+
           if (!seenIds.has(id)) {
             combinedResults.push({
               id,
               title: proj.title,
               pageName: `Projects · ${proj.category_tag || 'Venture'}`,
-              url: '/projects',
+              url: projectUrl,
               snippet: proj.description,
               type: 'project',
             });
@@ -319,6 +326,7 @@ export function SearchModal({ isOpen, onClose, onNavigate }: SearchModalProps) {
       if (isCurrent) {
         setResults(combinedResults);
         setIsSearching(false);
+        trackSearchUsage(debouncedQuery, combinedResults.length);
       }
     }
 
