@@ -175,6 +175,7 @@ export async function fetchRemoteCmsData(): Promise<Partial<CmsData> | null> {
       testimRes,
       faqsRes,
       pagesRes,
+      mediaRes,
     ] = await Promise.all([
       client.from('site_settings').select('*').limit(1).maybeSingle(),
       client.from('stats').select('*').order('sort_order', { ascending: true }),
@@ -188,6 +189,7 @@ export async function fetchRemoteCmsData(): Promise<Partial<CmsData> | null> {
       client.from('testimonials').select('*').order('sort_order', { ascending: true }),
       client.from('faqs').select('*').order('sort_order', { ascending: true }),
       client.from('pages').select('*'),
+      client.from('media_library').select('*').order('created_at', { ascending: false }),
     ]);
 
     const partialData: Partial<CmsData> = {};
@@ -227,6 +229,9 @@ export async function fetchRemoteCmsData(): Promise<Partial<CmsData> | null> {
     }
     if (pagesRes.data && pagesRes.data.length > 0) {
       partialData.pages = pagesRes.data;
+    }
+    if (mediaRes.data && mediaRes.data.length > 0) {
+      partialData.media = mediaRes.data;
     }
 
     return Object.keys(partialData).length > 0 ? partialData : null;

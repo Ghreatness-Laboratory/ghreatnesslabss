@@ -131,6 +131,31 @@ export interface FaqItem {
   sort_order: number;
 }
 
+export interface MediaItem {
+  id: string;
+  url: string;
+  storage_path?: string;
+  filename: string;
+  alt_text: string;
+  assigned_spot:
+    | 'unassigned'
+    | 'hero'
+    | 'team_member'
+    | 'partner_logo'
+    | 'project'
+    | 'about'
+    | 'general';
+  assigned_id?: string;
+  assigned_label?: string;
+  source: 'upload' | 'url';
+  mime_type?: string;
+  size_bytes?: number;
+  width?: number;
+  height?: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CmsData {
   settings: SiteSettings;
   stats: StatItem[];
@@ -144,5 +169,6 @@ export interface CmsData {
   testimonials: TestimonialItem[];
   faqs: FaqItem[];
   pages: PageCopyItem[];
+  media: MediaItem[];
 }
 

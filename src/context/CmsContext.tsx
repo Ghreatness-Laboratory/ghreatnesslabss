@@ -20,6 +20,7 @@ import {
   TestimonialItem,
   FaqItem,
   PageCopyItem,
+  MediaItem,
 } from '../types/cms';
 import { defaultCmsData } from '../lib/defaultData';
 import {
@@ -29,6 +30,7 @@ import {
   persistSettingsToRemote,
   deleteRecordFromRemote,
 } from '../lib/supabase';
+import { deleteStoredFile } from '../lib/mediaStorage';
 
 const CMS_STORAGE_KEY = 'ghreatness_cms_data_cache';
 
@@ -46,6 +48,18 @@ interface CmsContextValue {
   ) => Promise<boolean>;
   deleteRecord: (table: keyof CmsData, id: string) => Promise<boolean>;
   reorderRecords: (table: keyof CmsData, fromIndex: number, toIndex: number) => Promise<boolean>;
+  assignMediaToSpot: (
+    mediaId: string,
+    spot: MediaItem['assigned_spot'],
+    targetId?: string,
+    targetLabel?: string
+  ) => Promise<boolean>;
+  replaceMediaItem: (
+    mediaId: string,
+    newUrl: string,
+    newFilename?: string,
+    newStoragePath?: string
+  ) => Promise<boolean>;
   resetToDefaults: () => Promise<void>;
   refreshData: () => Promise<void>;
   notify: (msg: string, type?: 'success' | 'error' | 'info') => void;
@@ -80,6 +94,7 @@ function loadLocalCache(): CmsData {
           : defaultCmsData.testimonials,
         faqs: Array.isArray(parsed.faqs) ? parsed.faqs : defaultCmsData.faqs,
         pages: Array.isArray(parsed.pages) ? parsed.pages : defaultCmsData.pages,
+        media: Array.isArray(parsed.media) ? parsed.media : defaultCmsData.media,
       };
     }
   } catch (err) {
@@ -177,6 +192,10 @@ export function CmsProvider({ children }: { children: React.ReactNode }) {
               remote.pages && remote.pages.length > 0
                 ? (remote.pages as PageCopyItem[])
                 : prev.pages,
+            media:
+              remote.media && remote.media.length > 0
+                ? (remote.media as MediaItem[])
+                : prev.media,
           };
           saveLocalCache(updated);
           return updated;
@@ -263,6 +282,7 @@ export function CmsProvider({ children }: { children: React.ReactNode }) {
         const tableNameMap: Record<string, string> = {
           aboutCards: 'about_cards',
           holding: 'holding_group',
+          media: 'media_library',
         };
         const remoteTableName = tableNameMap[table] || table;
         const remoteOk = await persistRecordToRemote(
@@ -285,6 +305,43 @@ export function CmsProvider({ children }: { children: React.ReactNode }) {
 
   const deleteRecord = useCallback(
     async (table: keyof CmsData, id: string): Promise<boolean> => {
+      // If deleting from media, trigger file deletion in Supabase Storage if uploaded
+      if (table === 'media') {
+        const targetMedia = data.media.find((m) => m.id === id);
+        if (targetMedia && targetMedia.source === 'upload' && targetMedia.storage_path) {
+          deleteStoredFile(targetMedia.storage_path).catch((err) =>
+            console.warn('[GhreatnessLabs] Error deleting stored file:', err)
+          );
+        }
+
+        // If it was assigned to leadership or clients, gracefully detach
+        if (targetMedia && targetMedia.assigned_id) {
+          if (targetMedia.assigned_spot === 'team_member') {
+            setData((prev) => {
+              const updatedLeaders = prev.leadership.map((l) =>
+                l.id === targetMedia.assigned_id && l.avatar_url === targetMedia.url
+                  ? { ...l, avatar_url: undefined }
+                  : l
+              );
+              const next = { ...prev, leadership: updatedLeaders };
+              saveLocalCache(next);
+              return next;
+            });
+          } else if (targetMedia.assigned_spot === 'partner_logo') {
+            setData((prev) => {
+              const updatedClients = prev.clients.map((c) =>
+                c.id === targetMedia.assigned_id && c.logo_url === targetMedia.url
+                  ? { ...c, logo_url: undefined }
+                  : c
+              );
+              const next = { ...prev, clients: updatedClients };
+              saveLocalCache(next);
+              return next;
+            });
+          }
+        }
+      }
+
       setData((prev) => {
         const currentList = prev[table];
         if (!Array.isArray(currentList)) return prev;
@@ -301,6 +358,7 @@ export function CmsProvider({ children }: { children: React.ReactNode }) {
         const tableNameMap: Record<string, string> = {
           aboutCards: 'about_cards',
           holding: 'holding_group',
+          media: 'media_library',
         };
         const remoteTableName = tableNameMap[table] || table;
         await deleteRecordFromRemote(remoteTableName, id);
@@ -309,7 +367,156 @@ export function CmsProvider({ children }: { children: React.ReactNode }) {
       notify('Record removed.', 'info');
       return true;
     },
-    [isSupabaseConnected, notify]
+    [data.media, isSupabaseConnected, notify]
+  );
+
+  const assignMediaToSpot = useCallback(
+    async (
+      mediaId: string,
+      spot: MediaItem['assigned_spot'],
+      targetId?: string,
+      targetLabel?: string
+    ): Promise<boolean> => {
+      let mediaUrl = '';
+
+      setData((prev) => {
+        const currentMedia = prev.media.find((m) => m.id === mediaId);
+        if (!currentMedia) return prev;
+        mediaUrl = currentMedia.url;
+
+        // 1. Update media item
+        const updatedMediaList = prev.media.map((m) =>
+          m.id === mediaId
+            ? {
+                ...m,
+                assigned_spot: spot,
+                assigned_id: targetId,
+                assigned_label: targetLabel,
+                updated_at: new Date().toISOString(),
+              }
+            : m
+        );
+
+        let updatedLeaders = prev.leadership;
+        let updatedClients = prev.clients;
+        let updatedProjects = prev.projects;
+
+        // 2. Cascade assignment to target surface
+        if (spot === 'team_member' && targetId) {
+          updatedLeaders = prev.leadership.map((l) =>
+            l.id === targetId ? { ...l, avatar_url: mediaUrl } : l
+          );
+        } else if (spot === 'partner_logo' && targetId) {
+          updatedClients = prev.clients.map((c) =>
+            c.id === targetId ? { ...c, logo_url: mediaUrl } : c
+          );
+        } else if (spot === 'project' && targetId) {
+          updatedProjects = prev.projects.map((p) =>
+            p.id === targetId ? { ...p, hero_image_url: mediaUrl } : p
+          );
+        }
+
+        const next: CmsData = {
+          ...prev,
+          media: updatedMediaList,
+          leadership: updatedLeaders,
+          clients: updatedClients,
+          projects: updatedProjects,
+        };
+
+        saveLocalCache(next);
+        return next;
+      });
+
+      // Persist to remote Supabase if connected
+      if (isSupabaseConnected) {
+        const targetMedia = data.media.find((m) => m.id === mediaId);
+        if (targetMedia) {
+          persistRecordToRemote('media_library', {
+            ...targetMedia,
+            assigned_spot: spot,
+            assigned_id: targetId,
+            assigned_label: targetLabel,
+            updated_at: new Date().toISOString(),
+          }).catch(() => {});
+        }
+
+        if (spot === 'team_member' && targetId) {
+          const leader = data.leadership.find((l) => l.id === targetId);
+          if (leader) {
+            persistRecordToRemote('leadership', { ...leader, avatar_url: mediaUrl }).catch(() => {});
+          }
+        } else if (spot === 'partner_logo' && targetId) {
+          const client = data.clients.find((c) => c.id === targetId);
+          if (client) {
+            persistRecordToRemote('clients', { ...client, logo_url: mediaUrl }).catch(() => {});
+          }
+        }
+      }
+
+      notify(`Image successfully assigned to ${targetLabel || spot}!`, 'success');
+      return true;
+    },
+    [data.clients, data.leadership, data.media, isSupabaseConnected, notify]
+  );
+
+  const replaceMediaItem = useCallback(
+    async (
+      mediaId: string,
+      newUrl: string,
+      newFilename?: string,
+      newStoragePath?: string
+    ): Promise<boolean> => {
+      setData((prev) => {
+        const existing = prev.media.find((m) => m.id === mediaId);
+        if (!existing) return prev;
+
+        const oldUrl = existing.url;
+
+        // If old one was stored in Supabase Storage and we are replacing it, delete the old file
+        if (existing.source === 'upload' && existing.storage_path && existing.storage_path !== newStoragePath) {
+          deleteStoredFile(existing.storage_path).catch(() => {});
+        }
+
+        const updatedMedia = prev.media.map((m) =>
+          m.id === mediaId
+            ? {
+                ...m,
+                url: newUrl,
+                filename: newFilename || m.filename,
+                storage_path: newStoragePath !== undefined ? newStoragePath : m.storage_path,
+                updated_at: new Date().toISOString(),
+              }
+            : m
+        );
+
+        // Cascade URL update to any entities currently using the oldUrl
+        const updatedLeaders = prev.leadership.map((l) =>
+          l.avatar_url === oldUrl || l.id === existing.assigned_id ? { ...l, avatar_url: newUrl } : l
+        );
+        const updatedClients = prev.clients.map((c) =>
+          c.logo_url === oldUrl || c.id === existing.assigned_id ? { ...c, logo_url: newUrl } : c
+        );
+        const updatedProjects = prev.projects.map((p) =>
+          p.hero_image_url === oldUrl || p.id === existing.assigned_id ? { ...p, hero_image_url: newUrl } : p
+        );
+
+        const next: CmsData = {
+          ...prev,
+          media: updatedMedia,
+          leadership: updatedLeaders,
+          clients: updatedClients,
+          projects: updatedProjects,
+        };
+
+        saveLocalCache(next);
+        return next;
+      });
+
+      notify('Image replaced successfully! Associated surfaces updated.', 'success');
+      return true;
+    },
+    [notify]
   );
 
   const reorderRecords = useCallback(
@@ -376,6 +583,8 @@ export function CmsProvider({ children }: { children: React.ReactNode }) {
       saveRecord,
       deleteRecord,
       reorderRecords,
+      assignMediaToSpot,
+      replaceMediaItem,
       resetToDefaults,
       refreshData,
       notify,
@@ -392,6 +601,8 @@ export function CmsProvider({ children }: { children: React.ReactNode }) {
       saveRecord,
       deleteRecord,
       reorderRecords,
+      assignMediaToSpot,
+      replaceMediaItem,
       resetToDefaults,
       refreshData,
       notify,

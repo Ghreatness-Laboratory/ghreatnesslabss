@@ -29,6 +29,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   HelpCircle,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 import { GhreatnessLogo, GhreatnessMark } from '../components/GhreatnessLogo';
@@ -59,9 +60,11 @@ import { icons } from '../components/SharedSections';
 import { IconPickerModal } from '../components/admin/IconPickerModal';
 import { TagManager } from '../components/admin/TagManager';
 import { ToastContainer } from '../components/admin/ToastContainer';
+import { MediaManager } from '../components/admin/MediaManager';
 
 type TabKey =
   | 'settings'
+  | 'media'
   | 'stats'
   | 'about'
   | 'capabilities'
@@ -101,7 +104,12 @@ export default function Admin() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   // Active navigation tab
-  const [activeTab, setActiveTab] = useState<TabKey>('settings');
+  const [activeTab, setActiveTab] = useState<TabKey>(() => {
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin/media')) {
+      return 'media';
+    }
+    return 'settings';
+  });
 
   // Local editing copy for Site Settings (with dirty tracking)
   const [settingsForm, setSettingsForm] = useState<SiteSettings>(data.settings);
@@ -436,11 +444,26 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-                onClick={() => setActiveTab('settings')}
+                onClick={() => {
+                  setActiveTab('settings');
+                  window.history.pushState({}, '', '/admin');
+                }}
               >
                 <Settings size={16} />
                 <span>Site Settings</span>
                 {isSettingsDirty && <span className="admin-dirty-badge" />}
+              </button>
+              <button
+                type="button"
+                className={`admin-nav-item ${activeTab === 'media' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('media');
+                  window.history.pushState({}, '', '/admin/media');
+                }}
+              >
+                <ImageIcon size={16} />
+                <span>Media Library</span>
+                <span className="admin-count-badge">{(data.media || []).length}</span>
               </button>
               <button
                 type="button"
@@ -1928,6 +1951,9 @@ export default function Admin() {
               </div>
             </div>
           )}
+
+          {/* TAB: MEDIA LIBRARY & ASSET MANAGER */}
+          {activeTab === 'media' && <MediaManager />}
 
           {/* TAB 12: SUPABASE SETUP & SQL MIGRATION */}
           {activeTab === 'supabase' && (

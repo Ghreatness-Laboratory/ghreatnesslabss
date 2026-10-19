@@ -47,6 +47,7 @@ const routes: Record<string, React.LazyExoticComponent<() => React.JSX.Element>>
   '/clients': Clients,
   '/contact': Contact,
   '/admin': Admin,
+  '/admin/media': Admin,
 };
 
 const routeMetadata: Record<string, { title: string; description: string; category: string }> = {
@@ -103,7 +104,7 @@ function App() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [showChat, setShowChat] = useState(false);
 
-  const isAdminRoute = path === '/admin';
+  const isAdminRoute = path.startsWith('/admin');
 
   // Handle browser back/forward buttons
   useEffect(() => {

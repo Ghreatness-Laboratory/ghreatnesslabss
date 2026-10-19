@@ -203,6 +203,25 @@ CREATE TABLE IF NOT EXISTS public.project_inquiries (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Media Library Assets & Persistent Storage Mapping
+CREATE TABLE IF NOT EXISTS public.media_library (
+    id TEXT PRIMARY KEY,
+    url TEXT NOT NULL,
+    storage_path TEXT,
+    filename TEXT NOT NULL,
+    alt_text TEXT NOT NULL,
+    assigned_spot TEXT NOT NULL DEFAULT 'unassigned',
+    assigned_id TEXT,
+    assigned_label TEXT,
+    source TEXT NOT NULL DEFAULT 'upload',
+    mime_type TEXT,
+    size_bytes BIGINT,
+    width INT,
+    height INT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 3. ROW LEVEL SECURITY (RLS)
 -- Enable RLS across all tables
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
@@ -219,6 +238,7 @@ ALTER TABLE public.pages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.project_inquiries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.media_library ENABLE ROW LEVEL SECURITY;
 
 -- Clean existing policies if re-running
 DO $$
@@ -230,7 +250,7 @@ BEGIN
             'site_settings', 'stats', 'about_cards', 'capabilities', 
             'services', 'holding_group', 'projects', 'leadership', 
             'clients', 'testimonials', 'pages', 'faqs',
-            'contact_submissions', 'project_inquiries'
+            'contact_submissions', 'project_inquiries', 'media_library'
         ])
     LOOP
         EXECUTE format('DROP POLICY IF EXISTS "Public read access" ON public.%I', t);
@@ -253,6 +273,7 @@ CREATE POLICY "Public read access" ON public.clients FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.testimonials FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.pages FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.faqs FOR SELECT USING (true);
+CREATE POLICY "Public read access" ON public.media_library FOR SELECT USING (true);
 
 -- Admin WRITE access (authenticated users or service role)
 -- Allows authenticated Supabase users to insert, update, and delete
@@ -270,6 +291,7 @@ CREATE POLICY "Admin write access" ON public.pages FOR ALL TO authenticated USIN
 CREATE POLICY "Admin write access" ON public.faqs FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin write access" ON public.contact_submissions FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin write access" ON public.project_inquiries FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write access" ON public.media_library FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Public INSERT for visitors to submit inquiries
 CREATE POLICY "Public insert access" ON public.contact_submissions FOR INSERT TO anon, authenticated WITH CHECK (true);
@@ -290,6 +312,21 @@ CREATE POLICY "Anon modify for admin panel" ON public.pages FOR ALL TO anon USIN
 CREATE POLICY "Anon modify for admin panel" ON public.faqs FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon modify for admin panel" ON public.contact_submissions FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon modify for admin panel" ON public.project_inquiries FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon modify for admin panel" ON public.media_library FOR ALL TO anon USING (true) WITH CHECK (true);
+
+-- Storage bucket setup for persistent media uploads
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('media', 'media', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+CREATE POLICY "Public Access Media Bucket" ON storage.objects
+FOR SELECT USING (bucket_id = 'media');
+
+CREATE POLICY "Upload Media Bucket" ON storage.objects
+FOR INSERT WITH CHECK (bucket_id = 'media');
+
+CREATE POLICY "Delete Media Bucket" ON storage.objects
+FOR DELETE USING (bucket_id = 'media');
 
 -- 4. SEED DATA
 
@@ -461,6 +498,22 @@ ${defaultCmsData.faqs
       `INSERT INTO public.faqs (id, question, answer, sort_order) VALUES (${escapeSql(
         f.id
       )}, ${escapeSql(f.question)}, ${escapeSql(f.answer)}, ${f.sort_order}) ON CONFLICT (id) DO NOTHING;`
+  )
+  .join('\n')}
+
+-- Media Library
+${defaultCmsData.media
+  .map(
+    (m) =>
+      `INSERT INTO public.media_library (id, url, storage_path, filename, alt_text, assigned_spot, assigned_id, assigned_label, source, mime_type, size_bytes, width, height, created_at, updated_at) VALUES (${escapeSql(
+        m.id
+      )}, ${escapeSql(m.url)}, ${escapeSql(m.storage_path)}, ${escapeSql(
+        m.filename
+      )}, ${escapeSql(m.alt_text)}, ${escapeSql(m.assigned_spot)}, ${escapeSql(
+        m.assigned_id
+      )}, ${escapeSql(m.assigned_label)}, ${escapeSql(m.source)}, ${escapeSql(
+        m.mime_type
+      )}, ${m.size_bytes || 'NULL'}, ${m.width || 'NULL'}, ${m.height || 'NULL'}, NOW(), NOW()) ON CONFLICT (id) DO NOTHING;`
   )
   .join('\n')}
 

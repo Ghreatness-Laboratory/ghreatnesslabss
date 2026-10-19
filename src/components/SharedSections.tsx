@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import {
   BadgeCheck,
   Building2,
@@ -400,25 +400,73 @@ export function AboutPreview() {
 
 export function LeadershipPreview() {
   const { data } = useCms();
-  const sortedLeaders = [...data.leadership].sort((a, b) => a.sort_order - b.sort_order);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Memoize repeated leaders array to ensure continuous seamless loop across any viewport
+  const loopLeaders = useMemo(() => {
+    const list = [...data.leadership].sort((a, b) => a.sort_order - b.sort_order);
+    if (list.length === 0) return [];
+    let repeated = list;
+    while (repeated.length < 8) {
+      repeated = [...repeated, ...list];
+    }
+    return repeated;
+  }, [data.leadership]);
+
+  const renderLeaderCards = (keyPrefix: string) =>
+    loopLeaders.map((leader, idx) => {
+      const initials = leader.name
+        .split(' ')
+        .map((part) => part[0])
+        .join('');
+
+      return (
+        <Link
+          key={`${keyPrefix}-${leader.id}-${idx}`}
+          to="/leadership"
+          className="leader-preview-card marquee-card"
+        >
+          <span className="leader-preview-avatar overflow-hidden">
+            {leader.avatar_url ? (
+              <img
+                src={leader.avatar_url}
+                alt={leader.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              initials
+            )}
+          </span>
+          <b>{leader.name}</b>
+          <small>{leader.role}</small>
+        </Link>
+      );
+    });
 
   return (
     <section className="section leadership-preview">
       <SectionHead label="Leadership" title="The brains behind the work" />
-      <div className="leadership-row" aria-label="Leadership team">
-        {sortedLeaders.map((leader) => (
-          <Link key={leader.id || leader.name} to="/leadership" className="leader-preview-card">
-            <span className="leader-preview-avatar">
-              {leader.name
-                .split(' ')
-                .map((part) => part[0])
-                .join('')}
-            </span>
-            <b>{leader.name}</b>
-            <small>{leader.role}</small>
-          </Link>
-        ))}
+
+      {/* Auto-moving Infinite Marquee (Right to Left) */}
+      <div
+        className={`marquee-wrapper ${isPaused ? 'marquee-paused' : ''}`}
+        aria-label="Leadership team marquee"
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
+        onTouchCancel={() => setIsPaused(false)}
+      >
+        <div className="marquee-fade-edge marquee-fade-left" aria-hidden="true" />
+        <div className="marquee-fade-edge marquee-fade-right" aria-hidden="true" />
+
+        <div className="marquee-track marquee-rtl">
+          <div className="marquee-content">{renderLeaderCards('track-1')}</div>
+          <div className="marquee-content marquee-duplicate" aria-hidden="true">
+            {renderLeaderCards('track-2')}
+          </div>
+        </div>
       </div>
+
       <Link to="/leadership" className="about-preview-link">
         View full leadership team <ArrowUpRight />
       </Link>
@@ -428,7 +476,38 @@ export function LeadershipPreview() {
 
 export function Partners() {
   const { data } = useCms();
-  const sortedClients = [...data.clients].sort((a, b) => a.sort_order - b.sort_order);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Memoize repeated clients array for smooth continuous loop
+  const loopClients = useMemo(() => {
+    const list = [...data.clients].sort((a, b) => a.sort_order - b.sort_order);
+    if (list.length === 0) return [];
+    let repeated = list;
+    while (repeated.length < 10) {
+      repeated = [...repeated, ...list];
+    }
+    return repeated;
+  }, [data.clients]);
+
+  const renderPartnerLogos = (keyPrefix: string) =>
+    loopClients.map((partner, idx) => (
+      <span
+        className="partner-marquee-item"
+        key={`${keyPrefix}-${partner.id}-${idx}`}
+        title={partner.name}
+      >
+        {partner.logo_url ? (
+          <img
+            src={partner.logo_url}
+            alt={`${partner.name} logo`}
+            className="partner-logo-img"
+            loading="lazy"
+          />
+        ) : (
+          <span className="partner-logo-text">{partner.name}</span>
+        )}
+      </span>
+    ));
 
   return (
     <section className="section partners-section soft-section">
@@ -437,12 +516,24 @@ export function Partners() {
         title="In good company."
         copy="A few of the ambitious teams and ventures we are proud to work alongside."
       />
-      <div className="partner-row" aria-label="Partners and clients">
-        {sortedClients.map((partner) => (
-          <span className="partner-logo" key={partner.id || partner.name}>
-            {partner.name}
-          </span>
-        ))}
+
+      {/* Auto-moving Infinite Marquee (Left to Right, opposite direction) */}
+      <div
+        className={`marquee-wrapper ${isPaused ? 'marquee-paused' : ''}`}
+        aria-label="Partners and clients marquee"
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
+        onTouchCancel={() => setIsPaused(false)}
+      >
+        <div className="marquee-fade-edge marquee-fade-left" aria-hidden="true" />
+        <div className="marquee-fade-edge marquee-fade-right" aria-hidden="true" />
+
+        <div className="marquee-track marquee-ltr">
+          <div className="marquee-content">{renderPartnerLogos('partner-track-1')}</div>
+          <div className="marquee-content marquee-duplicate" aria-hidden="true">
+            {renderPartnerLogos('partner-track-2')}
+          </div>
+        </div>
       </div>
     </section>
   );

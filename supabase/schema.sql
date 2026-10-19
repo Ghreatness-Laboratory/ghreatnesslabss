@@ -187,6 +187,25 @@ CREATE TABLE IF NOT EXISTS public.project_inquiries (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Media Library Assets & Storage Mapping
+CREATE TABLE IF NOT EXISTS public.media_library (
+    id TEXT PRIMARY KEY,
+    url TEXT NOT NULL,
+    storage_path TEXT,
+    filename TEXT NOT NULL,
+    alt_text TEXT NOT NULL,
+    assigned_spot TEXT NOT NULL DEFAULT 'unassigned',
+    assigned_id TEXT,
+    assigned_label TEXT,
+    source TEXT NOT NULL DEFAULT 'upload',
+    mime_type TEXT,
+    size_bytes BIGINT,
+    width INT,
+    height INT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ==============================================================================
 -- 3. ROW LEVEL SECURITY (RLS)
 -- ==============================================================================
@@ -206,6 +225,7 @@ ALTER TABLE public.pages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.project_inquiries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.media_library ENABLE ROW LEVEL SECURITY;
 
 -- Clean existing policies if re-running
 DO $$
@@ -217,7 +237,7 @@ BEGIN
             'site_settings', 'stats', 'about_cards', 'capabilities', 
             'services', 'holding_group', 'projects', 'leadership', 
             'clients', 'testimonials', 'pages', 'faqs',
-            'contact_submissions', 'project_inquiries'
+            'contact_submissions', 'project_inquiries', 'media_library'
         ])
     LOOP
         EXECUTE format('DROP POLICY IF EXISTS "Public read access" ON public.%I', t);

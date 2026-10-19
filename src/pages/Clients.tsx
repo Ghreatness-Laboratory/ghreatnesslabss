@@ -32,7 +32,18 @@ export default function Clients() {
       ) : (
         <div className="client-list">
           {sortedClients.map((client) => (
-            <span key={client.id || client.name}>{client.name}</span>
+            <span key={client.id || client.name} className="p-3 flex items-center justify-center">
+              {client.logo_url ? (
+                <img
+                  src={client.logo_url}
+                  alt={`${client.name} logo`}
+                  className="max-h-12 max-w-[130px] object-contain filter grayscale hover:grayscale-0 transition-all duration-200"
+                  loading="lazy"
+                />
+              ) : (
+                client.name
+              )}
+            </span>
           ))}
         </div>
       )}
