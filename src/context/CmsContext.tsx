@@ -18,6 +18,7 @@ import {
   LeaderItem,
   ClientItem,
   TestimonialItem,
+  FaqItem,
   PageCopyItem,
 } from '../types/cms';
 import { defaultCmsData } from '../lib/defaultData';
@@ -77,6 +78,7 @@ function loadLocalCache(): CmsData {
         testimonials: Array.isArray(parsed.testimonials)
           ? parsed.testimonials
           : defaultCmsData.testimonials,
+        faqs: Array.isArray(parsed.faqs) ? parsed.faqs : defaultCmsData.faqs,
         pages: Array.isArray(parsed.pages) ? parsed.pages : defaultCmsData.pages,
       };
     }
@@ -167,6 +169,10 @@ export function CmsProvider({ children }: { children: React.ReactNode }) {
               remote.testimonials && remote.testimonials.length > 0
                 ? (remote.testimonials as TestimonialItem[])
                 : prev.testimonials,
+            faqs:
+              remote.faqs && remote.faqs.length > 0
+                ? (remote.faqs as FaqItem[])
+                : prev.faqs,
             pages:
               remote.pages && remote.pages.length > 0
                 ? (remote.pages as PageCopyItem[])

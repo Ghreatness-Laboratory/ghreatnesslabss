@@ -116,6 +116,13 @@ export interface PageCopyItem {
   updated_at?: string;
 }
 
+export interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+  sort_order: number;
+}
+
 export interface CmsData {
   settings: SiteSettings;
   stats: StatItem[];
@@ -127,5 +134,7 @@ export interface CmsData {
   leadership: LeaderItem[];
   clients: ClientItem[];
   testimonials: TestimonialItem[];
+  faqs: FaqItem[];
   pages: PageCopyItem[];
 }
+

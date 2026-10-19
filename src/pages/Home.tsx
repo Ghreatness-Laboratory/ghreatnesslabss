@@ -12,6 +12,8 @@ import {
   Testimonials,
 } from '../components/SharedSections';
 
+import { FaqSection } from '../components/FaqSection';
+
 export default function Home() {
   const { data } = useCms();
   const { settings } = data;
@@ -103,6 +105,8 @@ export default function Home() {
         <Testimonials limit={2} />
         <Button href="/clients">Read all perspectives</Button>
       </section>
+
+      <FaqSection />
     </>
   );
 }

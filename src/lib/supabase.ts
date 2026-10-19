@@ -173,6 +173,7 @@ export async function fetchRemoteCmsData(): Promise<Partial<CmsData> | null> {
       leadersRes,
       clientsRes,
       testimRes,
+      faqsRes,
       pagesRes,
     ] = await Promise.all([
       client.from('site_settings').select('*').limit(1).maybeSingle(),
@@ -185,6 +186,7 @@ export async function fetchRemoteCmsData(): Promise<Partial<CmsData> | null> {
       client.from('leadership').select('*').order('sort_order', { ascending: true }),
       client.from('clients').select('*').order('sort_order', { ascending: true }),
       client.from('testimonials').select('*').order('sort_order', { ascending: true }),
+      client.from('faqs').select('*').order('sort_order', { ascending: true }),
       client.from('pages').select('*'),
     ]);
 
@@ -219,6 +221,9 @@ export async function fetchRemoteCmsData(): Promise<Partial<CmsData> | null> {
     }
     if (testimRes.data && testimRes.data.length > 0) {
       partialData.testimonials = testimRes.data;
+    }
+    if (faqsRes.data && faqsRes.data.length > 0) {
+      partialData.faqs = faqsRes.data;
     }
     if (pagesRes.data && pagesRes.data.length > 0) {
       partialData.pages = pagesRes.data;

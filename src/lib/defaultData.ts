@@ -522,4 +522,42 @@ export const defaultCmsData: CmsData = {
       updated_at: new Date().toISOString(),
     },
   ],
+  faqs: [
+    {
+      id: 'faq-engagements',
+      question: 'How do studio engagements typically start?',
+      answer:
+        'Every partnership begins with a confidential discovery and technical audit session. We evaluate your product goals, architectural constraints, and organizational timeline to define an exact scope of work, technical blueprint, and delivery milestones before contract execution.',
+      sort_order: 1,
+    },
+    {
+      id: 'faq-pricing',
+      question: 'What is your pricing and commercial structure?',
+      answer:
+        'We operate transparently across two primary models: milestone-based fixed sprints for defined scopes (such as brand identity rollouts, core product launches, or cloud infrastructure rebuilds) and dedicated monthly advisory retainers for companies requiring ongoing senior engineering leadership and design stewardship.',
+      sort_order: 2,
+    },
+    {
+      id: 'faq-timelines',
+      question: 'What are typical project timelines?',
+      answer:
+        'Focused product sprints and brand design systems typically deliver production-ready within 2 to 4 weeks. Full-scale digital platforms, distributed microservices, and enterprise multi-tenant infrastructure typically span 6 to 12 weeks with weekly demo cycles.',
+      sort_order: 3,
+    },
+    {
+      id: 'faq-consultation',
+      question: 'What is included in a complimentary consultation?',
+      answer:
+        'Our initial 30-minute consultation is a deep, direct conversation with a senior systems partner. We review your current technology stack or project brief, identify high-risk technical bottlenecks, discuss scalable architecture choices, and outline immediate recommended next steps.',
+      sort_order: 4,
+    },
+    {
+      id: 'faq-support',
+      question: 'How does ongoing support, maintenance, and DevOps work?',
+      answer:
+        'Following deployment, we offer SLA-backed ongoing support packages encompassing 24/7 uptime monitoring, database performance tuning, security patching, dependency upgrades, and proactive scaling adjustments so your platforms remain fast, resilient, and secure.',
+      sort_order: 5,
+    },
+  ],
 };
+

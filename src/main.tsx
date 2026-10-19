@@ -11,6 +11,7 @@ import { Footer } from './components/Footer';
 import { LoadingScreen } from './components/LoadingScreen';
 import { AmbientBrandMark } from './components/AmbientBrandMark';
 import { CursorDot } from './components/CursorDot';
+import { StickyConsultationCta } from './components/StickyConsultationCta';
 import { CmsProvider } from './context/CmsContext';
 import './styles.css';
 
@@ -187,6 +188,9 @@ function App() {
       </main>
 
       <Footer />
+
+      {/* Sticky Book a Consultation CTA (IntersectionObserver past hero) */}
+      <StickyConsultationCta onNavigate={navigate} />
 
       {/* Deferred non-critical chat assistant */}
       {showChat && (

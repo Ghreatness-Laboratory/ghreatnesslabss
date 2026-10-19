@@ -160,6 +160,15 @@ CREATE TABLE IF NOT EXISTS public.pages (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Frequently Asked Questions (FAQs)
+CREATE TABLE IF NOT EXISTS public.faqs (
+    id TEXT PRIMARY KEY,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 3. ROW LEVEL SECURITY (RLS)
 -- Enable RLS across all tables
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
@@ -173,6 +182,7 @@ ALTER TABLE public.leadership ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.testimonials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.pages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
 
 -- Clean existing policies if re-running
 DO $$
@@ -183,7 +193,7 @@ BEGIN
         SELECT unnest(ARRAY[
             'site_settings', 'stats', 'about_cards', 'capabilities', 
             'services', 'holding_group', 'projects', 'leadership', 
-            'clients', 'testimonials', 'pages'
+            'clients', 'testimonials', 'pages', 'faqs'
         ])
     LOOP
         EXECUTE format('DROP POLICY IF EXISTS "Public read access" ON public.%I', t);
@@ -204,6 +214,7 @@ CREATE POLICY "Public read access" ON public.leadership FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.clients FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.testimonials FOR SELECT USING (true);
 CREATE POLICY "Public read access" ON public.pages FOR SELECT USING (true);
+CREATE POLICY "Public read access" ON public.faqs FOR SELECT USING (true);
 
 -- Admin WRITE access (authenticated users or service role)
 -- Allows authenticated Supabase users to insert, update, and delete
@@ -218,6 +229,7 @@ CREATE POLICY "Admin write access" ON public.leadership FOR ALL TO authenticated
 CREATE POLICY "Admin write access" ON public.clients FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin write access" ON public.testimonials FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin write access" ON public.pages FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin write access" ON public.faqs FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Optional: If using anon key directly from the admin panel (client-side passcode security):
 CREATE POLICY "Anon modify for admin panel" ON public.site_settings FOR ALL TO anon USING (true) WITH CHECK (true);
@@ -231,6 +243,7 @@ CREATE POLICY "Anon modify for admin panel" ON public.leadership FOR ALL TO anon
 CREATE POLICY "Anon modify for admin panel" ON public.clients FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon modify for admin panel" ON public.testimonials FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon modify for admin panel" ON public.pages FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon modify for admin panel" ON public.faqs FOR ALL TO anon USING (true) WITH CHECK (true);
 
 -- 4. SEED DATA
 
@@ -392,6 +405,16 @@ ${defaultCmsData.pages
       )}, ${escapeSql(p.page_slug)}, ${escapeSql(p.section_key)}, ${escapeSql(
         p.title
       )}, ${escapeSql(p.subtitle)}, ${escapeSql(p.content)}, NOW()) ON CONFLICT (id) DO NOTHING;`
+  )
+  .join('\n')}
+
+-- FAQs
+${defaultCmsData.faqs
+  .map(
+    (f) =>
+      `INSERT INTO public.faqs (id, question, answer, sort_order) VALUES (${escapeSql(
+        f.id
+      )}, ${escapeSql(f.question)}, ${escapeSql(f.answer)}, ${f.sort_order}) ON CONFLICT (id) DO NOTHING;`
   )
   .join('\n')}
 

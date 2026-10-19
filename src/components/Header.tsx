@@ -3,6 +3,8 @@ import { House, Search, Phone, Menu, X, ShieldAlert } from 'lucide-react';
 import { pages, Link } from './SharedSections';
 import { useCms } from '../context/CmsContext';
 
+import { SearchModal } from './SearchModal';
+
 export function Header({
   path,
   onNavigate,
@@ -14,16 +16,10 @@ export function Header({
   const { settings } = data;
   const [navOpen, setNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [query, setQuery] = useState('');
-
-  const results = pages.filter(([, name]) =>
-    name.toLowerCase().includes(query.trim().toLowerCase())
-  );
 
   useEffect(() => {
     setNavOpen(false);
     setSearchOpen(false);
-    setQuery('');
   }, [path]);
 
   const handleLinkClick = (to: string) => {
@@ -57,7 +53,7 @@ export function Header({
             aria-label="Search site"
             aria-expanded={searchOpen}
             onClick={() => {
-              setSearchOpen(!searchOpen);
+              setSearchOpen(true);
               setNavOpen(false);
             }}
           >
@@ -81,42 +77,12 @@ export function Header({
         </div>
       </nav>
 
-      {searchOpen && (
-        <div className="search-panel" role="dialog" aria-label="Site search">
-          <label htmlFor="site-search">Search site</label>
-          <div className="search-field">
-            <Search />
-            <input
-              id="site-search"
-              autoFocus
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Find a page"
-            />
-            <button aria-label="Close search" onClick={() => setSearchOpen(false)}>
-              <X />
-            </button>
-          </div>
-          <div className="search-results">
-            {results.length ? (
-              results.map(([to, name]) => (
-                <a
-                  key={to}
-                  href={to}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLinkClick(to);
-                  }}
-                >
-                  {name}
-                </a>
-              ))
-            ) : (
-              <p>No pages match “{query}”.</p>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Full-featured Live Site Search Modal */}
+      <SearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        onNavigate={handleLinkClick}
+      />
 
       {navOpen && (
         <div className="nav-drawer">

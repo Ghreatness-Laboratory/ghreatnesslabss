@@ -28,6 +28,7 @@ import {
   Sliders,
   CheckCircle2,
   AlertTriangle,
+  HelpCircle,
 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 import {
@@ -42,6 +43,7 @@ import {
   LeaderItem,
   ClientItem,
   TestimonialItem,
+  FaqItem,
   PageCopyItem,
 } from '../types/cms';
 import {
@@ -68,6 +70,7 @@ type TabKey =
   | 'leadership'
   | 'clients'
   | 'testimonials'
+  | 'faqs'
   | 'pages'
   | 'supabase';
 
@@ -520,6 +523,15 @@ export default function Admin() {
                 <Quote size={16} />
                 <span>Testimonials</span>
                 <span className="admin-count-badge">{data.testimonials.length}</span>
+              </button>
+              <button
+                type="button"
+                className={`admin-nav-item ${activeTab === 'faqs' ? 'active' : ''}`}
+                onClick={() => setActiveTab('faqs')}
+              >
+                <HelpCircle size={16} />
+                <span>FAQs Accordion</span>
+                <span className="admin-count-badge">{(data.faqs || []).length}</span>
               </button>
               <button
                 type="button"
@@ -1737,6 +1749,106 @@ export default function Admin() {
             </div>
           )}
 
+          {/* TAB: FAQS */}
+          {activeTab === 'faqs' && (
+            <div className="admin-panel">
+              <div className="admin-panel-head">
+                <div>
+                  <h2>Frequently Asked Questions (Accordion)</h2>
+                  <p>Questions and answers displayed on the homepage and across the site.</p>
+                </div>
+                <button
+                  type="button"
+                  className="button button-solid"
+                  onClick={() =>
+                    setEditingItem({
+                      table: 'faqs',
+                      item: {
+                        id: `faq-${Date.now()}`,
+                        question: 'What is included in...',
+                        answer: 'Our senior systems team provides...',
+                        sort_order: (data.faqs || []).length + 1,
+                      },
+                      isNew: true,
+                    })
+                  }
+                >
+                  <Plus size={16} /> Add FAQ Question
+                </button>
+              </div>
+
+              <div className="admin-card-list">
+                {[...(data.faqs || [])]
+                  .sort((a, b) => a.sort_order - b.sort_order)
+                  .map((faq, idx) => {
+                    return (
+                      <div key={faq.id} className="admin-card-row">
+                        <div className="admin-card-row-info">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-mono uppercase bg-[#222] px-2 py-0.5 rounded text-neutral-300">
+                              #{faq.sort_order}
+                            </span>
+                            <span className="font-semibold text-base text-white">
+                              {faq.question}
+                            </span>
+                          </div>
+                          <p className="text-xs text-neutral-400 mt-2 line-clamp-2">
+                            {faq.answer}
+                          </p>
+                        </div>
+                        <div className="admin-card-row-actions">
+                          <button
+                            type="button"
+                            className="admin-btn-icon"
+                            disabled={idx === 0}
+                            onClick={() => reorderRecords('faqs', idx, idx - 1)}
+                            title="Move Up"
+                          >
+                            <ArrowUp size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-btn-icon"
+                            disabled={idx === (data.faqs || []).length - 1}
+                            onClick={() => reorderRecords('faqs', idx, idx + 1)}
+                            title="Move Down"
+                          >
+                            <ArrowDown size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-btn-icon"
+                            onClick={() =>
+                              setEditingItem({
+                                table: 'faqs',
+                                item: { ...faq },
+                                isNew: false,
+                              })
+                            }
+                            title="Edit"
+                          >
+                            <Sliders size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-btn-icon text-rose-400 hover:text-rose-300"
+                            onClick={() => {
+                              if (confirm(`Delete FAQ "${faq.question}"?`)) {
+                                deleteRecord('faqs', faq.id);
+                              }
+                            }}
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+
           {/* TAB 11: PAGE COPY */}
           {activeTab === 'pages' && (
             <div className="admin-panel">
@@ -2600,6 +2712,56 @@ export default function Admin() {
                         setEditingItem({
                           ...editingItem,
                           item: { ...editingItem.item, content: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              {editingItem.table === 'faqs' && (
+                <>
+                  <div className="admin-field">
+                    <label>Question</label>
+                    <input
+                      type="text"
+                      required
+                      value={String(editingItem.item.question || '')}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          item: { ...editingItem.item, question: e.target.value },
+                        })
+                      }
+                      placeholder="e.g. How do studio engagements typically start?"
+                    />
+                  </div>
+                  <div className="admin-field">
+                    <label>Answer</label>
+                    <textarea
+                      rows={5}
+                      required
+                      value={String(editingItem.item.answer || '')}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          item: { ...editingItem.item, answer: e.target.value },
+                        })
+                      }
+                      placeholder="Detailed explanation of the process or answer..."
+                    />
+                  </div>
+                  <div className="admin-field">
+                    <label>Sort Order</label>
+                    <input
+                      type="number"
+                      required
+                      min={1}
+                      value={Number(editingItem.item.sort_order || 1)}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          item: { ...editingItem.item, sort_order: Number(e.target.value) },
                         })
                       }
                     />
