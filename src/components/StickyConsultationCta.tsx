@@ -121,7 +121,7 @@ export function StickyConsultationCta({
             ) : (
               <>
                 <span className="sticky-cta-icon-dot" />
-                <span className="sticky-cta-text">Book a Consultation</span>
+                <span className="sticky-cta-text">Book a consultation</span>
                 <ArrowRight size={14} className="sticky-cta-arrow" />
               </>
             )}
@@ -151,7 +151,7 @@ export function StickyConsultationCta({
             ) : (
               <>
                 <span className="sticky-cta-icon-dot" />
-                <span>Book a Consultation</span>
+                <span>Book a consultation</span>
                 <ArrowRight size={15} />
               </>
             )}

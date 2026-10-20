@@ -497,10 +497,10 @@ export function MediaManager() {
                   </div>
 
                   <div className="media-preview-fields">
-                    <div className="flex items-center justify-between pb-2 border-b border-[#262626]">
+                    <div className="flex items-center justify-between pb-2 border-b border-[#e5e5e5]">
                       <div>
-                        <h4 className="font-semibold text-white text-sm">{selectedFile.name}</h4>
-                        <span className="text-xs text-neutral-400 font-mono">
+                        <h4 className="font-medium text-[#111111] text-sm">{selectedFile.name}</h4>
+                        <span className="text-xs text-[#777777] font-mono">
                           {(selectedFile.size / 1024).toFixed(0)} KB • {selectedFile.type || 'image'}
                         </span>
                       </div>
@@ -691,10 +691,10 @@ export function MediaManager() {
                       <img src={urlInput} alt="URL preview" />
                     </div>
                     <div className="media-url-info">
-                      <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
+                      <span className="text-xs text-emerald-600 font-medium flex items-center gap-1.5">
                         <CheckCircle2 size={14} /> Image Verified & Ready
                       </span>
-                      <p className="text-xs text-neutral-400 mt-1 font-mono">
+                      <p className="text-xs text-[#777777] mt-1 font-mono">
                         Dimensions: {urlPreviewInfo.width} × {urlPreviewInfo.height} px
                       </p>
                     </div>
@@ -827,7 +827,7 @@ export function MediaManager() {
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="text-neutral-400 hover:text-white"
+              className="text-[#777777] hover:text-[#111111]"
             >
               <X size={14} />
             </button>
@@ -870,8 +870,8 @@ export function MediaManager() {
       {filteredMedia.length === 0 ? (
         <div className="media-empty-state">
           <ImageIcon size={32} />
-          <h4 className="font-semibold text-white mt-3">No matching images found</h4>
-          <p className="text-xs text-neutral-400 mt-1 max-w-sm">
+          <h4 className="font-medium text-[#111111] mt-3">No matching images found</h4>
+          <p className="text-xs text-[#666666] mt-1 max-w-sm">
             {searchQuery || filterSpot !== 'all' || filterSource !== 'all'
               ? 'Try adjusting your search query or filters to find what you need.'
               : 'Add your first image using the upload or URL box above.'}
@@ -1036,7 +1036,7 @@ export function MediaManager() {
             </div>
 
             <div className="p-4">
-              <p className="text-xs text-neutral-300 mb-3">
+              <p className="text-xs text-[#666666] mb-3">
                 Replacing <b>{replacingItem.filename}</b> will update all pages where this image is
                 currently featured ({replacingItem.assigned_label || 'Media Pool'}) without breaking
                 any layout.
@@ -1076,22 +1076,22 @@ export function MediaManager() {
                   />
                   <div
                     onClick={() => replaceFileInputRef.current?.click()}
-                    className="border border-dashed border-[#333] hover:border-neutral-400 p-4 rounded-xl text-center cursor-pointer transition-colors"
+                    className="border border-dashed border-[#cccccc] hover:border-[#111111] p-4 rounded-xl text-center cursor-pointer transition-colors bg-[#fafafa]"
                   >
                     {replacePreviewUrl ? (
                       <div className="flex items-center gap-3 justify-center">
                         <img
                           src={replacePreviewUrl}
                           alt="Replacement preview"
-                          className="w-16 h-16 object-cover rounded-lg"
+                          className="w-16 h-16 object-cover rounded-lg border border-[#e5e5e5]"
                         />
                         <div className="text-left text-xs">
-                          <p className="font-semibold text-white">{replaceFile?.name}</p>
-                          <p className="text-neutral-400">Click to choose a different file</p>
+                          <p className="font-medium text-[#111111]">{replaceFile?.name}</p>
+                          <p className="text-[#777777]">Click to choose a different file</p>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-xs text-neutral-300">
+                      <p className="text-xs text-[#666666]">
                         Click to select replacement JPG, PNG, WebP, or SVG file
                       </p>
                     )}
@@ -1148,25 +1148,25 @@ export function MediaManager() {
             </div>
 
             <div className="p-4">
-              <div className="flex items-center gap-3 p-3 bg-rose-950/40 border border-rose-900/60 rounded-xl mb-3">
-                <AlertTriangle size={24} className="text-rose-400 flex-shrink-0" />
-                <div className="text-xs text-rose-200">
-                  <p className="font-semibold">Are you sure you want to delete this image?</p>
-                  <p className="text-rose-300/80 mt-0.5">
+              <div className="flex items-center gap-3 p-3 bg-rose-50 border border-rose-200 rounded-xl mb-3">
+                <AlertTriangle size={24} className="text-rose-600 flex-shrink-0" />
+                <div className="text-xs text-rose-900">
+                  <p className="font-medium text-rose-950">Are you sure you want to delete this image?</p>
+                  <p className="text-rose-800/80 mt-0.5">
                     Filename: <b>{deletingItem.filename}</b>
                   </p>
                 </div>
               </div>
 
               {deletingItem.assigned_spot !== 'unassigned' && (
-                <p className="text-xs text-amber-300 bg-amber-950/40 border border-amber-900/60 p-2.5 rounded-lg mb-3">
+                <p className="text-xs text-amber-900 bg-amber-50 border border-amber-200 p-2.5 rounded-lg mb-3">
                   ⚠️ This image is currently assigned to <b>{deletingItem.assigned_label || deletingItem.assigned_spot}</b>.
                   Deleting it will remove the assignment without breaking the page.
                 </p>
               )}
 
               {deletingItem.source === 'upload' && deletingItem.storage_path && (
-                <p className="text-xs text-neutral-400 mb-3 font-mono">
+                <p className="text-xs text-[#777777] mb-3 font-mono">
                   The uploaded file in persistent storage will also be deleted.
                 </p>
               )}

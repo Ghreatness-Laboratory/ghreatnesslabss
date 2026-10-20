@@ -1,43 +1,44 @@
 import React from 'react';
 import { useCms } from '../context/CmsContext';
-import { SectionHead, Stats, icons } from '../components/SharedSections';
+import { Stats, icons } from '../components/SharedSections';
 
 export default function About() {
   const { data } = useCms();
-  const pageCopy = data.pages.find((p) => p.page_slug === 'about' && p.section_key === 'hero');
-
-  const title = pageCopy?.title || 'Built in Lagos for';
-  const subtitle = pageCopy?.subtitle || 'important work.';
-  const intro =
-    pageCopy?.content ||
-    'We are an independent digital and IT solutions studio for teams that need clarity, craft, and capable delivery in equal measure.';
-
   const sortedCards = [...data.aboutCards].sort((a, b) => a.sort_order - b.sort_order);
 
   return (
     <>
-      <section className="section page-intro">
-        <SectionHead
-          label="About GhreatnessLabs"
-          title={title}
-          accent={subtitle}
-          copy={intro}
-        />
+      <section className="section page-intro" aria-label="About GhreatnessLabs">
+        <p className="eyebrow-label">— ABOUT</p>
+        <h1 className="about-heading-26">
+          A studio built on <span className="text-secondary-muted">purpose and precision.</span>
+        </h1>
+        <p className="about-body-14">
+          GhreatnessLabs, also known as Ghreatness Laboratory, is an independent digital and IT solutions studio founded in Lagos in 2024. We partner with ambitious founders, established enterprises, and institutions to engineer high-impact systems, software, and brand infrastructure made to endure.
+        </p>
+
         <div className="story-grid">
-          {sortedCards.map((card, index) => {
+          {sortedCards.map((card) => {
             const Icon = icons[card.icon_name] || icons['building-2'];
+            const isHowWeStarted = card.title.toLowerCase().includes('started');
             return (
-              <article key={card.id || card.title} className={index % 2 === 1 ? 'story-dark' : ''}>
-                <span className="icon-badge">
-                  <Icon />
+              <article
+                key={card.id || card.title}
+                className={isHowWeStarted ? 'how-we-started-card' : 'about-card-standard'}
+              >
+                <span className="feature-icon-tile" aria-hidden="true">
+                  <Icon size={18} />
                 </span>
-                <h3>{card.title}</h3>
-                <p>{card.description}</p>
+                <div className="about-card-body">
+                  <h2 className="how-we-started-title">{card.title}</h2>
+                  <p className="how-we-started-desc">{card.description}</p>
+                </div>
               </article>
             );
           })}
         </div>
       </section>
+
       <Stats />
     </>
   );

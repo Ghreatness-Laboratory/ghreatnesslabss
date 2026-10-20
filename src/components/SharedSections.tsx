@@ -111,10 +111,13 @@ export function CountUp({ value }: { value: string }) {
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const target = Number(value);
+    // If it's a foundation year like 2024, never format with a comma
+    const isYear = value === '2024' || value === '2,024';
+    const cleanValue = isYear ? '2024' : value;
+    const target = Number(cleanValue.replace(/,/g, ''));
     const element = ref.current;
     if (!element || isNaN(target)) {
-      if (element) element.textContent = value;
+      if (element) element.textContent = cleanValue;
       return;
     }
 
@@ -135,7 +138,7 @@ export function CountUp({ value }: { value: string }) {
           const progress = Math.min(elapsed / duration, 1);
           const current = Math.floor(progress * target);
           if (element) {
-            element.textContent = current.toLocaleString();
+            element.textContent = isYear ? String(current) : current.toLocaleString();
           }
 
           if (progress < 1) {
@@ -161,7 +164,6 @@ export function CountUp({ value }: { value: string }) {
       style={{
         fontVariantNumeric: 'tabular-nums',
         display: 'inline-block',
-        minWidth: '2ch',
       }}
     >
       0
@@ -173,25 +175,67 @@ export function Stats() {
   const { data } = useCms();
   const sortedStats = [...data.stats].sort((a, b) => a.sort_order - b.sort_order);
 
+  // Exact normalized labels, values, and single-line captions with zero duplicate wording:
+  // 1) FOUNDED / "Lagos studio launch"
+  // 2) CLIENTS / "Served globally"
+  // 3) CERTIFIED / "Verified credentials"
+  // 4) MARKETS / "Active markets"
+  const getCleanStat = (item: (typeof sortedStats)[0], index: number) => {
+    const rawLabel = (item.label || '').toUpperCase();
+    if (rawLabel.includes('FOUND') || index === 0) {
+      return {
+        label: 'FOUNDED',
+        value: '2024',
+        caption: 'Lagos studio launch',
+        icon: item.icon_name || 'building-2',
+      };
+    }
+    if (rawLabel.includes('CLIENT') || index === 1) {
+      return {
+        label: 'CLIENTS',
+        value: item.value,
+        caption: 'Served globally',
+        icon: item.icon_name || 'users-round',
+      };
+    }
+    if (rawLabel.includes('CERT') || index === 2) {
+      return {
+        label: 'CERTIFIED',
+        value: item.value,
+        caption: 'Verified credentials',
+        icon: item.icon_name || 'badge-check',
+      };
+    }
+    return {
+      label: 'MARKETS',
+      value: item.value,
+      caption: 'Active markets',
+      icon: item.icon_name || 'globe-2',
+    };
+  };
+
   return (
-    <section className="stats">
-      {sortedStats.map((item) => {
-        const Icon = icons[item.icon_name] || icons['building-2'];
-        return (
-          <article key={item.id}>
-            <span className="icon-badge">
-              <Icon />
-            </span>
-            <div>
-              <CountUp value={item.value} />
-              <p>
-                {item.label}
-                <span>{item.caption}</span>
-              </p>
-            </div>
-          </article>
-        );
-      })}
+    <section className="stats-section" aria-label="Studio statistics">
+      <div className="stats-grid">
+        {sortedStats.slice(0, 4).map((item, idx) => {
+          const stat = getCleanStat(item, idx);
+          const Icon = icons[stat.icon] || icons['building-2'];
+          return (
+            <article key={item.id} className="stat-card">
+              <div className="stat-card-header">
+                <span className="stat-card-label">{stat.label}</span>
+                <span className="stat-icon-tile" aria-hidden="true">
+                  <Icon size={15} />
+                </span>
+              </div>
+              <div className="stat-card-number">
+                <CountUp value={stat.value} />
+              </div>
+              <p className="stat-card-caption">{stat.caption}</p>
+            </article>
+          );
+        })}
+      </div>
     </section>
   );
 }
@@ -360,40 +404,59 @@ export function Testimonials({ limit }: { limit?: number }) {
 export function AboutPreview() {
   const { data } = useCms();
   const sortedCards = [...data.aboutCards].sort((a, b) => a.sort_order - b.sort_order);
-  const cards = sortedCards.slice(0, 3);
+
+  // Isolate "How we started" card
+  const howWeStartedCard =
+    sortedCards.find((c) => c.title.toLowerCase().includes('started')) || sortedCards[0];
+  const secondaryCards = sortedCards
+    .filter((c) => c.id !== howWeStartedCard?.id)
+    .slice(0, 2);
 
   return (
-    <section className="section about-preview">
-      <SectionHead
-        label="About us"
-        title="A studio built on"
-        accent="purpose and precision."
-      />
-      <p className="about-preview-intro">
-        GhreatnessLabs is an independent digital and IT solutions studio, founded in Lagos in 2024 to create high-impact systems and brands for ambitious teams.
+    <section className="section about-preview" aria-label="About the studio">
+      <p className="eyebrow-label">— ABOUT</p>
+      <h2 className="about-heading-26">
+        A studio built on <span className="text-muted-gray">purpose and precision.</span>
+      </h2>
+      <p className="about-body-14">
+        GhreatnessLabs, also known as Ghreatness Laboratory, is an independent digital and IT solutions studio founded in Lagos in 2024 to create high-impact systems, software, and brand infrastructure for ambitious teams.
       </p>
-      <div className="about-preview-cards">
-        {cards.map((item, index) => {
+
+      <div className="about-cards-stack">
+        {/* "How we started": white card with hairline border, black icon tile, 15px title, 13px gray description */}
+        {howWeStartedCard && (
+          <article className="how-we-started-card">
+            <span className="feature-icon-tile" aria-hidden="true">
+              {React.createElement(icons[howWeStartedCard.icon_name] || icons['building-2'], { size: 18 })}
+            </span>
+            <div className="about-card-body">
+              <h3 className="how-we-started-title">{howWeStartedCard.title}</h3>
+              <p className="how-we-started-desc">{howWeStartedCard.description}</p>
+            </div>
+          </article>
+        )}
+
+        {secondaryCards.map((item) => {
           const Icon = icons[item.icon_name] || icons['target'];
           return (
-            <article
-              key={item.id || item.title}
-              className={`about-preview-card ${index % 2 ? 'about-preview-card-dark' : ''}`}
-            >
-              <span className="about-preview-icon">
-                <Icon />
+            <article key={item.id || item.title} className="how-we-started-card">
+              <span className="feature-icon-tile" aria-hidden="true">
+                <Icon size={18} />
               </span>
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
+              <div className="about-card-body">
+                <h3 className="how-we-started-title">{item.title}</h3>
+                <p className="how-we-started-desc">{item.description}</p>
               </div>
             </article>
           );
         })}
       </div>
-      <Link to="/about" className="about-preview-link">
-        Learn more about us <ArrowUpRight />
-      </Link>
+
+      <div className="mt-6">
+        <Link to="/about" className="button">
+          Learn more about us <ArrowUpRight size={14} className="ml-1 inline" />
+        </Link>
+      </div>
     </section>
   );
 }
@@ -445,8 +508,8 @@ export function LeadershipPreview() {
     });
 
   return (
-    <section className="section leadership-preview">
-      <SectionHead label="Leadership" title="The brains behind the work" />
+    <section className="section leadership-preview" aria-label="Leadership team">
+      <SectionHead label="— LEADERSHIP" title="The brains behind the work" />
 
       {/* Auto-moving Infinite Marquee (Right to Left) */}
       <div
@@ -467,9 +530,11 @@ export function LeadershipPreview() {
         </div>
       </div>
 
-      <Link to="/leadership" className="about-preview-link">
-        View full leadership team <ArrowUpRight />
-      </Link>
+      <div className="mt-6">
+        <Link to="/leadership" className="button">
+          View full leadership team <ArrowUpRight size={14} className="ml-1 inline" />
+        </Link>
+      </div>
     </section>
   );
 }
@@ -502,6 +567,8 @@ export function Partners() {
             alt={`${partner.name} logo`}
             className="partner-logo-img"
             loading="lazy"
+            width={120}
+            height={44}
           />
         ) : (
           <span className="partner-logo-text">{partner.name}</span>
@@ -510,14 +577,14 @@ export function Partners() {
     ));
 
   return (
-    <section className="section partners-section soft-section">
+    <section className="section partners-section soft-section" aria-label="Partners and clients">
       <SectionHead
-        label="Partners & clients"
+        label="— PARTNERS &amp; CLIENTS"
         title="In good company."
         copy="A few of the ambitious teams and ventures we are proud to work alongside."
       />
 
-      {/* Auto-moving Infinite Marquee (Left to Right, opposite direction) */}
+      {/* Auto-moving Infinite Marquee (Left to Right, opposite direction, slightly different speed) */}
       <div
         className={`marquee-wrapper ${isPaused ? 'marquee-paused' : ''}`}
         aria-label="Partners and clients marquee"

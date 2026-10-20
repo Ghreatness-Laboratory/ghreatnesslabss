@@ -111,6 +111,14 @@ export default function Admin() {
     return 'settings';
   });
 
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab);
+    if (typeof window !== 'undefined') {
+      const newPath = tab === 'media' ? '/admin/media' : '/admin';
+      window.history.pushState({}, '', newPath);
+    }
+  };
+
   // Local editing copy for Site Settings (with dirty tracking)
   const [settingsForm, setSettingsForm] = useState<SiteSettings>(data.settings);
   const [isSettingsDirty, setIsSettingsDirty] = useState(false);
@@ -444,10 +452,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTab('settings');
-                  window.history.pushState({}, '', '/admin');
-                }}
+                onClick={() => handleTabChange('settings')}
               >
                 <Settings size={16} />
                 <span>Site Settings</span>
@@ -456,10 +461,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'media' ? 'active' : ''}`}
-                onClick={() => {
-                  setActiveTab('media');
-                  window.history.pushState({}, '', '/admin/media');
-                }}
+                onClick={() => handleTabChange('media')}
               >
                 <ImageIcon size={16} />
                 <span>Media Library</span>
@@ -468,7 +470,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'stats' ? 'active' : ''}`}
-                onClick={() => setActiveTab('stats')}
+                onClick={() => handleTabChange('stats')}
               >
                 <Sliders size={16} />
                 <span>Stats Cards</span>
@@ -477,7 +479,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'about' ? 'active' : ''}`}
-                onClick={() => setActiveTab('about')}
+                onClick={() => handleTabChange('about')}
               >
                 <Shield size={16} />
                 <span>About & Core Values</span>
@@ -486,7 +488,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'capabilities' ? 'active' : ''}`}
-                onClick={() => setActiveTab('capabilities')}
+                onClick={() => handleTabChange('capabilities')}
               >
                 <Briefcase size={16} />
                 <span>Capabilities</span>
@@ -495,7 +497,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'services' ? 'active' : ''}`}
-                onClick={() => setActiveTab('services')}
+                onClick={() => handleTabChange('services')}
               >
                 <Layers size={16} />
                 <span>Services (Digital & IT)</span>
@@ -504,7 +506,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'holding' ? 'active' : ''}`}
-                onClick={() => setActiveTab('holding')}
+                onClick={() => handleTabChange('holding')}
               >
                 <Building size={16} />
                 <span>Holding Group</span>
@@ -513,7 +515,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'projects' ? 'active' : ''}`}
-                onClick={() => setActiveTab('projects')}
+                onClick={() => handleTabChange('projects')}
               >
                 <Eye size={16} />
                 <span>Projects / Ventures</span>
@@ -522,7 +524,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'leadership' ? 'active' : ''}`}
-                onClick={() => setActiveTab('leadership')}
+                onClick={() => handleTabChange('leadership')}
               >
                 <Users size={16} />
                 <span>Leadership</span>
@@ -531,7 +533,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'clients' ? 'active' : ''}`}
-                onClick={() => setActiveTab('clients')}
+                onClick={() => handleTabChange('clients')}
               >
                 <Building size={16} />
                 <span>Clients & Partners</span>
@@ -540,7 +542,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'testimonials' ? 'active' : ''}`}
-                onClick={() => setActiveTab('testimonials')}
+                onClick={() => handleTabChange('testimonials')}
               >
                 <Quote size={16} />
                 <span>Testimonials</span>
@@ -549,7 +551,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'faqs' ? 'active' : ''}`}
-                onClick={() => setActiveTab('faqs')}
+                onClick={() => handleTabChange('faqs')}
               >
                 <HelpCircle size={16} />
                 <span>FAQs Accordion</span>
@@ -558,7 +560,7 @@ export default function Admin() {
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'pages' ? 'active' : ''}`}
-                onClick={() => setActiveTab('pages')}
+                onClick={() => handleTabChange('pages')}
               >
                 <FileText size={16} />
                 <span>Page Copy</span>
@@ -567,13 +569,13 @@ export default function Admin() {
             </nav>
           </div>
 
-          <div className="admin-sidebar-section mt-auto pt-4 border-t border-[#222]">
+          <div className="admin-sidebar-section mt-auto pt-4 border-t border-[#e5e5e5]">
             <span className="admin-sidebar-heading">Database & Integration</span>
             <nav className="admin-nav-list">
               <button
                 type="button"
                 className={`admin-nav-item ${activeTab === 'supabase' ? 'active' : ''}`}
-                onClick={() => setActiveTab('supabase')}
+                onClick={() => handleTabChange('supabase')}
               >
                 <Server size={16} />
                 <span>Supabase & SQL</span>
