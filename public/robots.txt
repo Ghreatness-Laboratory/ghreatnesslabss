@@ -6,4 +6,4 @@ Disallow: /admin/*
 Disallow: /api/
 Disallow: /api/*
 
-Sitemap: https://ghreatnesslabs.com/sitemap.xml
+Sitemap: https://ghreatnesslab.com/sitemap.xml
