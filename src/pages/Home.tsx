@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useCms } from '../context/CmsContext';
 import {
   SectionHead,
@@ -17,7 +17,60 @@ import { GhreatnessMark } from '../components/GhreatnessLogo';
 
 export default function Home() {
   const { data } = useCms();
-  const { settings } = data;
+  const { settings, holding } = data;
+
+  // Dynamically synchronize Schema.org Organization JSON-LD with live holding group & social links
+  useEffect(() => {
+    const primaryHolding = holding[0];
+    const holdingName =
+      settings.holdingGroupName?.trim() || primaryHolding?.company_name || 'Ghreatness Group';
+    const holdingUrl =
+      settings.holdingGroupUrl?.trim() ||
+      primaryHolding?.website_url ||
+      'https://group.ghreatnesslab.com.ng';
+
+    const sameAsList = [
+      settings.socialInstagram || 'https://instagram.com/ghreatnesslabs',
+      settings.socialTwitter || 'https://x.com/ghreatnesslabs',
+      settings.socialLinkedin || 'https://linkedin.com/company/ghreatnesslabs',
+      holdingUrl,
+    ].filter(Boolean);
+
+    const orgSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'GhreatnessLabs',
+      alternateName: [
+        'Ghreatness Labs',
+        'GhreatnessLab',
+        'Ghreatness Lab',
+        'Ghreatness Laboratory',
+      ],
+      url: 'https://www.ghreatnesslab.com.ng',
+      logo: 'https://www.ghreatnesslab.com.ng/logo.png',
+      foundingDate: '2024',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Lagos',
+        addressCountry: 'NG',
+      },
+      parentOrganization: {
+        '@type': 'Organization',
+        name: holdingName,
+        url: holdingUrl,
+      },
+      sameAs: sameAsList,
+    };
+
+    let scriptTag = document.getElementById('organization-jsonld') as HTMLScriptElement | null;
+    if (!scriptTag) {
+      scriptTag = document.createElement('script');
+      scriptTag.id = 'organization-jsonld';
+      scriptTag.type = 'application/ld+json';
+      document.head.appendChild(scriptTag);
+    }
+    scriptTag.textContent = JSON.stringify(orgSchema, null, 2);
+  }, [settings, holding]);
 
   return (
     <>
@@ -91,9 +144,10 @@ export default function Home() {
 
       <section className="section">
         <SectionHead
-          label="Selected ventures"
-          title="Products with"
-          accent="purpose."
+          label="OUR WORK"
+          title="Check out the projects"
+          accent="we've worked on."
+          copy="Proprietary platforms, client software, and operational systems built to scale."
         />
         <Ventures limit={3} />
         <Button href="/projects">View all projects</Button>

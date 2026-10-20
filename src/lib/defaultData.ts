@@ -21,6 +21,10 @@ export const defaultCmsData: CmsData = {
     footerTagline: 'Digital systems and brand experiences built from Lagos for the world.',
     copyrightText: '© 2026 GHREATNESSLABS. All rights reserved.',
     availabilityText: 'Q2 projects',
+    holdingGroupName: 'Ghreatness Group',
+    holdingGroupUrl: 'https://group.ghreatnesslab.com.ng',
+    holdingGroupLogo: '/logo-mark.svg',
+    holdingGroupDescription: 'Parent collective fostering digital technology, ventures, and infrastructure.',
   },
   stats: [
     {
@@ -263,6 +267,8 @@ export const defaultCmsData: CmsData = {
       company_name: 'FragNaija',
       description: 'Competitive gaming and community for Nigeria’s next generation of players.',
       icon_name: 'play',
+      website_url: 'https://fragnaija.com',
+      logo_url: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=300&q=80',
       sort_order: 1,
     },
     {
@@ -270,6 +276,8 @@ export const defaultCmsData: CmsData = {
       company_name: 'FragAfrica',
       description: 'A platform connecting the wider African gaming ecosystem.',
       icon_name: 'globe-2',
+      website_url: 'https://fragafrica.org',
+      logo_url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=300&q=80',
       sort_order: 2,
     },
     {
@@ -277,6 +285,8 @@ export const defaultCmsData: CmsData = {
       company_name: 'Univyx',
       description: 'Better digital workflows for modern higher education.',
       icon_name: 'building-2',
+      website_url: 'https://univyx.io',
+      logo_url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=300&q=80',
       sort_order: 3,
     },
     {
@@ -284,6 +294,8 @@ export const defaultCmsData: CmsData = {
       company_name: 'Univyx Arena',
       description: 'Campus competition, events, and community in one arena.',
       icon_name: 'users-round',
+      website_url: 'https://arena.univyx.io',
+      logo_url: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=300&q=80',
       sort_order: 4,
     },
     {
@@ -291,6 +303,8 @@ export const defaultCmsData: CmsData = {
       company_name: 'AthleGame Esports',
       description: 'Esports experiences built around competitive play and culture.',
       icon_name: 'play',
+      website_url: 'https://athlegame.com',
+      logo_url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=300&q=80',
       sort_order: 5,
     },
     {
@@ -298,6 +312,8 @@ export const defaultCmsData: CmsData = {
       company_name: 'MisplaceMe',
       description: 'A useful layer for recovering, reporting, and reconnecting.',
       icon_name: 'shapes',
+      website_url: 'https://misplaceme.ng',
+      logo_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=300&q=80',
       sort_order: 6,
     },
     {
@@ -305,6 +321,8 @@ export const defaultCmsData: CmsData = {
       company_name: 'Sonariq Sounds',
       description: 'A home for artist-led sound, culture, and creative direction.',
       icon_name: 'pen-tool',
+      website_url: 'https://sonariqsounds.com',
+      logo_url: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=300&q=80',
       sort_order: 7,
     },
     {
@@ -312,6 +330,8 @@ export const defaultCmsData: CmsData = {
       company_name: 'Prothlete Esports',
       description: 'Infrastructure for talented players pursuing competitive progress.',
       icon_name: 'chart-no-axes-combined',
+      website_url: 'https://prothlete.gg',
+      logo_url: 'https://images.unsplash.com/photo-1542751110-97427bbecf20?auto=format&fit=crop&w=300&q=80',
       sort_order: 8,
     },
     {
@@ -319,6 +339,8 @@ export const defaultCmsData: CmsData = {
       company_name: 'Civyn',
       description: 'Digital civic tools for more connected communities.',
       icon_name: 'building-2',
+      website_url: 'https://civyn.org',
+      logo_url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=300&q=80',
       sort_order: 9,
     },
   ],
@@ -332,6 +354,8 @@ export const defaultCmsData: CmsData = {
         'A competitive gaming ecosystem constructed for Africa’s next generation of players.',
       detail:
         'A digital arena that brings player profiles, tournaments, live moments, and community into one focused experience.',
+      image_url:
+        'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80',
       hero_image_url:
         'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1600&q=80',
       challenge:
@@ -345,6 +369,8 @@ export const defaultCmsData: CmsData = {
       client_quote:
         'GhreatnessLabs built an infrastructure that stood up to tens of thousands of concurrent competitive gamers without breaking a sweat. It set the standard for African esports.',
       project_url: '/projects/fragnaija-athlegame',
+      live_url: 'https://fragnaija.com',
+      published: true,
       sort_order: 1,
     },
     {
@@ -356,6 +382,8 @@ export const defaultCmsData: CmsData = {
         'Digital public infrastructure that helps communities participate and organize.',
       detail:
         'A civic operating layer designed to make local action, services, and feedback easier to access and understand.',
+      image_url:
+        'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80',
       hero_image_url:
         'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80',
       challenge:
@@ -369,6 +397,8 @@ export const defaultCmsData: CmsData = {
       client_quote:
         'The Civyn platform turned bureaucratic logjams into an open, responsive civic dialogue. GhreatnessLabs understands public systems at a fundamental level.',
       project_url: '/projects/civyn',
+      live_url: 'https://civyn.org',
+      published: true,
       sort_order: 2,
     },
     {
@@ -379,6 +409,8 @@ export const defaultCmsData: CmsData = {
       description: 'A coordinated operating layer for the modern university.',
       detail:
         'A clearer university experience for administrators, students, and faculty working across complex systems.',
+      image_url:
+        'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=80',
       hero_image_url:
         'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=80',
       challenge:
@@ -392,6 +424,8 @@ export const defaultCmsData: CmsData = {
       client_quote:
         'Univyx removed the administrative friction that had burdened our faculties for a decade. The execution speed and design precision were exemplary.',
       project_url: '/projects/univyx',
+      live_url: 'https://univyx.io',
+      published: true,
       sort_order: 3,
     },
     {
@@ -402,6 +436,8 @@ export const defaultCmsData: CmsData = {
       description: 'A simplified financial operations environment for distributed teams.',
       detail:
         'A unified product language for high-trust workflows, reporting, and everyday decision making.',
+      image_url:
+        'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1600&q=80',
       hero_image_url:
         'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1600&q=80',
       challenge:
@@ -415,6 +451,8 @@ export const defaultCmsData: CmsData = {
       client_quote:
         'In financial operations, latency and ambiguity are unacceptable. GhreatnessLabs built an institutional-grade platform our treasury relies on daily.',
       project_url: '/projects/kora-systems',
+      live_url: 'https://korasystems.com',
+      published: true,
       sort_order: 4,
     },
   ],
@@ -423,12 +461,15 @@ export const defaultCmsData: CmsData = {
       id: 'lead-1',
       name: 'Gideon Greatness',
       role: 'Founder & Creative Director',
+      slug: 'gideon-greatness',
       bio: 'Guides the studio’s creative direction and turns ambitious briefs into clear, ownable systems.',
+      full_profile:
+        'Gideon Greatness is the founder and Creative Director of GhreatnessLabs. With over a decade of systems architecture and creative brand leadership in West Africa and international markets, Gideon leads the studio’s strategic mandate—unifying technical resilience with uncompromising brand coherence. Before founding GhreatnessLabs in Lagos in 2024, Gideon directed design and engineering initiatives for venture-backed startups and public sector institutions.',
       avatar_url:
         'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
       social_links: {
-        linkedin: 'https://www.linkedin.com',
-        twitter: 'https://x.com',
+        linkedin: 'https://www.linkedin.com/in/gideon-greatness',
+        twitter: 'https://x.com/gideongreatness',
       },
       sort_order: 1,
     },
@@ -436,12 +477,15 @@ export const defaultCmsData: CmsData = {
       id: 'lead-2',
       name: 'Tomi Adeyemi',
       role: 'Product Design Lead',
+      slug: 'tomi-adeyemi',
       bio: 'Shapes thoughtful product experiences from discovery through design-system delivery.',
+      full_profile:
+        'Tomi Adeyemi leads product and UX design systems at GhreatnessLabs. Specializing in high-density workflows and accessibility-first digital interfaces, Tomi bridges customer research with rigorous design tokens. She has spearheaded design infrastructure across fintech platforms, collegiate management solutions, and interactive esports portals.',
       avatar_url:
         'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
       social_links: {
-        linkedin: 'https://www.linkedin.com',
-        twitter: 'https://x.com',
+        linkedin: 'https://www.linkedin.com/in/tomi-adeyemi',
+        twitter: 'https://x.com/tomiadeyemi',
       },
       sort_order: 2,
     },
@@ -449,12 +493,15 @@ export const defaultCmsData: CmsData = {
       id: 'lead-3',
       name: 'David Okafor',
       role: 'Engineering Lead',
+      slug: 'david-okafor',
       bio: 'Builds the technical foundations that make digital products durable and fast.',
+      full_profile:
+        'David Okafor directs the engineering practice at GhreatnessLabs, supervising distributed backend services, high-availability database replication, and client-side performance benchmarks. With a background in distributed computing and secure cloud operations, David ensures every studio project meets strict 99.9% uptime and sub-100ms response targets.',
       avatar_url:
         'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80',
       social_links: {
-        linkedin: 'https://www.linkedin.com',
-        twitter: 'https://x.com',
+        linkedin: 'https://www.linkedin.com/in/david-okafor',
+        twitter: 'https://x.com/davidokafor',
       },
       sort_order: 3,
     },
@@ -462,12 +509,15 @@ export const defaultCmsData: CmsData = {
       id: 'lead-4',
       name: 'Ifeoma Nwosu',
       role: 'Strategy & Partnerships',
+      slug: 'ifeoma-nwosu',
       bio: 'Connects business priorities to practical programs of work and lasting relationships.',
+      full_profile:
+        'Ifeoma Nwosu manages institutional partnerships, venture scoping, and client governance at GhreatnessLabs. Her focus centers on translating complex operational requirements into agile milestone roadmaps, safeguarding delivery velocity, and aligning studio output with measurable organizational outcomes.',
       avatar_url:
         'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
       social_links: {
-        linkedin: 'https://www.linkedin.com',
-        twitter: 'https://x.com',
+        linkedin: 'https://www.linkedin.com/in/ifeoma-nwosu',
+        twitter: 'https://x.com/ifeomanwosu',
       },
       sort_order: 4,
     },

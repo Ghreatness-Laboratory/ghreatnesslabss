@@ -27,6 +27,7 @@ const Projects = lazy(() => import('./pages/Projects'));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
 const StartProject = lazy(() => import('./pages/StartProject'));
 const Leadership = lazy(() => import('./pages/Leadership'));
+const LeadershipDetail = lazy(() => import('./pages/LeadershipDetail'));
 const Clients = lazy(() => import('./pages/Clients'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Admin = lazy(() => import('./pages/Admin'));
@@ -48,6 +49,7 @@ const routes: Record<string, React.LazyExoticComponent<() => React.JSX.Element>>
   '/contact': Contact,
   '/admin': Admin,
   '/admin/media': Admin,
+  '/admin/links': Admin,
 };
 
 const routeMetadata: Record<string, { title: string; description: string; category: string }> = {
@@ -217,14 +219,18 @@ function App() {
   const isProjectDetail = path.startsWith('/projects/') && path.length > '/projects/'.length;
   const projectSlug = isProjectDetail ? path.replace(/^\/projects\/?/, '').replace(/\/$/, '') : '';
 
+  // Check for dynamic leadership detail route (e.g. /leadership/[slug])
+  const isLeadershipDetail = path.startsWith('/leadership/') && path.length > '/leadership/'.length;
+  const leaderSlug = isLeadershipDetail ? path.replace(/^\/leadership\/?/, '').replace(/\/$/, '') : '';
+
   // Synchronize document title and dynamic Open Graph card metadata on route change
   useEffect(() => {
     if (isAdminRoute) {
       document.title = 'Studio CMS Admin — GhreatnessLabs';
       return;
     }
-    // If on a project detail page, ProjectDetail component updates its own specific meta
-    if (isProjectDetail) return;
+    // If on a project or leadership detail page, those components update their own specific meta
+    if (isProjectDetail || isLeadershipDetail) return;
 
     const meta = routeMetadata[path] || routeMetadata['/'];
     if (meta) {
@@ -235,7 +241,7 @@ function App() {
         urlPath: path,
       });
     }
-  }, [path, isAdminRoute, isProjectDetail]);
+  }, [path, isAdminRoute, isProjectDetail, isLeadershipDetail]);
 
   const ActivePage = routes[path] || Home;
 
@@ -268,7 +274,13 @@ function App() {
 
       <main>
         <Suspense fallback={null}>
-          {isProjectDetail ? <ProjectDetail slug={projectSlug} /> : <ActivePage />}
+          {isProjectDetail ? (
+            <ProjectDetail slug={projectSlug} />
+          ) : isLeadershipDetail ? (
+            <LeadershipDetail slug={leaderSlug} />
+          ) : (
+            <ActivePage />
+          )}
         </Suspense>
       </main>
 

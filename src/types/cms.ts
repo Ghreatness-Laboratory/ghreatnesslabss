@@ -17,6 +17,10 @@ export interface SiteSettings {
   footerTagline: string;
   copyrightText: string;
   availabilityText: string;
+  holdingGroupName?: string;
+  holdingGroupUrl?: string;
+  holdingGroupLogo?: string;
+  holdingGroupDescription?: string;
 }
 
 export interface StatItem {
@@ -61,6 +65,8 @@ export interface HoldingItem {
   company_name: string;
   description: string;
   icon_name: string;
+  website_url?: string;
+  logo_url?: string;
   sort_order: number;
 }
 
@@ -80,6 +86,8 @@ export interface ProjectItem {
   client_quote?: string;
   client_name?: string;
   project_url?: string;
+  live_url?: string;
+  published?: boolean;
   sort_order: number;
 }
 
@@ -88,6 +96,8 @@ export interface LeaderItem {
   name: string;
   role: string;
   bio: string;
+  full_profile?: string;
+  slug?: string;
   avatar_url?: string;
   social_links: {
     linkedin?: string;

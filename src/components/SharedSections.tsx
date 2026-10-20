@@ -18,9 +18,12 @@ import {
   Mail,
   Phone,
   Send,
+  ExternalLink,
   type LucideIcon,
 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
+import { HoldingBanner } from './HoldingBanner';
+import { slugify } from './admin/LinksManager';
 
 export const icons: Record<string, LucideIcon> = {
   'building-2': Building2,
@@ -325,7 +328,9 @@ export function ServiceList({
 
 export function Ventures({ limit }: { limit?: number }) {
   const { data } = useCms();
-  const sorted = [...data.projects].sort((a, b) => a.sort_order - b.sort_order);
+  const sorted = [...data.projects]
+    .filter((p) => p.published !== false)
+    .sort((a, b) => a.sort_order - b.sort_order);
   const items = limit ? sorted.slice(0, limit) : sorted;
 
   return (
@@ -337,28 +342,57 @@ export function Ventures({ limit }: { limit?: number }) {
           ? item.project_url
           : `/projects/${item.id}`;
 
+        const coverImage = item.image_url || item.hero_image_url;
+        const liveSiteUrl = item.live_url || item.project_url || '#';
+
         return (
           <article className={`venture v${i}`} key={item.id || item.title}>
-            <Link to={projectHref} className="venture-visual-link" aria-label={`View ${item.title} case study`}>
-              <div className="venture-visual">
-                <span className="venture-badge">{item.category_tag}</span>
-                <span className="venture-mark">
+            <div className="venture-visual overflow-hidden relative">
+              <span className="venture-badge">{item.category_tag}</span>
+              {coverImage ? (
+                <img
+                  src={coverImage}
+                  alt={`${item.title} preview`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="venture-mark" aria-hidden="true">
                   <i />
                   <b />
                 </span>
-              </div>
-            </Link>
+              )}
+            </div>
+
             <div className="venture-body">
               <h3>
-                <Link to={projectHref} className="venture-title-link">
+                <a href={projectHref} className="venture-title-link">
                   {item.title}
-                </Link>
+                </a>
               </h3>
               <p>{item.description}</p>
-              {item.detail && <p className="venture-detail">{item.detail}</p>}
-              <Link to={projectHref} className="venture-cta-link">
-                View case study <ArrowUpRight />
-              </Link>
+              
+              <div className="venture-actions mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between gap-3 flex-wrap">
+                <a
+                  href={liveSiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="button button-solid visit-site-button"
+                  aria-label={`Visit ${item.title} website (opens in a new tab)`}
+                >
+                  <span>Visit site</span>
+                  <ExternalLink size={14} aria-hidden="true" />
+                </a>
+
+                <a
+                  href={projectHref}
+                  className="venture-cta-link"
+                  aria-label={`Read ${item.title} case study brief`}
+                >
+                  <span>Case study</span>
+                  <ArrowUpRight size={14} aria-hidden="true" />
+                </a>
+              </div>
             </div>
           </article>
         );
@@ -452,11 +486,14 @@ export function AboutPreview() {
         })}
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-wrap gap-4 items-center">
         <Link to="/about" className="button">
           Learn more about us <ArrowUpRight size={14} className="ml-1 inline" />
         </Link>
       </div>
+
+      {/* Holding Group affiliation banner in About section */}
+      <HoldingBanner variant="card" className="mt-8" />
     </section>
   );
 }
@@ -482,12 +519,15 @@ export function LeadershipPreview() {
         .split(' ')
         .map((part) => part[0])
         .join('');
+      const slug = leader.slug || slugify(leader.name);
+      const profileUrl = `/leadership/${slug}`;
 
       return (
-        <Link
+        <a
           key={`${keyPrefix}-${leader.id}-${idx}`}
-          to="/leadership"
+          href={profileUrl}
           className="leader-preview-card marquee-card"
+          aria-label={`View full profile of ${leader.name}, ${leader.role}`}
         >
           <span className="leader-preview-avatar overflow-hidden">
             {leader.avatar_url ? (
@@ -501,9 +541,10 @@ export function LeadershipPreview() {
               initials
             )}
           </span>
-          <b>{leader.name}</b>
-          <small>{leader.role}</small>
-        </Link>
+          <b className="leader-marquee-name">{leader.name}</b>
+          <small className="leader-marquee-role">{leader.role}</small>
+          <p className="leader-marquee-desc line-clamp-1">{leader.bio}</p>
+        </a>
       );
     });
 
@@ -511,10 +552,12 @@ export function LeadershipPreview() {
     <section className="section leadership-preview" aria-label="Leadership team">
       <SectionHead label="— LEADERSHIP" title="The brains behind the work" />
 
-      {/* Auto-moving Infinite Marquee (Right to Left) */}
+      {/* Auto-moving Infinite Marquee (Right to Left) with Hover and Touch Pause */}
       <div
         className={`marquee-wrapper ${isPaused ? 'marquee-paused' : ''}`}
         aria-label="Leadership team marquee"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
         onTouchStart={() => setIsPaused(true)}
         onTouchEnd={() => setIsPaused(false)}
         onTouchCancel={() => setIsPaused(false)}

@@ -44,7 +44,7 @@
     </script>
 
     <!-- Schema.org Organization Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
+    <script type="application/ld+json" id="organization-jsonld">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
@@ -62,7 +62,18 @@
         "@type": "PostalAddress",
         "addressLocality": "Lagos",
         "addressCountry": "NG"
-      }
+      },
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "Ghreatness Group",
+        "url": "https://group.ghreatnesslab.com.ng"
+      },
+      "sameAs": [
+        "https://instagram.com/ghreatnesslabs",
+        "https://x.com/ghreatnesslabs",
+        "https://linkedin.com/company/ghreatnesslabs",
+        "https://group.ghreatnesslab.com.ng"
+      ]
     }
     </script>
   </head>

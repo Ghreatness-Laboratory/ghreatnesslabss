@@ -25,13 +25,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.ghreatnesslab.com.ng/projects/univyx-arena</loc>
+    <loc>https://www.ghreatnesslab.com.ng/projects/civyn</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.ghreatnesslab.com.ng/projects/sonariq-sounds</loc>
+    <loc>https://www.ghreatnesslab.com.ng/projects/univyx</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.ghreatnesslab.com.ng/projects/kora-systems</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -55,6 +61,30 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.ghreatnesslab.com.ng/leadership/gideon-greatness</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.ghreatnesslab.com.ng/leadership/tomi-adeyemi</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.ghreatnesslab.com.ng/leadership/david-okafor</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.ghreatnesslab.com.ng/leadership/ifeoma-nwosu</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.ghreatnesslab.com.ng/clients</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
@@ -64,7 +94,7 @@
     <loc>https://www.ghreatnesslab.com.ng/holding-group</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.ghreatnesslab.com.ng/contact</loc>

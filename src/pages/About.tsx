@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCms } from '../context/CmsContext';
 import { Stats, icons } from '../components/SharedSections';
+import { HoldingBanner } from '../components/HoldingBanner';
 
 export default function About() {
   const { data } = useCms();
@@ -16,6 +17,11 @@ export default function About() {
         <p className="about-body-14">
           GhreatnessLabs, also known as Ghreatness Laboratory, is an independent digital and IT solutions studio founded in Lagos in 2024. We partner with ambitious founders, established enterprises, and institutions to engineer high-impact systems, software, and brand infrastructure made to endure.
         </p>
+
+        {/* Holding Group Affiliation Banner */}
+        <div className="my-8">
+          <HoldingBanner variant="card" />
+        </div>
 
         <div className="story-grid">
           {sortedCards.map((card) => {

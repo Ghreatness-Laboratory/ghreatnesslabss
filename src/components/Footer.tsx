@@ -3,6 +3,7 @@ import { MapPin, Shield } from 'lucide-react';
 import { pages, Label, Button, Link } from './SharedSections';
 import { useCms } from '../context/CmsContext';
 import { GhreatnessLogo } from './GhreatnessLogo';
+import { HoldingBanner } from './HoldingBanner';
 
 export function Footer() {
   const { data } = useCms();
@@ -23,6 +24,11 @@ export function Footer() {
           </a>
         </div>
       </section>
+
+      {/* Holding Group Affiliation Banner near Footer */}
+      <div className="footer-holding-wrap">
+        <HoldingBanner variant="footer" />
+      </div>
 
       <div className="footer-grid">
         <div className="footer-brand-col">

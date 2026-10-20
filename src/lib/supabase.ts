@@ -129,6 +129,10 @@ function mapDbSettings(row: Record<string, unknown>): SiteSettings {
     footerTagline: String(row.footer_tagline || ''),
     copyrightText: String(row.copyright_text || '© 2026 GHREATNESSLABS. All rights reserved.'),
     availabilityText: String(row.availability_text || 'Q2 projects'),
+    holdingGroupName: row.holding_group_name ? String(row.holding_group_name) : 'Ghreatness Group',
+    holdingGroupUrl: row.holding_group_url ? String(row.holding_group_url) : 'https://group.ghreatnesslab.com.ng',
+    holdingGroupLogo: row.holding_group_logo ? String(row.holding_group_logo) : '/logo-mark.svg',
+    holdingGroupDescription: row.holding_group_description ? String(row.holding_group_description) : 'Parent collective fostering digital technology, ventures, and infrastructure.',
   };
 }
 
@@ -153,6 +157,10 @@ function mapSettingsToDb(settings: SiteSettings): Record<string, unknown> {
     footer_tagline: settings.footerTagline,
     copyright_text: settings.copyrightText,
     availability_text: settings.availabilityText,
+    holding_group_name: settings.holdingGroupName || null,
+    holding_group_url: settings.holdingGroupUrl || null,
+    holding_group_logo: settings.holdingGroupLogo || null,
+    holding_group_description: settings.holdingGroupDescription || null,
     updated_at: new Date().toISOString(),
   };
 }

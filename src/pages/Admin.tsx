@@ -61,10 +61,13 @@ import { IconPickerModal } from '../components/admin/IconPickerModal';
 import { TagManager } from '../components/admin/TagManager';
 import { ToastContainer } from '../components/admin/ToastContainer';
 import { MediaManager } from '../components/admin/MediaManager';
+import { LinksManager } from '../components/admin/LinksManager';
+import { Link as LinkIcon } from 'lucide-react';
 
 type TabKey =
   | 'settings'
   | 'media'
+  | 'links'
   | 'stats'
   | 'about'
   | 'capabilities'
@@ -105,8 +108,13 @@ export default function Admin() {
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState<TabKey>(() => {
-    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin/media')) {
-      return 'media';
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname.startsWith('/admin/links')) {
+        return 'links';
+      }
+      if (window.location.pathname.startsWith('/admin/media')) {
+        return 'media';
+      }
     }
     return 'settings';
   });
@@ -114,7 +122,8 @@ export default function Admin() {
   const handleTabChange = (tab: TabKey) => {
     setActiveTab(tab);
     if (typeof window !== 'undefined') {
-      const newPath = tab === 'media' ? '/admin/media' : '/admin';
+      const newPath =
+        tab === 'media' ? '/admin/media' : tab === 'links' ? '/admin/links' : '/admin';
       window.history.pushState({}, '', newPath);
     }
   };
@@ -466,6 +475,17 @@ export default function Admin() {
                 <ImageIcon size={16} />
                 <span>Media Library</span>
                 <span className="admin-count-badge">{(data.media || []).length}</span>
+              </button>
+              <button
+                type="button"
+                className={`admin-nav-item ${activeTab === 'links' ? 'active' : ''}`}
+                onClick={() => handleTabChange('links')}
+              >
+                <LinkIcon size={16} />
+                <span>Links &amp; Profiles</span>
+                <span className="admin-count-badge">
+                  {data.projects.length + data.holding.length + data.leadership.length}
+                </span>
               </button>
               <button
                 type="button"
@@ -1956,6 +1976,9 @@ export default function Admin() {
 
           {/* TAB: MEDIA LIBRARY & ASSET MANAGER */}
           {activeTab === 'media' && <MediaManager />}
+
+          {/* TAB: LINKS, PROJECTS, HOLDING & LEADERSHIP MANAGER (/admin/links) */}
+          {activeTab === 'links' && <LinksManager />}
 
           {/* TAB 12: SUPABASE SETUP & SQL MIGRATION */}
           {activeTab === 'supabase' && (

@@ -45,6 +45,10 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
     footer_tagline TEXT NOT NULL,
     copyright_text TEXT NOT NULL DEFAULT '© 2026 GHREATNESSLABS. All rights reserved.',
     availability_text TEXT NOT NULL DEFAULT 'Q2 projects',
+    holding_group_name TEXT DEFAULT 'Ghreatness Group',
+    holding_group_url TEXT DEFAULT 'https://group.ghreatnesslab.com.ng',
+    holding_group_logo TEXT DEFAULT '/logo-mark.svg',
+    holding_group_description TEXT DEFAULT 'Parent collective fostering digital technology, ventures, and infrastructure.',
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -99,6 +103,8 @@ CREATE TABLE IF NOT EXISTS public.holding_group (
     company_name TEXT NOT NULL,
     description TEXT NOT NULL,
     icon_name TEXT NOT NULL,
+    website_url TEXT,
+    logo_url TEXT,
     sort_order INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -120,6 +126,8 @@ CREATE TABLE IF NOT EXISTS public.projects (
     client_quote TEXT,
     client_name TEXT,
     project_url TEXT DEFAULT '/contact',
+    live_url TEXT,
+    published BOOLEAN DEFAULT true,
     sort_order INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -130,11 +138,25 @@ CREATE TABLE IF NOT EXISTS public.leadership (
     name TEXT NOT NULL,
     role TEXT NOT NULL,
     bio TEXT NOT NULL,
+    full_profile TEXT,
+    slug TEXT,
     avatar_url TEXT,
     social_links JSONB DEFAULT '{}'::jsonb,
     sort_order INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Backward compatibility columns (if updating an existing schema)
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS holding_group_name TEXT;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS holding_group_url TEXT;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS holding_group_logo TEXT;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS holding_group_description TEXT;
+ALTER TABLE public.holding_group ADD COLUMN IF NOT EXISTS website_url TEXT;
+ALTER TABLE public.holding_group ADD COLUMN IF NOT EXISTS logo_url TEXT;
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS live_url TEXT;
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS published BOOLEAN DEFAULT true;
+ALTER TABLE public.leadership ADD COLUMN IF NOT EXISTS full_profile TEXT;
+ALTER TABLE public.leadership ADD COLUMN IF NOT EXISTS slug TEXT;
 
 -- Clients & Partners
 CREATE TABLE IF NOT EXISTS public.clients (

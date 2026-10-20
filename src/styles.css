@@ -5060,6 +5060,642 @@ a:not(.button){transition:color var(--motion-fast) ease-out}
   color: #666666;
 }
 
+/* ==========================================================================
+   HOLDING GROUP AFFILIATION BANNER & CARDS
+   ========================================================================== */
+.holding-banner-container {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.holding-banner-container:hover {
+  border-color: #111111;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.holding-banner-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+@media (min-width: 640px) {
+  .holding-banner-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.holding-banner-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  flex: 1;
+}
+
+.holding-logo-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f6f6f6;
+  border: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  shrink: 0;
+  overflow: hidden;
+  padding: 6px;
+}
+
+.holding-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.holding-logo-fallback {
+  color: #111111;
+}
+
+.holding-banner-text {
+  min-width: 0;
+}
+
+.holding-banner-eyebrow {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #777777;
+  margin-bottom: 2px;
+}
+
+.holding-banner-statement {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #111111;
+  line-height: 1.35;
+}
+
+.holding-group-name {
+  font-weight: 600;
+  color: #000000;
+}
+
+.holding-banner-desc {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.holding-banner-action {
+  shrink: 0;
+}
+
+.holding-visit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 20px;
+  background: #111111;
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.18s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.holding-visit-button:hover {
+  background: #333333;
+  color: #ffffff;
+}
+
+.holding-visit-button:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
+
+/* Footer holding wrapper */
+.footer-holding-wrap {
+  max-width: 1240px;
+  margin: 0 auto 32px;
+  padding-inline: clamp(1rem, 4vw, 4.5rem);
+  box-sizing: border-box;
+}
+
+.holding-banner-footer {
+  background: #fafafa;
+  border-color: #eaeaea;
+}
+
+/* Holding Group page cards */
+.holding-card-item {
+  background: #ffffff;
+  border: 0.5px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.holding-card-item:hover {
+  border-color: #111111;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.holding-site-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111111;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.holding-site-link:hover {
+  color: #555555;
+  text-decoration: underline;
+}
+
+.holding-site-link:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   PROJECTS SECTION: "OUR WORK" & VISIT SITE BUTTON
+   ========================================================================== */
+.visit-site-button {
+  min-height: 44px;
+  min-width: 120px;
+  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.visit-site-button:focus-visible,
+.venture-cta-link:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
+
+.venture-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   LEADERSHIP SLIDESHOW HOVER / TOUCH PAUSE & FULL PROFILE
+   ========================================================================== */
+.marquee-wrapper:hover .marquee-track,
+.marquee-wrapper.marquee-paused .marquee-track {
+  animation-play-state: paused !important;
+}
+
+.leader-preview-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 44px;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.leader-preview-card:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.leader-preview-card:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
+
+.leader-marquee-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111111;
+  margin-top: 8px;
+}
+
+.leader-marquee-role {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #777777;
+}
+
+.leader-marquee-desc {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #666666;
+  max-width: 190px;
+}
+
+/* Leadership Directory Cards */
+.team-avatar-link {
+  display: block;
+  border-radius: 50%;
+}
+
+.team-avatar-link:focus-visible,
+.team-name-link:focus-visible,
+.team-view-profile-btn:focus-visible,
+.social-icon-tap:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
+
+.team-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.team-name-link:hover {
+  text-decoration: underline;
+}
+
+.team-card-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.team-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 0.5px solid #e5e5e5;
+  gap: 12px;
+}
+
+.team-view-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111111;
+  text-decoration: none;
+}
+
+.team-view-profile-btn:hover {
+  text-decoration: underline;
+}
+
+.social-icon-tap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: #555555;
+  transition: color 0.15s ease;
+}
+
+.social-icon-tap:hover {
+  color: #111111;
+}
+
+/* ==========================================================================
+   LEADERSHIP PROFILE DETAIL PAGE (/leadership/[slug])
+   ========================================================================== */
+.leader-profile-page {
+  padding-bottom: 80px;
+}
+
+.leader-nav-bar {
+  border-bottom: 1px solid #eeeeee;
+  background: #ffffff;
+  padding: 14px 0;
+}
+
+.leader-nav-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-inline: clamp(1rem, 4vw, 4.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.leader-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111111;
+  text-decoration: none;
+  padding: 4px 10px 4px 0;
+}
+
+.leader-back-button:hover {
+  text-decoration: underline;
+}
+
+.leader-back-button:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
+
+.leader-crumb-category {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #777777;
+}
+
+.leader-hero-section {
+  padding-top: clamp(2rem, 4vw, 3.5rem);
+}
+
+.leader-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+  align-items: start;
+}
+
+@media (min-width: 840px) {
+  .leader-profile-grid {
+    grid-template-columns: 360px 1fr;
+    gap: 56px;
+  }
+}
+
+.leader-large-photo-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f6f6f6;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+}
+
+.leader-large-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.leader-large-photo-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111111;
+  color: #ffffff;
+  font-size: 64px;
+  font-weight: 600;
+}
+
+.leader-photo-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #111111;
+}
+
+.leader-eyebrow-role {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #777777;
+  margin-bottom: 8px;
+}
+
+.leader-name-heading {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  font-size: clamp(28px, 2.5vw + 16px, 42px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: #111111;
+  margin: 0 0 20px;
+}
+
+.leader-brief-highlight {
+  background: #f6f6f6;
+  border-left: 3px solid #111111;
+  padding: 16px 20px;
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 24px;
+}
+
+.leader-brief-quote {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #222222;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.leader-full-biography {
+  margin-bottom: 32px;
+}
+
+.leader-bio-subheading {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #111111;
+  margin: 0 0 12px;
+}
+
+.leader-bio-text {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #444444;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.leader-social-connections {
+  padding-top: 24px;
+  border-top: 1px solid #eeeeee;
+}
+
+.leader-social-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #777777;
+  margin-bottom: 12px;
+}
+
+.leader-social-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.leader-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid #111111;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111111;
+  text-decoration: none;
+  background: #ffffff;
+  transition: all 0.15s ease;
+}
+
+.leader-social-btn:hover {
+  background: #f6f6f6;
+}
+
+.leader-social-btn:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
+
+.leader-contact-btn {
+  background: #111111;
+  color: #ffffff;
+}
+
+.leader-contact-btn:hover {
+  background: #333333;
+  color: #ffffff;
+}
+
+.external-sub-icon {
+  opacity: 0.6;
+}
+
+/* Other leaders list grid */
+.other-leaders-section {
+  margin-top: 60px;
+  border-top: 1px solid #eeeeee;
+}
+
+.other-leaders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.other-leader-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: #ffffff;
+  border: 0.5px solid #e5e5e5;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.18s ease;
+}
+
+.other-leader-card:hover {
+  border-color: #111111;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.other-leader-card:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
+
+.other-leader-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0f0f0;
+  shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.other-leader-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: #111111;
+}
+
+.other-leader-role {
+  font-size: 11px;
+  color: #777777;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: block;
+}
+
+.other-leader-desc {
+  font-size: 12px;
+  color: #666666;
+  margin: 2px 0 0;
+}
+
+
 
 
 

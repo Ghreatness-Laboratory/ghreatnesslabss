@@ -6,18 +6,16 @@ export default function Projects() {
   const { data } = useCms();
   const pageCopy = data.pages.find((p) => p.page_slug === 'projects' && p.section_key === 'hero');
 
-  const title = pageCopy?.title || 'Ventures and case studies';
-  const subtitle = pageCopy?.subtitle || 'made to move.';
+  const title = pageCopy?.title || "Check out the projects we've worked on";
   const intro =
     pageCopy?.content ||
-    'We use systems thinking to make products, platforms, and brands more useful in the real world.';
+    'Selected platforms, technological infrastructure, and digital systems engineered by GhreatnessLabs in Lagos for ambitious teams.';
 
   return (
-    <section className="section page-intro">
+    <section className="section page-intro projects-page-section">
       <SectionHead
-        label="Portfolio"
+        label="OUR WORK"
         title={title}
-        accent={subtitle}
         copy={intro}
       />
       <Ventures />
