@@ -453,7 +453,7 @@ export function AboutPreview() {
         A studio built on <span className="text-muted-gray">purpose and precision.</span>
       </h2>
       <p className="about-body-14">
-        GhreatnessLabs, also known as Ghreatness Laboratory, is an independent digital and IT solutions studio founded in Lagos in 2024 to create high-impact systems, software, and brand infrastructure for ambitious teams.
+        Ghreatness Labs (frequently identified as Ghreatness Lab or GhreatnessLabs) is an independent digital and IT solutions studio founded in Lagos in 2024 to create high-impact systems, software, and brand infrastructure for ambitious teams.
       </p>
 
       <div className="about-cards-stack">

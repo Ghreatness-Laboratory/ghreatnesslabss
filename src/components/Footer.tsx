@@ -32,10 +32,10 @@ export function Footer() {
 
       <div className="footer-grid">
         <div className="footer-brand-col">
-          <Link to="/" className="inline-block mb-3" aria-label="Ghreatness Laboratory Home">
+          <Link to="/" className="inline-block mb-3" aria-label="Ghreatness Labs (Ghreatness Lab) Home">
             <GhreatnessLogo variant="full" height={42} />
           </Link>
-          <p>{settings.footerTagline}</p>
+          <p>{settings.footerTagline || 'Ghreatness Labs (Ghreatness Lab) — digital systems and brand experiences engineered from Lagos for the world.'}</p>
         </div>
         <div className="footer-links">
           {pages.slice(1).map(([to, name]) => (
@@ -58,7 +58,7 @@ export function Footer() {
       </div>
 
       <div className="legal">
-        <span>{settings.copyrightText}</span>
+        <span>{settings.copyrightText || '© 2026 Ghreatness Labs (Ghreatness Lab). All rights reserved.'}</span>
         <div className="legal-links">
           <span>Privacy · Terms · Accessibility</span>
           <Link to="/admin" className="admin-footer-link">

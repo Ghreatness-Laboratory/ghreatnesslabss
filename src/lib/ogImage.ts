@@ -145,4 +145,44 @@ export function updateDocumentMeta(options: PageMetaOptions) {
   setMeta('name', 'twitter:title', fullTitle);
   setMeta('name', 'twitter:description', options.description);
   setMeta('name', 'twitter:image', ogImageUrl);
+
+  // Guarantee Organization JSON-LD is present and accurate on every page
+  ensureOrganizationJsonLd();
 }
+
+/**
+ * Ensures Schema.org Organization JSON-LD is injected and kept in sync on every page view
+ */
+export function ensureOrganizationJsonLd() {
+  if (typeof document === 'undefined') return;
+
+  const orgSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Ghreatness Labs',
+    alternateName: ['Ghreatness Lab', 'GhreatnessLabs', 'Ghreatness Laboratory'],
+    url: 'https://www.ghreatnesslab.com.ng/',
+    logo: 'https://www.ghreatnesslab.com.ng/logo.png',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Lagos',
+      addressCountry: 'NG',
+    },
+    sameAs: [
+      'https://instagram.com/ghreatnesslabs',
+      'https://x.com/ghreatnesslabs',
+      'https://linkedin.com/company/ghreatnesslabs',
+      'https://group.ghreatnesslab.com.ng',
+    ],
+  };
+
+  let scriptTag = document.getElementById('organization-jsonld') as HTMLScriptElement | null;
+  if (!scriptTag) {
+    scriptTag = document.createElement('script');
+    scriptTag.id = 'organization-jsonld';
+    scriptTag.type = 'application/ld+json';
+    document.head.appendChild(scriptTag);
+  }
+  scriptTag.textContent = JSON.stringify(orgSchema, null, 2);
+}
+

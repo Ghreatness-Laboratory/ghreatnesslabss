@@ -1,6 +1,6 @@
 export const site = {
   status: 'Now accepting select projects for Q2.',
-  hero: { eyebrow: 'Independent digital studio · Lagos, Nigeria', title: { primary: 'Architects of high-impact digital systems', secondary: '& brand experiences' }, body: 'GhreatnessLabs is a Lagos-based digital and IT solutions studio building high-performance platforms, decisive brand identities, enterprise infrastructure, and proprietary products.' },
+  hero: { eyebrow: 'Independent digital studio · Lagos, Nigeria', title: { primary: 'Architects of high-impact digital systems', secondary: '& brand experiences' }, body: 'Ghreatness Labs (also recognized as Ghreatness Lab or GhreatnessLabs) is a Lagos-based digital and IT solutions studio building high-performance platforms, decisive brand identities, enterprise infrastructure, and proprietary products.' },
   stats: [['Founded', '2024', 'Lagos studio launch', 'building-2'], ['Clients', '124', 'served globally', 'users-round'], ['Certifications', '51', 'verified credentials', 'badge-check'], ['Markets', '14', 'active markets', 'globe-2']],
   capabilities: [
     ['Product design', 'UI/UX & Product Design', 'Interfaces engineered for clarity, momentum, and measurable use.', ['UX Research', 'Design Systems', 'Prototyping'], 'pen-tool'],

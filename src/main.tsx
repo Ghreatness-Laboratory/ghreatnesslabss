@@ -54,8 +54,8 @@ const routes: Record<string, React.LazyExoticComponent<() => React.JSX.Element>>
 
 const routeMetadata: Record<string, { title: string; description: string; category: string }> = {
   '/': {
-    title: 'GhreatnessLabs | Digital & IT Solutions Studio in Lagos',
-    description: 'GhreatnessLabs (also searched as Ghreatness Lab or Ghreatness Laboratory) is a Lagos digital and IT solutions studio building high-impact systems and brands for ambitious teams.',
+    title: 'GhreatnessLabs | Ghreatness Labs - Digital & IT Solutions Studio in Lagos',
+    description: 'Ghreatness Labs (also known as Ghreatness Lab or GhreatnessLabs) is a Lagos digital and IT solutions studio engineering high-impact systems, software, and brand infrastructure for ambitious teams.',
     category: 'Digital Systems Studio',
   },
   '/services': {

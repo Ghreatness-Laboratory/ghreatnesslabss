@@ -9,13 +9,13 @@ export default function About() {
 
   return (
     <>
-      <section className="section page-intro" aria-label="About GhreatnessLabs">
+      <section className="section page-intro" aria-label="About Ghreatness Labs">
         <p className="eyebrow-label">— ABOUT</p>
         <h1 className="about-heading-26">
           A studio built on <span className="text-secondary-muted">purpose and precision.</span>
         </h1>
         <p className="about-body-14">
-          GhreatnessLabs, also known as Ghreatness Laboratory, is an independent digital and IT solutions studio founded in Lagos in 2024. We partner with ambitious founders, established enterprises, and institutions to engineer high-impact systems, software, and brand infrastructure made to endure.
+          Ghreatness Labs (frequently identified as Ghreatness Lab or GhreatnessLabs) is an independent digital and IT solutions studio founded in Lagos in 2024. We partner with ambitious founders, established enterprises, and institutions to engineer high-impact systems, software, and brand infrastructure made to endure.
         </p>
 
         {/* Holding Group Affiliation Banner */}

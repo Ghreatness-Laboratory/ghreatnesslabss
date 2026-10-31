@@ -74,8 +74,9 @@ export default function LeadershipDetail({ slug: propSlug }: LeadershipDetailPro
       sameAs: sameAsList,
       worksFor: {
         '@type': 'Organization',
-        name: 'GhreatnessLabs',
-        url: CANONICAL_BASE_URL,
+        name: 'Ghreatness Labs',
+        alternateName: ['Ghreatness Lab', 'GhreatnessLabs', 'Ghreatness Laboratory'],
+        url: 'https://www.ghreatnesslab.com.ng/',
       },
     };
 

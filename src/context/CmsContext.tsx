@@ -73,8 +73,27 @@ function loadLocalCache(): CmsData {
     const cached = localStorage.getItem(CMS_STORAGE_KEY);
     if (cached) {
       const parsed = JSON.parse(cached);
+      const settings = { ...defaultCmsData.settings, ...(parsed.settings || {}) };
+      if (
+        !settings.heroBody ||
+        settings.heroBody.startsWith('GhreatnessLabs is a Lagos-based digital')
+      ) {
+        settings.heroBody = defaultCmsData.settings.heroBody;
+      }
+      if (
+        !settings.footerTagline ||
+        settings.footerTagline === 'Digital systems and brand experiences built from Lagos for the world.'
+      ) {
+        settings.footerTagline = defaultCmsData.settings.footerTagline;
+      }
+      if (
+        !settings.copyrightText ||
+        settings.copyrightText === '© 2026 GHREATNESSLABS. All rights reserved.'
+      ) {
+        settings.copyrightText = defaultCmsData.settings.copyrightText;
+      }
       return {
-        settings: { ...defaultCmsData.settings, ...(parsed.settings || {}) },
+        settings,
         stats: Array.isArray(parsed.stats) ? parsed.stats : defaultCmsData.stats,
         aboutCards: Array.isArray(parsed.aboutCards)
           ? parsed.aboutCards
