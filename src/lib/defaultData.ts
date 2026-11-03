@@ -23,7 +23,7 @@ export const defaultCmsData: CmsData = {
     availabilityText: 'Q2 projects',
     holdingGroupName: 'Ghreatness Group',
     holdingGroupUrl: 'https://group.ghreatnesslab.com.ng',
-    holdingGroupLogo: '/logo-mark.svg',
+    holdingGroupLogo: '/assets/aistudio/photo_2026-03-05_05-31-45_c5a71d06.jpg',
     holdingGroupDescription: 'Parent collective fostering digital technology, ventures, and infrastructure.',
   },
   stats: [

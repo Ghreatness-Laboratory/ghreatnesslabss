@@ -162,7 +162,7 @@ export function ensureOrganizationJsonLd() {
     name: 'Ghreatness Labs',
     alternateName: ['Ghreatness Lab', 'GhreatnessLabs', 'Ghreatness Laboratory'],
     url: 'https://www.ghreatnesslab.com.ng/',
-    logo: 'https://www.ghreatnesslab.com.ng/logo.png',
+    logo: 'https://www.ghreatnesslab.com.ng/assets/aistudio/891e0dd6-88c0-433e-b6b4-1c2edb13a9ed_26bf6581.jpeg',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Lagos',
