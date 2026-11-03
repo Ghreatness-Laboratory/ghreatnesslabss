@@ -8,15 +8,7 @@ export function AmbientBrandMark() {
     const el = containerRef.current;
     if (!el) return;
 
-    let scrollTimer: number | null = null;
-    const onScroll = () => {
-      el.classList.add('ambient-paused');
-      if (scrollTimer !== null) window.clearTimeout(scrollTimer);
-      scrollTimer = window.setTimeout(() => {
-        el.classList.remove('ambient-paused');
-      }, 150);
-    };
-
+    // Pause animation only when browser tab is inactive to preserve battery and resources
     const onVisibility = () => {
       if (document.hidden) {
         el.classList.add('ambient-paused');
@@ -25,21 +17,23 @@ export function AmbientBrandMark() {
       }
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
-
     return () => {
-      if (scrollTimer !== null) window.clearTimeout(scrollTimer);
-      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
 
   return (
-    <div ref={containerRef} className="ambient-mark-container" aria-hidden="true">
+    <div
+      ref={containerRef}
+      className="ambient-mark-container pointer-events-none select-none"
+      aria-hidden="true"
+    >
       <div className="ambient-mark-spin">
-        <GhreatnessMark size={320} fill="#111111" className="ambient-official-mark" />
+        <GhreatnessMark size={320} className="ambient-official-mark" />
       </div>
     </div>
   );
 }
+
+export default AmbientBrandMark;

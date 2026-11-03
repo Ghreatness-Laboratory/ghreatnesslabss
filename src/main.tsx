@@ -15,6 +15,7 @@ import { StickyConsultationCta } from './components/StickyConsultationCta';
 import { SiteToast } from './components/SiteToast';
 import { ScrollNavigation } from './components/ScrollNavigation';
 import { CmsProvider } from './context/CmsContext';
+import { SmoothScrollProvider } from './context/SmoothScrollContext';
 import { updateDocumentMeta } from './lib/ogImage';
 import './styles.css';
 
@@ -257,44 +258,46 @@ function App() {
 
   return (
     <CmsProvider>
-      {/* Branded loading state: shows on initial asset load or route transitions if >220ms */}
-      <LoadingScreen isLoading={initialLoading || isPending} delayMs={220} />
+      <SmoothScrollProvider currentPath={path}>
+        {/* Branded loading state: shows on initial asset load or route transitions if >220ms */}
+        <LoadingScreen isLoading={initialLoading || isPending} delayMs={220} />
 
-      {/* Ambient background watermark and cursor dot */}
-      <AmbientBrandMark />
-      <CursorDot />
+        {/* Ambient background watermark and cursor dot */}
+        <AmbientBrandMark />
+        <CursorDot />
 
-      {/* Global thin scroll progress bar & back-to-top button */}
-      <ScrollNavigation />
+        {/* Global thin scroll progress bar & back-to-top button */}
+        <ScrollNavigation />
 
-      {/* Global toast notifications */}
-      <SiteToast />
+        {/* Global toast notifications */}
+        <SiteToast />
 
-      <Header path={path} onNavigate={navigate} />
+        <Header path={path} onNavigate={navigate} />
 
-      <main>
-        <Suspense fallback={null}>
-          {isProjectDetail ? (
-            <ProjectDetail slug={projectSlug} />
-          ) : isLeadershipDetail ? (
-            <LeadershipDetail slug={leaderSlug} />
-          ) : (
-            <ActivePage />
-          )}
-        </Suspense>
-      </main>
+        <main>
+          <Suspense fallback={null}>
+            {isProjectDetail ? (
+              <ProjectDetail slug={projectSlug} />
+            ) : isLeadershipDetail ? (
+              <LeadershipDetail slug={leaderSlug} />
+            ) : (
+              <ActivePage />
+            )}
+          </Suspense>
+        </main>
 
-      <Footer />
+        <Footer />
 
-      {/* Sticky Book a Consultation CTA (IntersectionObserver past hero) */}
-      <StickyConsultationCta onNavigate={navigate} />
+        {/* Sticky Book a Consultation CTA (IntersectionObserver past hero) */}
+        <StickyConsultationCta onNavigate={navigate} />
 
-      {/* Deferred non-critical chat assistant */}
-      {showChat && (
-        <Suspense fallback={null}>
-          <ChatBubble />
-        </Suspense>
-      )}
+        {/* Deferred non-critical chat assistant */}
+        {showChat && (
+          <Suspense fallback={null}>
+            <ChatBubble />
+          </Suspense>
+        )}
+      </SmoothScrollProvider>
     </CmsProvider>
   );
 }

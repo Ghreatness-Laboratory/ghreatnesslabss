@@ -1,61 +1,80 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ArrowUp } from 'lucide-react';
+import { useSmoothScroll } from '../context/SmoothScrollContext';
 
 export function ScrollNavigation() {
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const { lenis, scrollTo } = useSmoothScroll();
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const lastStateRef = useRef(false);
 
   useEffect(() => {
-    let ticking = false;
+    const updateProgress = (scroll: number, limit: number) => {
+      const progress = limit > 0 ? Math.min(1, Math.max(0, scroll / limit)) : 0;
+      if (progressBarRef.current) {
+        progressBarRef.current.style.transform = `scaleX(${progress})`;
+      }
 
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
-          const height =
-            document.documentElement.scrollHeight - document.documentElement.clientHeight;
-          const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
-          setScrollProgress(Math.min(100, Math.max(0, scrolled)));
-          setShowBackToTop(winScroll > 600);
-          ticking = false;
-        });
-        ticking = true;
+      const shouldShow = scroll > 500;
+      if (shouldShow !== lastStateRef.current) {
+        lastStateRef.current = shouldShow;
+        setShowBackToTop(shouldShow);
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    if (lenis) {
+      const unsubscribe = lenis.on('scroll', (e: { scroll: number; limit: number }) => {
+        updateProgress(e.scroll, e.limit);
+      });
+      return () => {
+        unsubscribe();
+      };
+    } else {
+      let ticking = false;
+      const handleNativeScroll = () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+            const height =
+              document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            updateProgress(winScroll, height);
+            ticking = false;
+          });
+          ticking = true;
+        }
+      };
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
+      window.addEventListener('scroll', handleNativeScroll, { passive: true });
+      handleNativeScroll();
+      return () => window.removeEventListener('scroll', handleNativeScroll);
+    }
+  }, [lenis]);
+
+  const handleScrollToTop = () => {
+    scrollTo(0, {
+      duration: 1.25,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
   };
 
   return (
     <>
-      {/* Thin scroll progress bar fixed to top of viewport */}
+      {/* Precision scroll progress indicator fixed to top */}
       <div
         className="scroll-progress-track"
         aria-hidden="true"
         role="progressbar"
-        aria-valuenow={Math.round(scrollProgress)}
-        aria-valuemin={0}
-        aria-valuemax={100}
       >
         <div
+          ref={progressBarRef}
           className="scroll-progress-bar"
-          style={{ width: `${scrollProgress}%` }}
         />
       </div>
 
-      {/* Back to top circular button positioned bottom-left to avoid chat bubble collision */}
+      {/* Floating Back to Top Button */}
       <button
         type="button"
-        onClick={scrollToTop}
+        onClick={handleScrollToTop}
         className={`back-to-top-btn ${showBackToTop ? 'back-to-top-visible' : ''}`}
         aria-label="Back to top of page"
         title="Back to top"

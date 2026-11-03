@@ -53,7 +53,7 @@ export function ConsultationModal({ isOpen, onClose, onNavigate }: ConsultationM
       aria-modal="true"
       aria-labelledby="consultation-modal-title"
     >
-      <div className="consultation-modal-container">
+      <div className="consultation-modal-container" data-lenis-prevent="true">
         {/* Header */}
         <div className="consultation-modal-header">
           <div>

@@ -379,7 +379,7 @@ export function SearchModal({ isOpen, onClose, onNavigate }: SearchModalProps) {
       aria-modal="true"
       aria-label="Studio Site Search"
     >
-      <div className="search-modal-container">
+      <div className="search-modal-container" data-lenis-prevent="true">
         {/* Top Input Bar */}
         <div className="search-modal-header">
           <div className="search-modal-input-wrap">
