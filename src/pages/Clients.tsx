@@ -1,7 +1,7 @@
 import React from 'react';
 import { Building2 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
-import { SectionHead, Testimonials, EmptyState } from '../components/SharedSections';
+import { SectionHead, Testimonials, EmptyState, ClientLogoChip } from '../components/SharedSections';
 
 export default function Clients() {
   const { data } = useCms();
@@ -18,11 +18,13 @@ export default function Clients() {
   return (
     <section className="section page-intro">
       <SectionHead
+        as="h1"
         label="Clients"
         title={title}
         accent={subtitle}
         copy={intro}
       />
+
       {sortedClients.length === 0 ? (
         <EmptyState
           icon={Building2}
@@ -30,23 +32,13 @@ export default function Clients() {
           subtitle="Partners and client ventures will be featured here."
         />
       ) : (
-        <div className="client-list">
+        <div className="clients-chip-grid mt-5">
           {sortedClients.map((client) => (
-            <span key={client.id || client.name} className="p-3 flex items-center justify-center">
-              {client.logo_url ? (
-                <img
-                  src={client.logo_url}
-                  alt={`${client.name} logo`}
-                  className="max-h-12 max-w-[130px] object-contain filter grayscale hover:grayscale-0 transition-all duration-200"
-                  loading="lazy"
-                />
-              ) : (
-                client.name
-              )}
-            </span>
+            <ClientLogoChip key={client.id || client.name} client={client} />
           ))}
         </div>
       )}
+
       <div className="testimonials-section">
         <SectionHead
           label="Client perspectives"

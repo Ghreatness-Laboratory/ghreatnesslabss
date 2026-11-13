@@ -12,7 +12,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
-import { SectionHead, Button } from '../components/SharedSections';
+import { SectionHead, Button, ResilientCoverImage } from '../components/SharedSections';
 import { trackProjectDetailView } from '../lib/analytics';
 import { updateDocumentMeta } from '../lib/ogImage';
 
@@ -47,30 +47,29 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
 
   if (!project) {
     return (
-      <section className="section soft-section page-intro">
+      <section className="section page-intro">
         <SectionHead
+          as="h1"
           label="Case Studies"
           title="Project not"
           accent="found."
           copy="The requested system architecture brief could not be located."
         />
-        <div className="mt-8">
+        <div className="mt-6">
           <Button href="/projects">← Back to all projects</Button>
         </div>
       </section>
     );
   }
 
-  const defaultHero =
-    'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1600&q=80';
-  const heroImage = project.hero_image_url || project.image_url || defaultHero;
+  const heroImage = project.hero_image_url || project.image_url;
 
   return (
     <article className="project-detail-page">
       {/* Top Breadcrumb & Return Nav */}
       <div className="project-detail-header-bar">
         <a href="/projects" className="project-back-link">
-          <ArrowLeft size={16} /> Back to all projects
+          <ArrowLeft size={16} strokeWidth={1.7} /> Back to all projects
         </a>
         <span className="project-detail-badge">{project.category_tag}</span>
       </div>
@@ -99,11 +98,12 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
 
         {/* Hero Visual Banner */}
         <div className="project-hero-banner-wrap">
-          <img
+          <ResilientCoverImage
             src={heroImage}
             alt={`${project.title} interface and system architecture`}
-            className="project-hero-banner-img"
-            loading="eager"
+            title={project.title}
+            category={project.category_tag}
+            className="w-full h-full"
           />
           <div className="project-hero-banner-overlay">
             <span className="project-banner-pill">Deployed in Production</span>

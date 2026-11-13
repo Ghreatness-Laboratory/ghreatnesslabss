@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCms } from '../context/CmsContext';
 import { SectionHead, ServiceList, Button } from '../components/SharedSections';
 
 export default function Services() {
   const { data } = useCms();
+  const [activeTab, setActiveTab] = useState<'digital' | 'it'>('digital');
+
   const pageCopy = data.pages.find((p) => p.page_slug === 'services' && p.section_key === 'hero');
 
   const title = pageCopy?.title || 'Full-spectrum capabilities';
@@ -20,30 +22,50 @@ export default function Services() {
     .filter((s) => s.category === 'technology')
     .sort((a, b) => a.sort_order - b.sort_order);
 
+  const activeItems = activeTab === 'digital' ? digitalServices : technologyServices;
+
   return (
-    <section className="section soft-section page-intro">
+    <section className="section page-intro">
       <SectionHead
+        as="h1"
         label="Practice areas"
         title={title}
         accent={subtitle}
         copy={intro}
       />
-      <div className="service-category">
-        <SectionHead
-          label="01 / Digital services"
-          title="Creative work that"
-          accent="carries further."
-        />
-        <ServiceList items={digitalServices} />
+
+      <div className="segmented-control" role="tablist" aria-label="Service categories">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'digital'}
+          className={`segmented-tab ${activeTab === 'digital' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('digital')}
+        >
+          Digital ({digitalServices.length})
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'it'}
+          className={`segmented-tab ${activeTab === 'it' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('it')}
+        >
+          IT ({technologyServices.length})
+        </button>
       </div>
-      <div className="service-category">
-        <SectionHead
-          label="02 / Information technology"
-          title="Systems made"
-          accent="to perform."
-        />
-        <ServiceList items={technologyServices} />
+
+      <div className="service-tab-panel" role="tabpanel">
+        <div className="service-panel-caption">
+          <span>
+            {activeTab === 'digital'
+              ? 'Creative work that carries further.'
+              : 'Systems made to perform.'}
+          </span>
+        </div>
+        <ServiceList items={activeItems} />
       </div>
+
       <div className="center-action">
         <Button solid>Book a consultation</Button>
       </div>

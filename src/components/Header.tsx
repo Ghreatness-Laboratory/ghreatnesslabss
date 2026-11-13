@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { House, Search, Phone, Menu, X, ShieldAlert } from 'lucide-react';
+import { Search, Menu, X, ArrowUpRight } from 'lucide-react';
 import { pages, Link } from './SharedSections';
-import { useCms } from '../context/CmsContext';
-import { GhreatnessLogo } from './GhreatnessLogo';
-
+import { GhreatnessMark } from './GhreatnessLogo';
 import { SearchModal } from './SearchModal';
 
 export function Header({
@@ -13,8 +11,6 @@ export function Header({
   path: string;
   onNavigate?: (to: string) => void;
 }) {
-  const { data } = useCms();
-  const { settings } = data;
   const [navOpen, setNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -30,27 +26,24 @@ export function Header({
   };
 
   return (
-    <header>
-      <div className="announcement">
-        <span>{settings.status}</span>
-        <div className="announcement-actions">
-          <a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
-          <Link to="/admin" className="admin-quick-link" aria-label="Open Studio CMS Admin">
-            <ShieldAlert size={12} />
-            <span>Admin CMS</span>
-          </Link>
-        </div>
-      </div>
-      <nav>
-        <Link className="brand-logo-link group flex items-center py-2" to="/" aria-label="Ghreatness Laboratory — Return to homepage">
-          <GhreatnessLogo variant="full" height={36} />
+    <header className="app-header">
+      <nav className="app-topbar" aria-label="Top bar">
+        <Link
+          className="app-brand-lockup"
+          to="/"
+          aria-label="Ghreatness Laboratory — Return to homepage"
+        >
+          <GhreatnessMark size={24} theme="dark" />
+          <span className="app-brand-wordmark">
+            <span className="app-brand-title">GHREATNESS</span>
+            <span className="app-brand-sub">LABORATORY</span>
+          </span>
         </Link>
-        <div className="navicons">
-          <Link className="navicon" aria-label="Home" to="/">
-            <House />
-          </Link>
+
+        <div className="app-topbar-actions">
           <button
-            className="navicon"
+            type="button"
+            className="app-icon-btn"
             aria-label="Search site"
             aria-expanded={searchOpen}
             onClick={() => {
@@ -58,27 +51,28 @@ export function Header({
               setNavOpen(false);
             }}
           >
-            <Search />
+            <Search size={16} strokeWidth={1.7} aria-hidden="true" />
           </button>
-          <Link className="navicon" aria-label="Contact Us" to="/contact">
-            <Phone />
-          </Link>
-          <span className="nav-divider" aria-hidden="true" />
+
           <button
-            className="navicon nav-menu"
-            aria-label={navOpen ? 'Close navigation' : 'Open navigation'}
+            type="button"
+            className="app-icon-btn"
+            aria-label={navOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={navOpen}
             onClick={() => {
-              setNavOpen(!navOpen);
+              setNavOpen((prev) => !prev);
               setSearchOpen(false);
             }}
           >
-            {navOpen ? <X /> : <Menu />}
+            {navOpen ? (
+              <X size={16} strokeWidth={1.7} aria-hidden="true" />
+            ) : (
+              <Menu size={16} strokeWidth={1.7} aria-hidden="true" />
+            )}
           </button>
         </div>
       </nav>
 
-      {/* Full-featured Live Site Search Modal */}
       <SearchModal
         isOpen={searchOpen}
         onClose={() => setSearchOpen(false)}
@@ -86,22 +80,32 @@ export function Header({
       />
 
       {navOpen && (
-        <div className="nav-drawer">
-          <span className="label">Navigate</span>
-          {pages.map(([to, name]) => (
-            <a
-              key={to}
-              href={to}
-              className={path === to ? 'active' : ''}
-              onClick={(e) => {
-                e.preventDefault();
-                handleLinkClick(to);
-              }}
-            >
-              {name}
-            </a>
-          ))}
-        </div>
+        <>
+          <div
+            className="nav-drawer-backdrop"
+            aria-hidden="true"
+            onClick={() => setNavOpen(false)}
+          />
+          <div className="nav-drawer" role="dialog" aria-label="Site navigation">
+            <span className="nav-drawer-label">Navigate</span>
+            <div className="nav-drawer-list">
+              {pages.map(([to, name]) => (
+                <a
+                  key={to}
+                  href={to}
+                  className={`nav-drawer-link ${path === to ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleLinkClick(to);
+                  }}
+                >
+                  <span>{name}</span>
+                  <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </header>
   );

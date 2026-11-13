@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { ChevronDown, Plus, Minus, HelpCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 import { SectionHead } from './SharedSections';
 
 export function FaqSection({ limit }: { limit?: number }) {
   const { data } = useCms();
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({
-    'faq-engagements': true, // Open the first item by default
+    'faq-engagements': true,
   });
 
   const faqs = [...(data.faqs || [])].sort((a, b) => a.sort_order - b.sort_order);
@@ -49,7 +49,7 @@ export function FaqSection({ limit }: { limit?: number }) {
               >
                 <span className="faq-question-text">{faq.question}</span>
                 <span className="faq-icon-wrapper" aria-hidden="true">
-                  <ChevronDown className={`faq-chevron ${isOpen ? 'faq-chevron-rotated' : ''}`} />
+                  <ChevronDown size={15} strokeWidth={1.7} className={`faq-chevron ${isOpen ? 'faq-chevron-rotated' : ''}`} />
                 </span>
               </button>
 

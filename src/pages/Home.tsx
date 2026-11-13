@@ -11,7 +11,6 @@ import {
   Ventures,
   Testimonials,
 } from '../components/SharedSections';
-
 import { FaqSection } from '../components/FaqSection';
 import { GhreatnessMark } from '../components/GhreatnessLogo';
 import { ensureOrganizationJsonLd } from '../lib/ogImage';
@@ -20,7 +19,6 @@ export default function Home() {
   const { data } = useCms();
   const { settings } = data;
 
-  // Ensure Organization JSON-LD with exact dual-spelling brand attributes is active
   useEffect(() => {
     ensureOrganizationJsonLd();
   }, []);
@@ -30,27 +28,33 @@ export default function Home() {
       <section className="hero section">
         <div className="hero-copy">
           <SectionHead
+            as="h1"
             label={settings.heroEyebrow}
             title={settings.heroTitlePrimary}
             accent={settings.heroTitleSecondary}
             copy={settings.heroBody}
           />
-          <div className="actions">
+          <div className="actions hero-actions">
             <Button solid>Book a consultation</Button>
-            <Button href="/projects">Explore case studies</Button>
+            <Button href="/projects">Case studies</Button>
           </div>
         </div>
+
         <div className="hero-aside">
           <div className="infrastructure-mark" aria-label="Live infrastructure status visual">
-            <span className="infrastructure-live">LIVE</span>
+            <span className="infrastructure-live">
+              <span className="live-status-dot" aria-hidden="true" />
+              <span>LIVE</span>
+            </span>
+
             <span className="infrastructure-ring infrastructure-ring-outer" />
             <span className="infrastructure-ring infrastructure-ring-middle" />
             <span className="infrastructure-dot-ping" />
+
             <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-              <GhreatnessMark size={34} fill="#000000" className="hero-center-mark" />
+              <GhreatnessMark size={26} theme="light" className="hero-center-mark" />
             </div>
 
-            {/* Orbiting nodes */}
             <div className="infrastructure-orbit orbit-1">
               <span className="orbit-node node-1" />
             </div>
@@ -61,8 +65,9 @@ export default function Home() {
               <span className="orbit-node node-3" />
             </div>
 
-            <span className="infrastructure-badge">Infrastructure</span>
+            <span className="infrastructure-badge">INFRASTRUCTURE</span>
           </div>
+
           <div className="dispatch">
             <b>Studio at a glance</b>
             <p>
@@ -81,7 +86,7 @@ export default function Home() {
       <Stats />
       <AboutPreview />
 
-      <section className="section soft-section">
+      <section className="section">
         <SectionHead
           label="Practice areas"
           title="Core capabilities"
@@ -89,7 +94,9 @@ export default function Home() {
           copy="Cross-disciplinary expertise for organizations that need a system, not just a surface."
         />
         <Capabilities limit={3} />
-        <Button href="/services">View all services</Button>
+        <div className="mt-4">
+          <Button href="/services">View all services</Button>
+        </div>
       </section>
 
       <LeadershipPreview />
@@ -97,23 +104,27 @@ export default function Home() {
 
       <section className="section">
         <SectionHead
-          label="OUR WORK"
+          label="Our work"
           title="Check out the projects"
           accent="we've worked on."
           copy="Proprietary platforms, client software, and operational systems built to scale."
         />
         <Ventures limit={3} />
-        <Button href="/projects">View all projects</Button>
+        <div className="mt-4">
+          <Button href="/projects">View all projects</Button>
+        </div>
       </section>
 
-      <section className="section soft-section">
+      <section className="section">
         <SectionHead
           label="Client perspectives"
           title="Trusted by teams"
           accent="around the world."
         />
         <Testimonials limit={2} />
-        <Button href="/clients">Read all perspectives</Button>
+        <div className="mt-4">
+          <Button href="/clients">Read all perspectives</Button>
+        </div>
       </section>
 
       <FaqSection />

@@ -123,8 +123,9 @@ export default function Contact() {
   };
 
   return (
-    <section className="section soft-section page-intro">
+    <section className="section page-intro">
       <SectionHead
+        as="h1"
         label="Contact us"
         title={title}
         accent={subtitle}

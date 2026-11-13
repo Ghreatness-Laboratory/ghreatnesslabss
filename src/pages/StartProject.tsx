@@ -181,8 +181,9 @@ export default function StartProject() {
 
   return (
     <div className="start-project-page">
-      <section className="section soft-section page-intro">
+      <section className="section page-intro">
         <SectionHead
+          as="h1"
           label="Project Intake"
           title="Start a project"
           accent="brief."

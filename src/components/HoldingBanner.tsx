@@ -1,5 +1,5 @@
-import React from 'react';
-import { ExternalLink, Building2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowUpRight, Building2 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 
 interface HoldingBannerProps {
@@ -10,8 +10,8 @@ interface HoldingBannerProps {
 export function HoldingBanner({ className = '', variant = 'banner' }: HoldingBannerProps) {
   const { data } = useCms();
   const { settings, holding } = data;
+  const [logoError, setLogoError] = useState(false);
 
-  // Derive holding group information from settings or first holding item
   const primaryHoldingItem = holding[0];
   const holdingName =
     settings.holdingGroupName?.trim() ||
@@ -31,7 +31,7 @@ export function HoldingBanner({ className = '', variant = 'banner' }: HoldingBan
   const holdingDesc =
     settings.holdingGroupDescription?.trim() ||
     primaryHoldingItem?.description ||
-    'Parent collective fostering technology, digital infrastructure, and ambitious ecosystems across Africa.';
+    'Parent collective fostering digital technology, ventures, and infrastructure.';
 
   return (
     <div
@@ -40,27 +40,28 @@ export function HoldingBanner({ className = '', variant = 'banner' }: HoldingBan
       aria-label={`Holding group affiliation: ${holdingName}`}
     >
       <div className="holding-banner-inner">
-        {/* Logo and Brand Identity */}
         <div className="holding-banner-brand">
           <div className="holding-logo-wrap" aria-hidden="true">
-            {holdingLogo ? (
+            {holdingLogo && !logoError ? (
               <img
                 src={holdingLogo}
                 alt={`${holdingName} emblem`}
                 className="holding-logo-img"
                 loading="lazy"
-                width={36}
-                height={36}
+                referrerPolicy="no-referrer"
+                onError={() => setLogoError(true)}
+                width={32}
+                height={32}
               />
             ) : (
               <div className="holding-logo-fallback">
-                <Building2 size={20} />
+                <Building2 size={18} strokeWidth={1.7} />
               </div>
             )}
           </div>
 
           <div className="holding-banner-text">
-            <span className="holding-banner-eyebrow">PARENT HOLDING GROUP</span>
+            <span className="holding-banner-eyebrow">Parent Holding Group</span>
             <p className="holding-banner-statement">
               GhreatnessLabs is part of{' '}
               <strong className="holding-group-name">{holdingName}</strong>
@@ -71,7 +72,6 @@ export function HoldingBanner({ className = '', variant = 'banner' }: HoldingBan
           </div>
         </div>
 
-        {/* Action Button: Real <a href> tag with external attributes & descriptive text */}
         <div className="holding-banner-action">
           <a
             href={holdingUrl}
@@ -81,7 +81,7 @@ export function HoldingBanner({ className = '', variant = 'banner' }: HoldingBan
             aria-label={`Visit ${holdingName} official website (opens in a new tab)`}
           >
             <span>Visit {holdingName}</span>
-            <ExternalLink size={14} aria-hidden="true" className="holding-link-icon" />
+            <ArrowUpRight size={14} strokeWidth={1.8} aria-hidden="true" />
           </a>
         </div>
       </div>

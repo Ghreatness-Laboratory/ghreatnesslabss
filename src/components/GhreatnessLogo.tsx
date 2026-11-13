@@ -68,7 +68,7 @@ export function GhreatnessMark({
         className="ghreatness-mark block w-full h-full"
         style={{
           mixBlendMode: isLight ? 'screen' : 'multiply',
-          filter: isLight ? 'brightness(0) invert(1)' : undefined,
+          filter: isLight ? 'invert(1)' : undefined,
         }}
       >
         <image

@@ -7,6 +7,7 @@ export default function Projects() {
   const pageCopy = data.pages.find((p) => p.page_slug === 'projects' && p.section_key === 'hero');
 
   const title = pageCopy?.title || "Check out the projects we've worked on";
+  const subtitle = pageCopy?.subtitle;
   const intro =
     pageCopy?.content ||
     'Selected platforms, technological infrastructure, and digital systems engineered by GhreatnessLabs in Lagos for ambitious teams.';
@@ -14,8 +15,10 @@ export default function Projects() {
   return (
     <section className="section page-intro projects-page-section">
       <SectionHead
-        label="OUR WORK"
+        as="h1"
+        label="Our work"
         title={title}
+        accent={subtitle}
         copy={intro}
       />
       <Ventures />

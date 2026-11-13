@@ -10,7 +10,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
-import { SectionHead, Button } from '../components/SharedSections';
+import { SectionHead, Button, ResilientAvatar } from '../components/SharedSections';
 import { updateDocumentMeta, CANONICAL_BASE_URL } from '../lib/ogImage';
 import { slugify } from '../components/admin/LinksManager';
 
@@ -147,13 +147,10 @@ export default function LeadershipDetail({ slug: propSlug }: LeadershipDetailPro
           <div className="leader-photo-column">
             <div className="leader-large-photo-frame">
               {leader.avatar_url ? (
-                <img
+                <ResilientAvatar
                   src={leader.avatar_url}
-                  alt={`${leader.name}, ${leader.role} at GhreatnessLabs`}
+                  name={leader.name}
                   className="leader-large-photo-img"
-                  loading="eager"
-                  width={560}
-                  height={560}
                 />
               ) : (
                 <div className="leader-large-photo-fallback">
@@ -251,16 +248,7 @@ export default function LeadershipDetail({ slug: propSlug }: LeadershipDetailPro
                   aria-label={`View full profile of ${other.name}, ${other.role}`}
                 >
                   <div className="other-leader-avatar">
-                    {other.avatar_url ? (
-                      <img
-                        src={other.avatar_url}
-                        alt={other.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <span>{other.name[0]}</span>
-                    )}
+                    <ResilientAvatar src={other.avatar_url} name={other.name} />
                   </div>
                   <div>
                     <h3 className="other-leader-name">{other.name}</h3>

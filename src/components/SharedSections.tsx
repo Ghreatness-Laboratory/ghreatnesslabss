@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   BadgeCheck,
   Building2,
@@ -18,12 +18,15 @@ import {
   Mail,
   Phone,
   Send,
-  ExternalLink,
+  Linkedin,
+  Twitter,
+  Layers,
   type LucideIcon,
 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 import { HoldingBanner } from './HoldingBanner';
 import { slugify } from './admin/LinksManager';
+import { ClientItem, LeaderItem } from '../types/cms';
 
 export const icons: Record<string, LucideIcon> = {
   'building-2': Building2,
@@ -100,13 +103,151 @@ export function EmptyState({
   subtitle: string;
 }) {
   return (
-    <div className="empty-state" style={{ textAlign: 'center', padding: '48px 16px' }}>
-      <div className="icon-badge" style={{ margin: '0 auto 16px', display: 'inline-flex' }}>
-        <Icon />
+    <div className="empty-state">
+      <div className="icon-badge empty-state-icon">
+        <Icon size={18} strokeWidth={1.7} />
       </div>
-      <h3 style={{ margin: '0 0 8px', fontSize: 'var(--font-card-title)', lineHeight: 1.25 }}>{title}</h3>
-      <p style={{ margin: 0, color: '#666', fontSize: 'var(--font-body)', lineHeight: 1.6 }}>{subtitle}</p>
+      <h3 className="empty-state-title">{title}</h3>
+      <p className="empty-state-desc">{subtitle}</p>
     </div>
+  );
+}
+
+/**
+ * Resilient project/cover image with gradient mesh fallback so broken URLs
+ * never render a broken-image icon or empty black box.
+ */
+export function ResilientCoverImage({
+  src,
+  alt,
+  title,
+  category,
+  className = '',
+}: {
+  src?: string;
+  alt: string;
+  title: string;
+  category?: string;
+  className?: string;
+}) {
+  const [failed, setFailed] = useState(!src);
+
+  useEffect(() => {
+    setFailed(!src);
+  }, [src]);
+
+  const initials = title
+    .split(/[\s/]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join('');
+
+  if (failed || !src) {
+    return (
+      <div className={`cover-fallback-gradient ${className}`} aria-label={alt}>
+        <div className="cover-fallback-grid" aria-hidden="true" />
+        <div className="cover-fallback-content" aria-hidden="true">
+          <span className="cover-fallback-monogram">
+            {initials || <Layers size={18} strokeWidth={1.7} />}
+          </span>
+          <span className="cover-fallback-title">{title}</span>
+          {category && <span className="cover-fallback-sub">{category}</span>}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`cover-image-shell ${className}`}>
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        className="w-full h-full object-cover"
+        onLoad={(e) => {
+          if (e.currentTarget.naturalWidth === 0) setFailed(true);
+        }}
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
+
+/**
+ * Resilient 52px client chip: displays logo if it loads cleanly,
+ * otherwise falls back to crisp client name text.
+ */
+export function ClientLogoChip({ client }: { client: ClientItem }) {
+  const [imgFailed, setImgFailed] = useState(!client.logo_url);
+
+  useEffect(() => {
+    setImgFailed(!client.logo_url);
+  }, [client.logo_url]);
+
+  return (
+    <div className="client-chip" title={client.name}>
+      {client.logo_url && !imgFailed ? (
+        <img
+          src={client.logo_url}
+          alt={`${client.name} logo`}
+          className="client-chip-img"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onLoad={(e) => {
+            if (e.currentTarget.naturalWidth === 0) setImgFailed(true);
+          }}
+          onError={() => setImgFailed(true)}
+        />
+      ) : (
+        <span className="client-chip-text">{client.name}</span>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Resilient circular avatar with initials fallback.
+ */
+export function ResilientAvatar({
+  src,
+  name,
+  className = '',
+}: {
+  src?: string;
+  name: string;
+  className?: string;
+}) {
+  const [failed, setFailed] = useState(!src);
+
+  useEffect(() => {
+    setFailed(!src);
+  }, [src]);
+
+  const initials = name
+    .split(' ')
+    .filter(Boolean)
+    .map((x) => x[0])
+    .join('')
+    .slice(0, 2);
+
+  if (failed || !src) {
+    return <span className={`avatar-initials ${className}`}>{initials}</span>;
+  }
+
+  return (
+    <img
+      src={src}
+      alt={name}
+      loading="lazy"
+      referrerPolicy="no-referrer"
+      className={`w-full h-full object-cover ${className}`}
+      onLoad={(e) => {
+        if (e.currentTarget.naturalWidth === 0) setFailed(true);
+      }}
+      onError={() => setFailed(true)}
+    />
   );
 }
 
@@ -114,13 +255,18 @@ export function CountUp({ value }: { value: string }) {
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // If it's a foundation year like 2024, never format with a comma
     const isYear = value === '2024' || value === '2,024';
     const cleanValue = isYear ? '2024' : value;
     const target = Number(cleanValue.replace(/,/g, ''));
     const element = ref.current;
     if (!element || isNaN(target)) {
       if (element) element.textContent = cleanValue;
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      element.textContent = isYear ? String(target) : target.toLocaleString();
       return;
     }
 
@@ -134,7 +280,7 @@ export function CountUp({ value }: { value: string }) {
         observer.disconnect();
 
         const start = performance.now();
-        const duration = 1000;
+        const duration = 800;
 
         const tick = (now: number) => {
           const elapsed = now - start;
@@ -178,11 +324,6 @@ export function Stats() {
   const { data } = useCms();
   const sortedStats = [...data.stats].sort((a, b) => a.sort_order - b.sort_order);
 
-  // Exact normalized labels, values, and single-line captions with zero duplicate wording:
-  // 1) FOUNDED / "Lagos studio launch"
-  // 2) CLIENTS / "Served globally"
-  // 3) CERTIFIED / "Verified credentials"
-  // 4) MARKETS / "Active markets"
   const getCleanStat = (item: (typeof sortedStats)[0], index: number) => {
     const rawLabel = (item.label || '').toUpperCase();
     if (rawLabel.includes('FOUND') || index === 0) {
@@ -228,7 +369,7 @@ export function Stats() {
               <div className="stat-card-header">
                 <span className="stat-card-label">{stat.label}</span>
                 <span className="stat-icon-tile" aria-hidden="true">
-                  <Icon size={15} />
+                  <Icon size={14} strokeWidth={1.7} />
                 </span>
               </div>
               <div className="stat-card-number">
@@ -248,20 +389,23 @@ export function SectionHead({
   title,
   accent,
   copy,
+  as = 'h2',
 }: {
   label: string;
   title: string;
   accent?: string;
   copy?: string;
+  as?: 'h1' | 'h2';
 }) {
+  const HeadingTag = as;
   return (
-    <>
+    <div className="section-head-block">
       <Label>{label}</Label>
-      <h1 className="section-heading">
+      <HeadingTag className={as === 'h1' ? 'page-hero-heading' : 'section-heading'}>
         {title} {accent && <em>{accent}</em>}
-      </h1>
+      </HeadingTag>
       {copy && <p className="section-intro">{copy}</p>}
-    </>
+    </div>
   );
 }
 
@@ -271,24 +415,27 @@ export function Capabilities({ limit }: { limit?: number }) {
   const items = limit ? sorted.slice(0, limit) : sorted;
 
   return (
-    <div className="cap-grid">
+    <div className="grouped-list-card cap-grouped-list">
       {items.map((item, index) => {
         const Icon = icons[item.icon_name] || icons['pen-tool'];
         return (
-          <article className={`cap ${index % 2 ? 'cap-dark' : ''}`} key={item.id || item.title}>
-            <div className="cap-header">
-              <span className="icon-badge">
-                <Icon />
-              </span>
-              <small>{item.category_label}</small>
-              <span className="cap-index">{String(index + 1).padStart(2, '0')}</span>
-            </div>
-            <h3>{item.title}</h3>
-            <p>{item.description}</p>
-            <div className="tags">
-              {item.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
+          <article className="grouped-list-row" key={item.id || item.title}>
+            <span className="service-row-icon" aria-hidden="true">
+              <Icon size={17} strokeWidth={1.7} />
+            </span>
+            <div className="grouped-list-body">
+              <div className="grouped-list-title-row">
+                <h3>{item.title}</h3>
+                <span className="service-row-index">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+              </div>
+              <p>{item.description}</p>
+              {item.tags?.length > 0 && (
+                <div className="cap-meta-line">
+                  {item.tags.join(' · ')}
+                </div>
+              )}
             </div>
           </article>
         );
@@ -303,22 +450,25 @@ export function ServiceList({
   items: Array<{ id: string; title: string; description: string; icon_name: string }>;
 }) {
   return (
-    <div className="service-list">
+    <div className="grouped-list-card" role="list">
       {items.map((item, index) => {
         const Icon = icons[item.icon_name] || icons['shapes'];
         return (
           <article
-            className={`service-item ${index % 2 ? 'service-dark' : ''}`}
+            className="service-grouped-row"
             key={item.id || item.title}
+            role="listitem"
           >
-            <span className="icon-badge">
-              <Icon />
+            <span className="service-row-icon" aria-hidden="true">
+              <Icon size={17} strokeWidth={1.7} />
             </span>
-            <div>
+            <div className="service-row-copy">
               <h3>{item.title}</h3>
               <p>{item.description}</p>
             </div>
-            <span className="cap-index">{String(index + 1).padStart(2, '0')}</span>
+            <span className="service-row-index">
+              {String(index + 1).padStart(2, '0')}
+            </span>
           </article>
         );
       })}
@@ -347,22 +497,20 @@ export function Ventures({ limit }: { limit?: number }) {
 
         return (
           <article className={`venture v${i}`} key={item.id || item.title}>
-            <div className="venture-visual overflow-hidden relative">
+            <a
+              href={projectHref}
+              className="venture-visual"
+              aria-label={`View ${item.title} case study`}
+            >
               <span className="venture-badge">{item.category_tag}</span>
-              {coverImage ? (
-                <img
-                  src={coverImage}
-                  alt={`${item.title} preview`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <span className="venture-mark" aria-hidden="true">
-                  <i />
-                  <b />
-                </span>
-              )}
-            </div>
+              <ResilientCoverImage
+                src={coverImage}
+                alt={`${item.title} preview`}
+                title={item.title}
+                category={item.category_tag}
+                className="w-full h-full"
+              />
+            </a>
 
             <div className="venture-body">
               <h3>
@@ -371,26 +519,25 @@ export function Ventures({ limit }: { limit?: number }) {
                 </a>
               </h3>
               <p>{item.description}</p>
-              
-              <div className="venture-actions mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between gap-3 flex-wrap">
+
+              <div className="venture-actions">
                 <a
                   href={liveSiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="button button-solid visit-site-button"
+                  className="venture-btn venture-btn-primary"
                   aria-label={`Visit ${item.title} website (opens in a new tab)`}
                 >
                   <span>Visit site</span>
-                  <ExternalLink size={14} aria-hidden="true" />
+                  <ArrowUpRight size={14} strokeWidth={1.8} aria-hidden="true" />
                 </a>
 
                 <a
                   href={projectHref}
-                  className="venture-cta-link"
+                  className="venture-btn venture-btn-secondary"
                   aria-label={`Read ${item.title} case study brief`}
                 >
                   <span>Case study</span>
-                  <ArrowUpRight size={14} aria-hidden="true" />
                 </a>
               </div>
             </div>
@@ -415,8 +562,10 @@ export function Testimonials({ limit }: { limit?: number }) {
           .join('');
         return (
           <blockquote key={item.id || item.author_name}>
-            <Quote className="testimonial-quote" />
-            <small>{item.location}</small>
+            <div className="testimonial-top-row">
+              <Quote size={16} strokeWidth={1.7} className="testimonial-quote" />
+              <small>{item.location}</small>
+            </div>
             <p>{item.quote}</p>
             <footer>
               <span className="testimonial-avatar">{initials}</span>
@@ -439,143 +588,146 @@ export function AboutPreview() {
   const { data } = useCms();
   const sortedCards = [...data.aboutCards].sort((a, b) => a.sort_order - b.sort_order);
 
-  // Isolate "How we started" card
-  const howWeStartedCard =
-    sortedCards.find((c) => c.title.toLowerCase().includes('started')) || sortedCards[0];
-  const secondaryCards = sortedCards
-    .filter((c) => c.id !== howWeStartedCard?.id)
-    .slice(0, 2);
+  const missionCard = sortedCards.find((c) => c.type === 'mission' || c.title.toLowerCase().includes('mission'));
+  const visionCard = sortedCards.find((c) => c.type === 'vision' || c.title.toLowerCase().includes('vision'));
+  const coreValuesCard = sortedCards.find((c) => c.type === 'core_values' || c.title.toLowerCase().includes('value'));
+
+  const pairCards = [missionCard, visionCard].filter(Boolean) as typeof sortedCards;
 
   return (
     <section className="section about-preview" aria-label="About the studio">
-      <p className="eyebrow-label">— ABOUT</p>
-      <h2 className="about-heading-26">
-        A studio built on <span className="text-muted-gray">purpose and precision.</span>
-      </h2>
-      <p className="about-body-14">
-        Ghreatness Labs (frequently identified as Ghreatness Lab or GhreatnessLabs) is an independent digital and IT solutions studio founded in Lagos in 2024 to create high-impact systems, software, and brand infrastructure for ambitious teams.
-      </p>
+      <SectionHead
+        label="About"
+        title="A studio built on"
+        accent="purpose and precision."
+        copy="Ghreatness Labs (Ghreatness Lab / GhreatnessLabs) is an independent digital and IT solutions studio founded in Lagos in 2024 to build high-impact systems, software, and brand infrastructure."
+      />
 
-      <div className="about-cards-stack">
-        {/* "How we started": white card with hairline border, black icon tile, 15px title, 13px gray description */}
-        {howWeStartedCard && (
-          <article className="how-we-started-card">
-            <span className="feature-icon-tile" aria-hidden="true">
-              {React.createElement(icons[howWeStartedCard.icon_name] || icons['building-2'], { size: 18 })}
+      {pairCards.length > 0 && (
+        <div className="mission-vision-grid">
+          {pairCards.map((item) => {
+            const Icon = icons[item.icon_name] || icons['target'];
+            return (
+              <article key={item.id || item.title} className="compact-about-card">
+                <span className="compact-icon-tile" aria-hidden="true">
+                  <Icon size={16} strokeWidth={1.7} />
+                </span>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
+            );
+          })}
+        </div>
+      )}
+
+      {coreValuesCard && (
+        <div className="grouped-list-card mt-3">
+          <article className="service-grouped-row">
+            <span className="service-row-icon" aria-hidden="true">
+              {React.createElement(icons[coreValuesCard.icon_name] || icons['shield-check'], {
+                size: 17,
+                strokeWidth: 1.7,
+              })}
             </span>
-            <div className="about-card-body">
-              <h3 className="how-we-started-title">{howWeStartedCard.title}</h3>
-              <p className="how-we-started-desc">{howWeStartedCard.description}</p>
+            <div className="service-row-copy">
+              <h3>{coreValuesCard.title}</h3>
+              <p className="core-values-desc">{coreValuesCard.description}</p>
             </div>
           </article>
-        )}
+        </div>
+      )}
 
-        {secondaryCards.map((item) => {
-          const Icon = icons[item.icon_name] || icons['target'];
-          return (
-            <article key={item.id || item.title} className="how-we-started-card">
-              <span className="feature-icon-tile" aria-hidden="true">
-                <Icon size={18} />
-              </span>
-              <div className="about-card-body">
-                <h3 className="how-we-started-title">{item.title}</h3>
-                <p className="how-we-started-desc">{item.description}</p>
-              </div>
-            </article>
-          );
-        })}
+      <div className="mt-4">
+        <HoldingBanner variant="card" />
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-4 items-center">
+      <div className="mt-4">
         <Link to="/about" className="button">
-          Learn more about us <ArrowUpRight size={14} className="ml-1 inline" />
+          Learn more about us <ArrowUpRight size={14} strokeWidth={1.7} className="ml-1.5 inline" />
         </Link>
       </div>
-
-      {/* Holding Group affiliation banner in About section */}
-      <HoldingBanner variant="card" className="mt-8" />
     </section>
+  );
+}
+
+export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
+  const slug = leader.slug || slugify(leader.name);
+  const profileUrl = `/leadership/${slug}`;
+
+  return (
+    <article className="leader-snap-card">
+      <a
+        href={profileUrl}
+        className="leader-snap-main"
+        aria-label={`View full profile of ${leader.name}, ${leader.role}`}
+      >
+        <span className="leader-snap-avatar">
+          <ResilientAvatar src={leader.avatar_url} name={leader.name} />
+        </span>
+        <h3 className="leader-snap-name">{leader.name}</h3>
+        <small className="leader-snap-role">{leader.role}</small>
+        <p className="leader-snap-bio">{leader.bio}</p>
+      </a>
+
+      <div className="leader-snap-socials">
+        {leader.social_links?.linkedin && (
+          <a
+            aria-label={`${leader.name} LinkedIn`}
+            href={leader.social_links.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="leader-snap-social-btn"
+          >
+            <Linkedin size={14} strokeWidth={1.7} aria-hidden="true" />
+          </a>
+        )}
+        {leader.social_links?.twitter && (
+          <a
+            aria-label={`${leader.name} on X`}
+            href={leader.social_links.twitter}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="leader-snap-social-btn"
+          >
+            <Twitter size={14} strokeWidth={1.7} aria-hidden="true" />
+          </a>
+        )}
+        <a
+          href={profileUrl}
+          className="leader-snap-profile-link"
+          aria-label={`Profile of ${leader.name}`}
+        >
+          <span>Profile</span>
+          <ArrowUpRight size={12} strokeWidth={1.7} aria-hidden="true" />
+        </a>
+      </div>
+    </article>
   );
 }
 
 export function LeadershipPreview() {
   const { data } = useCms();
-  const [isPaused, setIsPaused] = useState(false);
-
-  // Memoize repeated leaders array to ensure continuous seamless loop across any viewport
-  const loopLeaders = useMemo(() => {
-    const list = [...data.leadership].sort((a, b) => a.sort_order - b.sort_order);
-    if (list.length === 0) return [];
-    let repeated = list;
-    while (repeated.length < 8) {
-      repeated = [...repeated, ...list];
-    }
-    return repeated;
-  }, [data.leadership]);
-
-  const renderLeaderCards = (keyPrefix: string) =>
-    loopLeaders.map((leader, idx) => {
-      const initials = leader.name
-        .split(' ')
-        .map((part) => part[0])
-        .join('');
-      const slug = leader.slug || slugify(leader.name);
-      const profileUrl = `/leadership/${slug}`;
-
-      return (
-        <a
-          key={`${keyPrefix}-${leader.id}-${idx}`}
-          href={profileUrl}
-          className="leader-preview-card marquee-card"
-          aria-label={`View full profile of ${leader.name}, ${leader.role}`}
-        >
-          <span className="leader-preview-avatar overflow-hidden">
-            {leader.avatar_url ? (
-              <img
-                src={leader.avatar_url}
-                alt={leader.name}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              initials
-            )}
-          </span>
-          <b className="leader-marquee-name">{leader.name}</b>
-          <small className="leader-marquee-role">{leader.role}</small>
-          <p className="leader-marquee-desc line-clamp-1">{leader.bio}</p>
-        </a>
-      );
-    });
+  const sortedLeaders = [...data.leadership].sort((a, b) => a.sort_order - b.sort_order);
 
   return (
     <section className="section leadership-preview" aria-label="Leadership team">
-      <SectionHead label="— LEADERSHIP" title="The brains behind the work" />
+      <SectionHead
+        label="Leadership"
+        title="The brains behind"
+        accent="the work."
+      />
 
-      {/* Auto-moving Infinite Marquee (Right to Left) with Hover and Touch Pause */}
-      <div
-        className={`marquee-wrapper ${isPaused ? 'marquee-paused' : ''}`}
-        aria-label="Leadership team marquee"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        onTouchStart={() => setIsPaused(true)}
-        onTouchEnd={() => setIsPaused(false)}
-        onTouchCancel={() => setIsPaused(false)}
-      >
-        <div className="marquee-fade-edge marquee-fade-left" aria-hidden="true" />
-        <div className="marquee-fade-edge marquee-fade-right" aria-hidden="true" />
-
-        <div className="marquee-track marquee-rtl">
-          <div className="marquee-content">{renderLeaderCards('track-1')}</div>
-          <div className="marquee-content marquee-duplicate" aria-hidden="true">
-            {renderLeaderCards('track-2')}
+      <div className="leader-snap-row" role="list" aria-label="Studio leadership team">
+        {sortedLeaders.map((leader) => (
+          <div key={leader.id || leader.name} role="listitem">
+            <LeaderSnapCard leader={leader} />
           </div>
-        </div>
+        ))}
       </div>
 
-      <div className="mt-6">
+      <div className="mt-4">
         <Link to="/leadership" className="button">
-          View full leadership team <ArrowUpRight size={14} className="ml-1 inline" />
+          View full leadership team <ArrowUpRight size={14} strokeWidth={1.7} className="ml-1.5 inline" />
         </Link>
       </div>
     </section>
@@ -584,66 +736,21 @@ export function LeadershipPreview() {
 
 export function Partners() {
   const { data } = useCms();
-  const [isPaused, setIsPaused] = useState(false);
-
-  // Memoize repeated clients array for smooth continuous loop
-  const loopClients = useMemo(() => {
-    const list = [...data.clients].sort((a, b) => a.sort_order - b.sort_order);
-    if (list.length === 0) return [];
-    let repeated = list;
-    while (repeated.length < 10) {
-      repeated = [...repeated, ...list];
-    }
-    return repeated;
-  }, [data.clients]);
-
-  const renderPartnerLogos = (keyPrefix: string) =>
-    loopClients.map((partner, idx) => (
-      <span
-        className="partner-marquee-item"
-        key={`${keyPrefix}-${partner.id}-${idx}`}
-        title={partner.name}
-      >
-        {partner.logo_url ? (
-          <img
-            src={partner.logo_url}
-            alt={`${partner.name} logo`}
-            className="partner-logo-img"
-            loading="lazy"
-            width={120}
-            height={44}
-          />
-        ) : (
-          <span className="partner-logo-text">{partner.name}</span>
-        )}
-      </span>
-    ));
+  const sortedClients = [...data.clients].sort((a, b) => a.sort_order - b.sort_order);
 
   return (
-    <section className="section partners-section soft-section" aria-label="Partners and clients">
+    <section className="section partners-section" aria-label="Partners and clients">
       <SectionHead
-        label="— PARTNERS &amp; CLIENTS"
-        title="In good company."
-        copy="A few of the ambitious teams and ventures we are proud to work alongside."
+        label="Partners & Clients"
+        title="In good"
+        accent="company."
+        copy="Ambitious teams and ventures we are proud to work alongside."
       />
 
-      {/* Auto-moving Infinite Marquee (Left to Right, opposite direction, slightly different speed) */}
-      <div
-        className={`marquee-wrapper ${isPaused ? 'marquee-paused' : ''}`}
-        aria-label="Partners and clients marquee"
-        onTouchStart={() => setIsPaused(true)}
-        onTouchEnd={() => setIsPaused(false)}
-        onTouchCancel={() => setIsPaused(false)}
-      >
-        <div className="marquee-fade-edge marquee-fade-left" aria-hidden="true" />
-        <div className="marquee-fade-edge marquee-fade-right" aria-hidden="true" />
-
-        <div className="marquee-track marquee-ltr">
-          <div className="marquee-content">{renderPartnerLogos('partner-track-1')}</div>
-          <div className="marquee-content marquee-duplicate" aria-hidden="true">
-            {renderPartnerLogos('partner-track-2')}
-          </div>
-        </div>
+      <div className="clients-chip-grid">
+        {sortedClients.map((client) => (
+          <ClientLogoChip key={client.id || client.name} client={client} />
+        ))}
       </div>
     </section>
   );

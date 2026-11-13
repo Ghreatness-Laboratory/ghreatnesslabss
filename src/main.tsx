@@ -11,7 +11,7 @@ import { Footer } from './components/Footer';
 import { LoadingScreen } from './components/LoadingScreen';
 import { AmbientBrandMark } from './components/AmbientBrandMark';
 import { CursorDot } from './components/CursorDot';
-import { StickyConsultationCta } from './components/StickyConsultationCta';
+import { BottomTabBar } from './components/BottomTabBar';
 import { SiteToast } from './components/SiteToast';
 import { ScrollNavigation } from './components/ScrollNavigation';
 import { CmsProvider } from './context/CmsContext';
@@ -32,11 +32,6 @@ const LeadershipDetail = lazy(() => import('./pages/LeadershipDetail'));
 const Clients = lazy(() => import('./pages/Clients'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Admin = lazy(() => import('./pages/Admin'));
-
-// Lazy-loaded non-critical widgets
-const ChatBubble = lazy(() =>
-  import('./components/ChatBubble').then((mod) => ({ default: mod.ChatBubble }))
-);
 
 const routes: Record<string, React.LazyExoticComponent<() => React.JSX.Element>> = {
   '/': Home,
@@ -105,7 +100,6 @@ function App() {
   const [path, setPath] = useState(location.pathname);
   const [isPending, startTransition] = useTransition();
   const [initialLoading, setInitialLoading] = useState(true);
-  const [showChat, setShowChat] = useState(false);
 
   const isAdminRoute = path.startsWith('/admin');
 
@@ -127,29 +121,6 @@ function App() {
     }, 50);
     return () => clearTimeout(timer);
   }, []);
-
-  // Defer non-critical JavaScript (chat widget) until after first paint & idle
-  useEffect(() => {
-    if (isAdminRoute) return;
-
-    if ('requestIdleCallback' in window) {
-      const handle = (
-        window as unknown as {
-          requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => number;
-        }
-      ).requestIdleCallback(() => setShowChat(true), { timeout: 1500 });
-      return () => {
-        if ('cancelIdleCallback' in window) {
-          (
-            window as unknown as { cancelIdleCallback: (id: number) => void }
-          ).cancelIdleCallback(handle);
-        }
-      };
-    } else {
-      const timer = setTimeout(() => setShowChat(true), 600);
-      return () => clearTimeout(timer);
-    }
-  }, [isAdminRoute]);
 
   // Handle client-side routing when links are clicked
   const navigate = (to: string) => {
@@ -174,47 +145,6 @@ function App() {
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
   }, [path]);
-
-  // High-performance batched IntersectionObserver for section reveal
-  useEffect(() => {
-    if (isAdminRoute) return;
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      const sections = Array.from(
-        document.querySelectorAll<HTMLElement>(
-          'main > .section, main > .stats, main .service-category, main .testimonials-section, footer .cta'
-        )
-      );
-
-      if (!sections.length) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.05, rootMargin: '120px 0px 40px 0px' }
-      );
-
-      sections.forEach((section) => {
-        section.classList.add('reveal');
-        observer.observe(section);
-      });
-
-      return () => observer.disconnect();
-    }, 60);
-
-    return () => clearTimeout(timer);
-  }, [path, isAdminRoute]);
 
   // Check for dynamic project detail route (e.g. /projects/[slug])
   const isProjectDetail = path.startsWith('/projects/') && path.length > '/projects/'.length;
@@ -275,28 +205,23 @@ function App() {
         <Header path={path} onNavigate={navigate} />
 
         <main>
-          <Suspense fallback={null}>
-            {isProjectDetail ? (
-              <ProjectDetail slug={projectSlug} />
-            ) : isLeadershipDetail ? (
-              <LeadershipDetail slug={leaderSlug} />
-            ) : (
-              <ActivePage />
-            )}
-          </Suspense>
+          <div key={path} className="page-transition-enter">
+            <Suspense fallback={null}>
+              {isProjectDetail ? (
+                <ProjectDetail slug={projectSlug} />
+              ) : isLeadershipDetail ? (
+                <LeadershipDetail slug={leaderSlug} />
+              ) : (
+                <ActivePage />
+              )}
+            </Suspense>
+          </div>
         </main>
 
         <Footer />
 
-        {/* Sticky Book a Consultation CTA (IntersectionObserver past hero) */}
-        <StickyConsultationCta onNavigate={navigate} />
-
-        {/* Deferred non-critical chat assistant */}
-        {showChat && (
-          <Suspense fallback={null}>
-            <ChatBubble />
-          </Suspense>
-        )}
+        {/* Floating native-style bottom tab bar & consultation modal */}
+        <BottomTabBar path={path} onNavigate={navigate} />
       </SmoothScrollProvider>
     </CmsProvider>
   );

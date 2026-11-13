@@ -32,13 +32,19 @@ export function BlurImage({
 
   return (
     <div className={`blur-image-container ${containerClassName}`}>
-      {/* Blurred shimmering backdrop shown before image finishes loading */}
       {!loaded && <div className="blur-image-skeleton" aria-hidden="true" />}
       <img
         src={src}
         alt={alt}
         loading="lazy"
-        onLoad={() => setLoaded(true)}
+        referrerPolicy="no-referrer"
+        onLoad={(e) => {
+          if (e.currentTarget.naturalWidth === 0) {
+            setError(true);
+          } else {
+            setLoaded(true);
+          }
+        }}
         onError={() => setError(true)}
         className={`blur-image-img ${loaded ? 'blur-image-loaded' : 'blur-image-loading'} ${className}`}
         {...props}
