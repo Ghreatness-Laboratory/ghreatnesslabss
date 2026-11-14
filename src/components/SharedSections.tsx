@@ -210,11 +210,12 @@ export function ResilientCoverImage({
 }
 
 /**
- * Resilient 80px client card with skeleton shimmer and crisp name fallback.
+ * Resilient 64px client tile with monochrome logo/wordmark (~22px tall) that turns full colour on tap.
  */
 export function ClientLogoChip({ client }: { client: ClientItem }) {
   const [imgFailed, setImgFailed] = useState(!client.logo_url);
   const [loaded, setLoaded] = useState(false);
+  const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
     setImgFailed(!client.logo_url);
@@ -222,10 +223,17 @@ export function ClientLogoChip({ client }: { client: ClientItem }) {
   }, [client.logo_url]);
 
   return (
-    <div className="client-chip" title={client.name}>
+    <button
+      type="button"
+      className={`client-chip ${revealed ? 'is-revealed' : ''}`}
+      title={client.name}
+      aria-pressed={revealed}
+      aria-label={`${client.name} partner logo`}
+      onClick={() => setRevealed((prev) => !prev)}
+    >
       {client.logo_url && !imgFailed ? (
-        <>
-          {!loaded && <div className="image-skeleton" aria-hidden="true" />}
+        <span className="client-chip-media">
+          {!loaded && <span className="image-skeleton" aria-hidden="true" />}
           <img
             src={client.logo_url}
             alt={`${client.name} logo`}
@@ -242,11 +250,14 @@ export function ClientLogoChip({ client }: { client: ClientItem }) {
             }}
             onError={() => setImgFailed(true)}
           />
-        </>
+        </span>
       ) : (
-        <span className="client-chip-text">{client.name}</span>
+        <span className="client-chip-wordmark">
+          <span className="client-chip-dot" aria-hidden="true" />
+          <span className="client-chip-text">{client.name}</span>
+        </span>
       )}
-    </div>
+    </button>
   );
 }
 
@@ -806,8 +817,17 @@ export function LeadershipPreview() {
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  const cardStep = 292 + 12; // 292px card + 12px gap
   const maxIndex = Math.max(0, sortedLeaders.length - 1);
+
+  const getCardStep = () => {
+    const track = trackRef.current;
+    if (!track) return 320;
+    const firstCard = track.querySelector<HTMLElement>('.leader-snap-card');
+    if (!firstCard) return 320;
+    const trackStyle = getComputedStyle(track);
+    const gap = parseFloat(trackStyle.columnGap || trackStyle.gap || '12') || 12;
+    return firstCard.getBoundingClientRect().width + gap;
+  };
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -821,7 +841,7 @@ export function LeadershipPreview() {
     const track = trackRef.current;
     if (!track || sortedLeaders.length === 0) return;
     const clamped = Math.max(0, Math.min(maxIndex, index));
-    track.scrollTo({ left: clamped * cardStep, behavior });
+    track.scrollTo({ left: clamped * getCardStep(), behavior });
     setActiveIndex(clamped);
   };
 
@@ -835,14 +855,14 @@ export function LeadershipPreview() {
         const next = prev >= maxIndex ? 0 : prev + 1;
         const track = trackRef.current;
         if (track) {
-          track.scrollTo({ left: next * cardStep, behavior: 'smooth' });
+          track.scrollTo({ left: next * getCardStep(), behavior: 'smooth' });
         }
         return next;
       });
     }, 5000);
 
     return () => window.clearInterval(timer);
-  }, [prefersReducedMotion, hasUserInteracted, isHoverOrFocusPaused, sortedLeaders.length, maxIndex, cardStep]);
+  }, [prefersReducedMotion, hasUserInteracted, isHoverOrFocusPaused, sortedLeaders.length, maxIndex]);
 
   const handleScroll = () => {
     const track = trackRef.current;
@@ -856,7 +876,7 @@ export function LeadershipPreview() {
       setActiveIndex(maxIndex);
       return;
     }
-    const nextIdx = Math.min(maxIndex, Math.max(0, Math.round(track.scrollLeft / cardStep)));
+    const nextIdx = Math.min(maxIndex, Math.max(0, Math.round(track.scrollLeft / getCardStep())));
     setActiveIndex(nextIdx);
   };
 
@@ -917,7 +937,7 @@ export function LeadershipPreview() {
                 disabled={atStart}
                 aria-label="Previous team member"
               >
-                <ChevronLeft size={18} strokeWidth={2} aria-hidden="true" />
+                <ChevronLeft size={16} strokeWidth={2} aria-hidden="true" />
               </button>
               <button
                 type="button"
@@ -926,7 +946,7 @@ export function LeadershipPreview() {
                 disabled={atEnd}
                 aria-label="Next team member"
               >
-                <ChevronRight size={18} strokeWidth={2} aria-hidden="true" />
+                <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />
               </button>
             </div>
           )}

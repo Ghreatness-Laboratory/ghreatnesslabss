@@ -92,6 +92,18 @@ function loadLocalCache(): CmsData {
       ) {
         settings.copyrightText = defaultCmsData.settings.copyrightText;
       }
+      const stalePartnerWallpapers = new Set([
+        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80',
+        'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?auto=format&fit=crop&w=300&q=80',
+      ]);
+      const sanitizedClients = Array.isArray(parsed.clients)
+        ? parsed.clients.map((c: ClientItem) =>
+            c.logo_url && stalePartnerWallpapers.has(c.logo_url)
+              ? { ...c, logo_url: undefined }
+              : c
+          )
+        : defaultCmsData.clients;
+
       return {
         settings,
         stats: Array.isArray(parsed.stats) ? parsed.stats : defaultCmsData.stats,
@@ -107,13 +119,15 @@ function loadLocalCache(): CmsData {
         leadership: Array.isArray(parsed.leadership)
           ? parsed.leadership
           : defaultCmsData.leadership,
-        clients: Array.isArray(parsed.clients) ? parsed.clients : defaultCmsData.clients,
+        clients: sanitizedClients,
         testimonials: Array.isArray(parsed.testimonials)
           ? parsed.testimonials
           : defaultCmsData.testimonials,
         faqs: Array.isArray(parsed.faqs) ? parsed.faqs : defaultCmsData.faqs,
         pages: Array.isArray(parsed.pages) ? parsed.pages : defaultCmsData.pages,
-        media: Array.isArray(parsed.media) ? parsed.media : defaultCmsData.media,
+        media: Array.isArray(parsed.media)
+          ? parsed.media.filter((m: MediaItem) => !stalePartnerWallpapers.has(m.url))
+          : defaultCmsData.media,
       };
     }
   } catch (err) {

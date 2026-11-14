@@ -148,7 +148,7 @@ export default function Home() {
         <div className="section-link-wrap">
           <Button variant="link" href="/clients">
             <span>Read all perspectives</span>
-            <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+            <ArrowUpRight size={15} strokeWidth={2} aria-hidden="true" />
           </Button>
         </div>
       </section>

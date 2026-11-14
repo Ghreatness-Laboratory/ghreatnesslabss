@@ -5,18 +5,13 @@ import { SectionHead } from './SharedSections';
 
 export function FaqSection({ limit }: { limit?: number }) {
   const { data } = useCms();
-  const [openItems, setOpenItems] = useState<Record<string, boolean>>({
-    'faq-engagements': true,
-  });
 
   const faqs = [...(data.faqs || [])].sort((a, b) => a.sort_order - b.sort_order);
   const displayFaqs = limit ? faqs.slice(0, limit) : faqs;
+  const [openId, setOpenId] = useState<string | null>(() => displayFaqs[0]?.id ?? 'faq-engagements');
 
   const toggleItem = (id: string) => {
-    setOpenItems((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setOpenId((prev) => (prev === id ? null : id));
   };
 
   return (
@@ -29,8 +24,8 @@ export function FaqSection({ limit }: { limit?: number }) {
       />
 
       <div className="faq-accordion-container" role="region" aria-label="Frequently Asked Questions Accordion">
-        {displayFaqs.map((faq, index) => {
-          const isOpen = Boolean(openItems[faq.id] ?? (index === 0 && openItems['faq-engagements'] === undefined));
+        {displayFaqs.map((faq) => {
+          const isOpen = openId === faq.id;
           const contentId = `faq-content-${faq.id}`;
           const triggerId = `faq-trigger-${faq.id}`;
 
@@ -49,7 +44,7 @@ export function FaqSection({ limit }: { limit?: number }) {
               >
                 <span className="faq-question-text">{faq.question}</span>
                 <span className="faq-icon-wrapper" aria-hidden="true">
-                  <ChevronDown size={16} strokeWidth={2} className={`faq-chevron ${isOpen ? 'faq-chevron-rotated' : ''}`} />
+                  <ChevronDown size={15} strokeWidth={2} className={`faq-chevron ${isOpen ? 'faq-chevron-rotated' : ''}`} />
                 </span>
               </button>
 
