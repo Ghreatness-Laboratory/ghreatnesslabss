@@ -73,7 +73,7 @@ export function ChatBubble() {
         aria-hidden={!open}
       >
         <div className="flex items-center justify-between pb-2 border-b border-[#eee]">
-          <span className="font-medium text-[13px] text-[#111]">Ghreatness assistant</span>
+          <span className="font-medium text-[length:var(--fs-body)] text-[#111]">Ghreatness assistant</span>
           <button
             type="button"
             aria-label="Close assistant panel"
@@ -83,12 +83,12 @@ export function ChatBubble() {
             <X size={15} />
           </button>
         </div>
-        <p className="my-3 text-[13px] text-[#666] leading-[1.6]">
+        <p className="my-3 text-[length:var(--fs-body)] text-[#666] leading-[var(--lh-body)]">
           How can we help with your next digital system or brand architecture project?
         </p>
         <a
           href="/contact"
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#111] hover:underline"
+          className="inline-flex items-center gap-1.5 text-[length:var(--fs-button)] font-medium text-[#111] hover:underline"
         >
           Start a conversation <ArrowUpRight size={13} />
         </a>

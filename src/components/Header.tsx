@@ -11,7 +11,7 @@ const DESKTOP_NAV_ITEMS = [
   { to: '/services', label: 'Services', match: (p: string) => p.startsWith('/services') },
   { to: '/projects', label: 'Work', match: (p: string) => p.startsWith('/projects') },
   { to: '/about', label: 'About', match: (p: string) => p.startsWith('/about') },
-  { to: '/leadership', label: 'Leadership', match: (p: string) => p.startsWith('/leadership') },
+  { to: '/contact', label: 'Contact', match: (p: string) => p.startsWith('/contact') },
 ] as const;
 
 export function Header({
