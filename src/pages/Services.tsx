@@ -70,7 +70,7 @@ export default function Services() {
       <div className="center-action">
         <Button solid>
           <span>Book a consultation</span>
-          <ArrowRight size={15} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
+          <ArrowRight size={16} strokeWidth={2} className="btn-arrow-green" aria-hidden="true" />
         </Button>
       </div>
     </section>

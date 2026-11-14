@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCms } from '../context/CmsContext';
-import { Stats, icons, SectionHead } from '../components/SharedSections';
+import { Stats, icons, SectionHead, InfoCard } from '../components/SharedSections';
 import { HoldingBanner } from '../components/HoldingBanner';
 
 export default function About() {
@@ -33,15 +33,17 @@ export default function About() {
         {pairCards.length > 0 && (
           <div className="mission-vision-grid">
             {pairCards.map((card) => {
-              const Icon = icons[card.icon_name] || icons['target'];
+              const isMission = card.type === 'mission' || card.title.toLowerCase().includes('mission');
+              const isVision = card.type === 'vision' || card.title.toLowerCase().includes('vision');
               return (
-                <article key={card.id || card.title} className="compact-about-card">
-                  <span className="compact-icon-tile" aria-hidden="true">
-                    <Icon size={17} strokeWidth={1.8} />
-                  </span>
-                  <h2>{card.title}</h2>
-                  <p>{card.description}</p>
-                </article>
+                <InfoCard
+                  key={card.id || card.title}
+                  iconName={card.icon_name}
+                  title={card.title}
+                  description={card.description}
+                  fallbackIcon="target"
+                  tags={isMission ? ['Strategy', 'Identity', 'Product'] : isVision ? ['Engineering', 'Infrastructure'] : undefined}
+                />
               );
             })}
           </div>
@@ -54,7 +56,7 @@ export default function About() {
               return (
                 <article key={card.id || card.title} className="service-grouped-row">
                   <span className="service-row-icon" aria-hidden="true">
-                    <Icon size={18} strokeWidth={1.8} />
+                    <Icon size={20} strokeWidth={2} />
                   </span>
                   <div className="service-row-copy">
                     <h2>{card.title}</h2>

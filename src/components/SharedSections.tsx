@@ -71,7 +71,7 @@ export const Label = ({
 }) => (
   <p className={`label ${variant === 'hero' ? 'label-hero' : 'label-section'}`}>
     <span
-      className={variant === 'hero' ? 'eyebrow-line' : 'eyebrow-square'}
+      className={variant === 'hero' ? 'eyebrow-pulse-dot' : 'eyebrow-square'}
       aria-hidden="true"
     />
     <span className="eyebrow-text">{children}</span>
@@ -131,7 +131,7 @@ export function EmptyState({
   return (
     <div className="empty-state">
       <div className="icon-badge empty-state-icon">
-        <Icon size={18} strokeWidth={1.7} />
+        <Icon size={18} strokeWidth={2} />
       </div>
       <h3 className="empty-state-title">{title}</h3>
       <p className="empty-state-desc">{subtitle}</p>
@@ -140,7 +140,7 @@ export function EmptyState({
 }
 
 /**
- * Resilient project/cover image with gradient mesh fallback so broken URLs
+ * Resilient project/cover image with skeleton shimmer + fallback so broken URLs
  * never render a broken-image icon or empty black box.
  */
 export function ResilientCoverImage({
@@ -157,9 +157,11 @@ export function ResilientCoverImage({
   className?: string;
 }) {
   const [failed, setFailed] = useState(!src);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     setFailed(!src);
+    setLoaded(false);
   }, [src]);
 
   const initials = title
@@ -175,7 +177,7 @@ export function ResilientCoverImage({
         <div className="cover-fallback-grid" aria-hidden="true" />
         <div className="cover-fallback-content" aria-hidden="true">
           <span className="cover-fallback-monogram">
-            {initials || <Layers size={18} strokeWidth={1.7} />}
+            {initials || <Layers size={18} strokeWidth={2} />}
           </span>
           <span className="cover-fallback-title">{title}</span>
           {category && <span className="cover-fallback-sub">{category}</span>}
@@ -186,14 +188,20 @@ export function ResilientCoverImage({
 
   return (
     <div className={`cover-image-shell ${className}`}>
+      {!loaded && <div className="image-skeleton" aria-hidden="true" />}
       <img
         src={src}
         alt={alt}
         loading="lazy"
+        decoding="async"
         referrerPolicy="no-referrer"
-        className="w-full h-full object-cover"
+        className={`w-full h-full object-cover img-fade-in ${loaded ? 'is-loaded' : ''}`}
         onLoad={(e) => {
-          if (e.currentTarget.naturalWidth === 0) setFailed(true);
+          if (e.currentTarget.naturalWidth === 0) {
+            setFailed(true);
+          } else {
+            setLoaded(true);
+          }
         }}
         onError={() => setFailed(true)}
       />
@@ -202,30 +210,39 @@ export function ResilientCoverImage({
 }
 
 /**
- * Resilient 52px client chip: displays logo if it loads cleanly,
- * otherwise falls back to crisp client name text.
+ * Resilient 80px client card with skeleton shimmer and crisp name fallback.
  */
 export function ClientLogoChip({ client }: { client: ClientItem }) {
   const [imgFailed, setImgFailed] = useState(!client.logo_url);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     setImgFailed(!client.logo_url);
+    setLoaded(false);
   }, [client.logo_url]);
 
   return (
     <div className="client-chip" title={client.name}>
       {client.logo_url && !imgFailed ? (
-        <img
-          src={client.logo_url}
-          alt={`${client.name} logo`}
-          className="client-chip-img"
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          onLoad={(e) => {
-            if (e.currentTarget.naturalWidth === 0) setImgFailed(true);
-          }}
-          onError={() => setImgFailed(true)}
-        />
+        <>
+          {!loaded && <div className="image-skeleton" aria-hidden="true" />}
+          <img
+            src={client.logo_url}
+            alt={`${client.name} logo`}
+            className={`client-chip-img img-fade-in ${loaded ? 'is-loaded' : ''}`}
+            loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            onLoad={(e) => {
+              if (e.currentTarget.naturalWidth === 0) {
+                setImgFailed(true);
+              } else {
+                setLoaded(true);
+              }
+            }}
+            onError={() => setImgFailed(true)}
+          />
+        </>
       ) : (
         <span className="client-chip-text">{client.name}</span>
       )}
@@ -234,7 +251,7 @@ export function ClientLogoChip({ client }: { client: ClientItem }) {
 }
 
 /**
- * Resilient circular avatar with initials fallback.
+ * Resilient circular avatar with skeleton shimmer & initials fallback.
  */
 export function ResilientAvatar({
   src,
@@ -246,9 +263,11 @@ export function ResilientAvatar({
   className?: string;
 }) {
   const [failed, setFailed] = useState(!src);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     setFailed(!src);
+    setLoaded(false);
   }, [src]);
 
   const initials = name
@@ -263,17 +282,25 @@ export function ResilientAvatar({
   }
 
   return (
-    <img
-      src={src}
-      alt={name}
-      loading="lazy"
-      referrerPolicy="no-referrer"
-      className={`w-full h-full object-cover ${className}`}
-      onLoad={(e) => {
-        if (e.currentTarget.naturalWidth === 0) setFailed(true);
-      }}
-      onError={() => setFailed(true)}
-    />
+    <span className="avatar-image-shell">
+      {!loaded && <span className="image-skeleton" aria-hidden="true" />}
+      <img
+        src={src}
+        alt={name}
+        loading="lazy"
+        decoding="async"
+        referrerPolicy="no-referrer"
+        className={`w-full h-full object-cover img-fade-in ${loaded ? 'is-loaded' : ''} ${className}`}
+        onLoad={(e) => {
+          if (e.currentTarget.naturalWidth === 0) {
+            setFailed(true);
+          } else {
+            setLoaded(true);
+          }
+        }}
+        onError={() => setFailed(true)}
+      />
+    </span>
   );
 }
 
@@ -386,6 +413,7 @@ export function Stats() {
 
   return (
     <section className="stats-section" aria-label="Studio statistics">
+      <Label>By the numbers</Label>
       <div className="stats-grid">
         {sortedStats.slice(0, 4).map((item, idx) => {
           const stat = getCleanStat(item, idx);
@@ -395,7 +423,7 @@ export function Stats() {
               <div className="stat-card-header">
                 <span className="stat-card-label">{stat.label}</span>
                 <span className="stat-icon-tile" aria-hidden="true">
-                  <Icon size={14} strokeWidth={1.7} />
+                  <Icon size={15} strokeWidth={2} />
                 </span>
               </div>
               <div className="stat-card-number">
@@ -449,7 +477,7 @@ export function Capabilities({ limit }: { limit?: number }) {
         return (
           <article className="practice-row" key={item.id || item.title}>
             <span className="practice-row-icon" aria-hidden="true">
-              <Icon size={20} strokeWidth={1.8} />
+              <Icon size={20} strokeWidth={2} />
             </span>
             <div className="practice-row-content">
               <div className="practice-row-header">
@@ -486,7 +514,7 @@ export function ServiceList({
             role="listitem"
           >
             <span className="service-row-icon" aria-hidden="true">
-              <Icon size={17} strokeWidth={1.7} />
+              <Icon size={18} strokeWidth={2} />
             </span>
             <div className="service-row-copy">
               <h3>{item.title}</h3>
@@ -557,7 +585,7 @@ export function Ventures({ limit }: { limit?: number }) {
                   aria-label={`Visit ${item.title} website (opens in a new tab)`}
                 >
                   <span>Visit site</span>
-                  <ArrowUpRight size={14} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
+                  <ArrowUpRight size={15} strokeWidth={2} className="btn-arrow-green" aria-hidden="true" />
                 </a>
 
                 <a
@@ -591,7 +619,7 @@ export function Testimonials({ limit }: { limit?: number }) {
         return (
           <blockquote key={item.id || item.author_name}>
             <div className="testimonial-top-row">
-              <Quote size={16} strokeWidth={1.7} className="testimonial-quote" />
+              <Quote size={16} strokeWidth={2} className="testimonial-quote" />
               <small>{item.location}</small>
             </div>
             <p>{item.quote}</p>
@@ -612,25 +640,41 @@ export function Testimonials({ limit }: { limit?: number }) {
   );
 }
 
+const MISSION_TAGS = ['Strategy', 'Identity', 'Product'] as const;
+const VISION_TAGS = ['Engineering', 'Infrastructure'] as const;
+
 export function InfoCard({
   iconName,
   title,
   description,
   fallbackIcon = 'target',
+  tags,
 }: {
   iconName?: string;
   title: string;
   description: string;
   fallbackIcon?: string;
+  tags?: readonly string[];
 }) {
   const Icon = icons[iconName || ''] || icons[fallbackIcon] || icons['target'];
   return (
-    <article className="compact-about-card">
-      <span className="compact-icon-tile" aria-hidden="true">
-        <Icon size={17} strokeWidth={1.8} />
-      </span>
-      <h3>{title}</h3>
-      <p>{description}</p>
+    <article className="info-card">
+      <div className="info-card-header">
+        <span className="info-card-icon-tile" aria-hidden="true">
+          <Icon size={20} strokeWidth={2} />
+        </span>
+        <h3 className="info-card-title">{title}</h3>
+      </div>
+      <p className="info-card-body">{description}</p>
+      {tags && tags.length > 0 && (
+        <div className="info-card-tags" aria-label="Core disciplines">
+          {tags.map((tag) => (
+            <span key={tag} className="green-tag-pill">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
@@ -656,15 +700,20 @@ export function AboutPreview() {
 
       {pairCards.length > 0 && (
         <div className="mission-vision-grid">
-          {pairCards.map((item) => (
-            <InfoCard
-              key={item.id || item.title}
-              iconName={item.icon_name}
-              title={item.title}
-              description={item.description}
-              fallbackIcon="target"
-            />
-          ))}
+          {pairCards.map((item) => {
+            const isMission = item.type === 'mission' || item.title.toLowerCase().includes('mission');
+            const isVision = item.type === 'vision' || item.title.toLowerCase().includes('vision');
+            return (
+              <InfoCard
+                key={item.id || item.title}
+                iconName={item.icon_name}
+                title={item.title}
+                description={item.description}
+                fallbackIcon="target"
+                tags={isMission ? MISSION_TAGS : isVision ? VISION_TAGS : undefined}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -721,7 +770,7 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
             rel="noopener noreferrer"
             className="leader-snap-social-btn"
           >
-            <Linkedin size={16} strokeWidth={1.8} aria-hidden="true" />
+            <Linkedin size={16} strokeWidth={2} aria-hidden="true" />
           </a>
         )}
         {leader.social_links?.twitter && (
@@ -732,7 +781,7 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
             rel="noopener noreferrer"
             className="leader-snap-social-btn"
           >
-            <Twitter size={16} strokeWidth={1.8} aria-hidden="true" />
+            <Twitter size={16} strokeWidth={2} aria-hidden="true" />
           </a>
         )}
         <a
@@ -741,7 +790,7 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
           aria-label={`Profile of ${leader.name}`}
         >
           <span>Profile</span>
-          <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
+          <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
         </a>
       </div>
     </article>
@@ -868,7 +917,7 @@ export function LeadershipPreview() {
                 disabled={atStart}
                 aria-label="Previous team member"
               >
-                <ChevronLeft size={18} strokeWidth={2.1} aria-hidden="true" />
+                <ChevronLeft size={18} strokeWidth={2} aria-hidden="true" />
               </button>
               <button
                 type="button"
@@ -877,7 +926,7 @@ export function LeadershipPreview() {
                 disabled={atEnd}
                 aria-label="Next team member"
               >
-                <ChevronRight size={18} strokeWidth={2.1} aria-hidden="true" />
+                <ChevronRight size={18} strokeWidth={2} aria-hidden="true" />
               </button>
             </div>
           )}

@@ -49,7 +49,7 @@ export function FaqSection({ limit }: { limit?: number }) {
               >
                 <span className="faq-question-text">{faq.question}</span>
                 <span className="faq-icon-wrapper" aria-hidden="true">
-                  <ChevronDown size={15} strokeWidth={1.7} className={`faq-chevron ${isOpen ? 'faq-chevron-rotated' : ''}`} />
+                  <ChevronDown size={16} strokeWidth={2} className={`faq-chevron ${isOpen ? 'faq-chevron-rotated' : ''}`} />
                 </span>
               </button>
 

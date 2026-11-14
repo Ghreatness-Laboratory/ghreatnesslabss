@@ -20,7 +20,7 @@ export function Footer() {
         <div className="actions">
           <Button solid>
             <span>Book a consultation</span>
-            <ArrowRight size={15} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
+            <ArrowRight size={16} strokeWidth={2} className="btn-arrow-green" aria-hidden="true" />
           </Button>
           <a className="button" href={`mailto:${settings.contactEmail}`}>
             {settings.contactEmail}
@@ -55,7 +55,7 @@ export function Footer() {
             .map(([to, name]) => (
               <Link key={to} to={to} className="footer-nav-link">
                 <span>{name}</span>
-                <ArrowUpRight size={12} strokeWidth={1.7} aria-hidden="true" />
+                <ArrowUpRight size={13} strokeWidth={2} aria-hidden="true" />
               </Link>
             ))}
         </div>
@@ -63,7 +63,7 @@ export function Footer() {
         <div className="footer-hq-col">
           <small>{settings.officeCity} HQ</small>
           <p className="footer-address">
-            <MapPin size={14} strokeWidth={1.7} aria-hidden="true" />
+            <MapPin size={15} strokeWidth={2} aria-hidden="true" />
             <span>
               {settings.officeAddress}
               <br />
@@ -80,7 +80,7 @@ export function Footer() {
         <div className="legal-links">
           <span>Privacy · Terms · Accessibility</span>
           <Link to="/admin" className="admin-footer-link">
-            <Shield size={12} strokeWidth={1.7} aria-hidden="true" />
+            <Shield size={13} strokeWidth={2} aria-hidden="true" />
             <span>Admin CMS</span>
           </Link>
         </div>

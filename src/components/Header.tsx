@@ -4,6 +4,14 @@ import { pages, Link } from './SharedSections';
 import { GhreatnessMark } from './GhreatnessLogo';
 import { SearchModal } from './SearchModal';
 
+const DESKTOP_NAV_ITEMS = [
+  { to: '/', label: 'Home', match: (p: string) => p === '/' },
+  { to: '/services', label: 'Services', match: (p: string) => p.startsWith('/services') },
+  { to: '/projects', label: 'Work', match: (p: string) => p.startsWith('/projects') },
+  { to: '/about', label: 'About', match: (p: string) => p.startsWith('/about') },
+  { to: '/leadership', label: 'Leadership', match: (p: string) => p.startsWith('/leadership') },
+] as const;
+
 export function Header({
   path,
   onNavigate,
@@ -42,6 +50,26 @@ export function Header({
           </span>
         </Link>
 
+        <div className="app-desktop-nav" role="navigation" aria-label="Primary desktop navigation">
+          {DESKTOP_NAV_ITEMS.map((item) => {
+            const isActive = item.match(path);
+            return (
+              <a
+                key={item.to}
+                href={item.to}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(item.to);
+                }}
+                className={`app-desktop-nav-link ${isActive ? 'is-active' : ''}`}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+        </div>
+
         <div className="app-topbar-actions">
           <button
             type="button"
@@ -53,12 +81,12 @@ export function Header({
               setNavOpen(false);
             }}
           >
-            <Search size={18} strokeWidth={1.8} aria-hidden="true" />
+            <Search size={18} strokeWidth={2} aria-hidden="true" />
           </button>
 
           <button
             type="button"
-            className="app-icon-btn"
+            className="app-icon-btn app-menu-btn"
             aria-label={navOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={navOpen}
             onClick={() => {
@@ -67,10 +95,19 @@ export function Header({
             }}
           >
             {navOpen ? (
-              <X size={18} strokeWidth={1.8} aria-hidden="true" />
+              <X size={18} strokeWidth={2} aria-hidden="true" />
             ) : (
-              <Menu size={18} strokeWidth={1.8} aria-hidden="true" />
+              <Menu size={18} strokeWidth={2} aria-hidden="true" />
             )}
+          </button>
+
+          <button
+            type="button"
+            className="app-desktop-cta"
+            data-consultation-trigger
+          >
+            <span>Book a consultation</span>
+            <ArrowUpRight size={15} strokeWidth={2} className="btn-arrow-green" aria-hidden="true" />
           </button>
         </div>
       </nav>
@@ -102,7 +139,7 @@ export function Header({
                   }}
                 >
                   <span>{name}</span>
-                  <ArrowUpRight size={14} strokeWidth={1.7} aria-hidden="true" />
+                  <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
                 </a>
               ))}
             </div>

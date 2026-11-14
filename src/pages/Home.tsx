@@ -39,14 +39,15 @@ export default function Home() {
           <div className="actions hero-actions">
             <Button solid>
               <span>Book a consultation</span>
-              <ArrowRight size={15} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
+              <ArrowRight size={16} strokeWidth={2} className="btn-arrow-green" aria-hidden="true" />
             </Button>
-            <Button href="/projects">Case studies</Button>
+            <Button href="/projects">View case studies</Button>
           </div>
         </div>
 
         <div className="hero-aside">
           <div className="infrastructure-mark" aria-label="Live infrastructure status visual">
+            <span className="infrastructure-glow" aria-hidden="true" />
             <span className="infrastructure-live">
               <span className="live-status-dot" aria-hidden="true" />
               <span>LIVE</span>
@@ -70,7 +71,10 @@ export default function Home() {
               <span className="orbit-node node-3" />
             </div>
 
-            <span className="infrastructure-badge">INFRASTRUCTURE</span>
+            <div className="infrastructure-caption">
+              <span className="infrastructure-caption-title">INFRASTRUCTURE</span>
+              <span className="infrastructure-caption-sub">Lagos · Cloud &amp; Brand Systems</span>
+            </div>
           </div>
 
           <div className="glance-block">
@@ -110,7 +114,7 @@ export default function Home() {
         <div className="section-link-wrap">
           <Button variant="link" href="/services">
             <span>View all services</span>
-            <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
+            <ArrowUpRight size={15} strokeWidth={2} aria-hidden="true" />
           </Button>
         </div>
       </section>

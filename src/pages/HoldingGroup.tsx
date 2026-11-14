@@ -32,7 +32,7 @@ function HoldingCompanyCard({
               onError={() => setLogoFailed(true)}
             />
           ) : (
-            <Icon size={17} strokeWidth={1.7} />
+            <Icon size={18} strokeWidth={2} />
           )}
         </span>
         <span className="service-row-index">{String(index + 1).padStart(2, '0')}</span>
@@ -49,7 +49,7 @@ function HoldingCompanyCard({
             aria-label={`Visit ${company.company_name} website (opens in a new tab)`}
           >
             <span>Visit {company.company_name}</span>
-            <ArrowUpRight size={13} strokeWidth={1.7} aria-hidden="true" />
+            <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
           </a>
         </div>
       )}

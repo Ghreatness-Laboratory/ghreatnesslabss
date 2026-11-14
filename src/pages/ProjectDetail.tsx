@@ -72,7 +72,7 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
       {/* Top Breadcrumb & Return Nav */}
       <div className="project-detail-header-bar">
         <a href="/projects" className="project-back-link">
-          <ArrowLeft size={16} strokeWidth={1.7} /> Back to all projects
+          <ArrowLeft size={16} strokeWidth={2} /> Back to all projects
         </a>
         <span className="project-detail-badge">{project.category_tag}</span>
       </div>
@@ -89,7 +89,7 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
           <div className="project-hero-actions">
             <Button solid href="/contact">
               <span>Discuss a similar project</span>
-              <ArrowRight size={15} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
+              <ArrowRight size={16} strokeWidth={2} className="btn-arrow-green" aria-hidden="true" />
             </Button>
             <a
               href="#challenge"
@@ -209,7 +209,7 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
           <div className="actions">
             <Button solid href="/contact">
               <span>Book a consultation</span>
-              <ArrowRight size={15} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
+              <ArrowRight size={16} strokeWidth={2} className="btn-arrow-green" aria-hidden="true" />
             </Button>
             <Button href="/projects">View more case studies</Button>
           </div>
