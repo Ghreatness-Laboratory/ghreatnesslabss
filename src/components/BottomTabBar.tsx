@@ -53,6 +53,8 @@ export function BottomTabBar({ path, onNavigate }: BottomTabBarProps) {
 
   return (
     <>
+      <div className="bottom-nav-fade" aria-hidden="true" />
+
       <nav className="app-bottom-tab-bar" aria-label="Primary mobile navigation">
         {TAB_ITEMS.map((item) => {
           const Icon = item.icon;

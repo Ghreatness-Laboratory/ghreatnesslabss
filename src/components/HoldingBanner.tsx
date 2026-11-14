@@ -33,6 +33,54 @@ export function HoldingBanner({ className = '', variant = 'banner' }: HoldingBan
     primaryHoldingItem?.description ||
     'Parent collective fostering digital technology, ventures, and infrastructure.';
 
+  if (variant === 'card') {
+    return (
+      <div
+        className={`holding-banner-container holding-banner-card ${className}`}
+        role="region"
+        aria-label={`Holding group affiliation: ${holdingName}`}
+      >
+        <div className="holding-card-top-row">
+          <div className="holding-logo-tile" aria-hidden="true">
+            {holdingLogo && !logoError ? (
+              <img
+                src={holdingLogo}
+                alt={`${holdingName} emblem`}
+                className="holding-logo-img"
+                loading="lazy"
+                referrerPolicy="no-referrer"
+                onError={() => setLogoError(true)}
+                width={28}
+                height={28}
+              />
+            ) : (
+              <Building2 size={20} strokeWidth={1.8} />
+            )}
+          </div>
+          <span className="holding-banner-eyebrow">Parent Holding Group</span>
+        </div>
+
+        <h3 className="holding-banner-statement">
+          GhreatnessLabs is part of{' '}
+          <strong className="holding-group-name">{holdingName}</strong>
+        </h3>
+
+        {holdingDesc && <p className="holding-banner-desc">{holdingDesc}</p>}
+
+        <a
+          href={holdingUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="holding-visit-button"
+          aria-label={`Visit ${holdingName} official website (opens in a new tab)`}
+        >
+          <span>Visit {holdingName}</span>
+          <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`holding-banner-container holding-banner-${variant} ${className}`}

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 import {
   SectionHead,
@@ -93,7 +93,7 @@ export default function Home() {
       <Stats />
       <AboutPreview />
 
-      <section className="section">
+      <section className="section home-practice-section">
         <SectionHead
           label="Practice areas"
           title="Core capabilities"
@@ -101,18 +101,18 @@ export default function Home() {
           copy="Cross-disciplinary expertise for organizations that need a system, not just a surface."
         />
         <Capabilities limit={3} />
-        <div className="section-link-wrap">
-          <Button variant="link" href="/services">
+        <div className="practice-link-wrap">
+          <a href="/services" className="practice-view-all-btn">
             <span>View all services</span>
-            <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
-          </Button>
+            <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
+          </a>
         </div>
       </section>
 
       <LeadershipPreview />
       <Partners />
 
-      <section className="section">
+      <section className="section home-work-section">
         <SectionHead
           label="Our work"
           title="Check out the projects"

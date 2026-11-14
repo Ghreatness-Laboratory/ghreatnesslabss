@@ -441,25 +441,29 @@ export function Capabilities({ limit }: { limit?: number }) {
   const items = limit ? sorted.slice(0, limit) : sorted;
 
   return (
-    <div className="grouped-list-card cap-grouped-list">
+    <div className="practice-list-card">
       {items.map((item, index) => {
         const Icon = icons[item.icon_name] || icons['pen-tool'];
         return (
-          <article className="grouped-list-row" key={item.id || item.title}>
-            <span className="service-row-icon" aria-hidden="true">
-              <Icon size={17} strokeWidth={1.7} />
+          <article className="practice-row" key={item.id || item.title}>
+            <span className="practice-row-icon" aria-hidden="true">
+              <Icon size={20} strokeWidth={1.8} />
             </span>
-            <div className="grouped-list-body">
-              <div className="grouped-list-title-row">
+            <div className="practice-row-content">
+              <div className="practice-row-header">
                 <h3>{item.title}</h3>
-                <span className="service-row-index">
+                <span className="practice-row-index">
                   {String(index + 1).padStart(2, '0')}
                 </span>
               </div>
-              <p>{item.description}</p>
+              <p className="practice-row-desc">{item.description}</p>
               {item.tags?.length > 0 && (
-                <div className="cap-meta-line">
-                  {item.tags.join(' · ')}
+                <div className="practice-tags-row">
+                  {item.tags.map((tag) => (
+                    <span key={tag} className="practice-tag-chip">
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               )}
             </div>
@@ -610,6 +614,31 @@ export function Testimonials({ limit }: { limit?: number }) {
   );
 }
 
+export function InfoCard({
+  iconName,
+  title,
+  description,
+  fallbackIcon = 'target',
+}: {
+  iconName?: string;
+  title: string;
+  description: string;
+  fallbackIcon?: string;
+}) {
+  const Icon = icons[iconName || ''] || icons[fallbackIcon] || icons['target'];
+  return (
+    <article className="info-card">
+      <div className="info-card-header">
+        <span className="info-card-icon-tile" aria-hidden="true">
+          <Icon size={20} strokeWidth={1.8} />
+        </span>
+        <h3 className="info-card-title">{title}</h3>
+      </div>
+      <p className="info-card-body">{description}</p>
+    </article>
+  );
+}
+
 export function AboutPreview() {
   const { data } = useCms();
   const sortedCards = [...data.aboutCards].sort((a, b) => a.sort_order - b.sort_order);
@@ -618,7 +647,7 @@ export function AboutPreview() {
   const visionCard = sortedCards.find((c) => c.type === 'vision' || c.title.toLowerCase().includes('vision'));
   const coreValuesCard = sortedCards.find((c) => c.type === 'core_values' || c.title.toLowerCase().includes('value'));
 
-  const pairCards = [missionCard, visionCard].filter(Boolean) as typeof sortedCards;
+  const infoCards = [missionCard, visionCard, coreValuesCard].filter(Boolean) as typeof sortedCards;
 
   return (
     <section className="section about-preview" aria-label="About the studio">
@@ -629,37 +658,17 @@ export function AboutPreview() {
         copy="Ghreatness Labs (Ghreatness Lab / GhreatnessLabs) is an independent digital and IT solutions studio founded in Lagos in 2024 to build high-impact systems, software, and brand infrastructure."
       />
 
-      {pairCards.length > 0 && (
-        <div className="mission-vision-grid">
-          {pairCards.map((item) => {
-            const Icon = icons[item.icon_name] || icons['target'];
-            return (
-              <article key={item.id || item.title} className="compact-about-card">
-                <span className="compact-icon-tile" aria-hidden="true">
-                  <Icon size={16} strokeWidth={1.7} />
-                </span>
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </article>
-            );
-          })}
-        </div>
-      )}
-
-      {coreValuesCard && (
-        <div className="grouped-list-card about-core-values-card">
-          <article className="service-grouped-row">
-            <span className="service-row-icon" aria-hidden="true">
-              {React.createElement(icons[coreValuesCard.icon_name] || icons['shield-check'], {
-                size: 18,
-                strokeWidth: 1.8,
-              })}
-            </span>
-            <div className="service-row-copy">
-              <h3>{coreValuesCard.title}</h3>
-              <p className="core-values-desc">{coreValuesCard.description}</p>
-            </div>
-          </article>
+      {infoCards.length > 0 && (
+        <div className="about-info-stack">
+          {infoCards.map((item) => (
+            <InfoCard
+              key={item.id || item.title}
+              iconName={item.icon_name}
+              title={item.title}
+              description={item.description}
+              fallbackIcon={item.type === 'core_values' ? 'shield-check' : 'target'}
+            />
+          ))}
         </div>
       )}
 
@@ -705,7 +714,7 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
             rel="noopener noreferrer"
             className="leader-snap-social-btn"
           >
-            <Linkedin size={14} strokeWidth={1.7} aria-hidden="true" />
+            <Linkedin size={16} strokeWidth={1.8} aria-hidden="true" />
           </a>
         )}
         {leader.social_links?.twitter && (
@@ -716,7 +725,7 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
             rel="noopener noreferrer"
             className="leader-snap-social-btn"
           >
-            <Twitter size={14} strokeWidth={1.7} aria-hidden="true" />
+            <Twitter size={16} strokeWidth={1.8} aria-hidden="true" />
           </a>
         )}
         <a
@@ -725,7 +734,7 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
           aria-label={`Profile of ${leader.name}`}
         >
           <span>Profile</span>
-          <ArrowUpRight size={12} strokeWidth={1.7} aria-hidden="true" />
+          <ArrowUpRight size={13} strokeWidth={1.8} aria-hidden="true" />
         </a>
       </div>
     </article>
@@ -735,6 +744,36 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
 export function LeadershipPreview() {
   const { data } = useCms();
   const sortedLeaders = [...data.leadership].sort((a, b) => a.sort_order - b.sort_order);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const handleScroll = () => {
+    const track = trackRef.current;
+    if (!track || sortedLeaders.length === 0) return;
+    const cardStep = 310 + 12; // 310px card width + 12px gap
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    if (maxScroll <= 0) {
+      setActiveIndex(0);
+      return;
+    }
+    if (track.scrollLeft >= maxScroll - 8) {
+      setActiveIndex(sortedLeaders.length - 1);
+      return;
+    }
+    const nextIdx = Math.min(
+      sortedLeaders.length - 1,
+      Math.max(0, Math.round(track.scrollLeft / cardStep))
+    );
+    setActiveIndex(nextIdx);
+  };
+
+  const scrollToCard = (index: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const cardStep = 310 + 12;
+    track.scrollTo({ left: index * cardStep, behavior: 'smooth' });
+    setActiveIndex(index);
+  };
 
   return (
     <section className="section leadership-preview" aria-label="Leadership team">
@@ -744,13 +783,35 @@ export function LeadershipPreview() {
         accent="the work."
       />
 
-      <div className="leader-snap-row" role="list" aria-label="Studio leadership team">
+      <div
+        ref={trackRef}
+        className="leader-snap-row"
+        role="list"
+        aria-label="Studio leadership team"
+        onScroll={handleScroll}
+      >
         {sortedLeaders.map((leader) => (
           <div key={leader.id || leader.name} role="listitem">
             <LeaderSnapCard leader={leader} />
           </div>
         ))}
       </div>
+
+      {sortedLeaders.length > 1 && (
+        <div className="leader-pagination" role="tablist" aria-label="Leadership carousel pagination">
+          {sortedLeaders.map((leader, idx) => (
+            <button
+              key={leader.id || leader.name}
+              type="button"
+              role="tab"
+              aria-selected={activeIndex === idx}
+              aria-label={`Show ${leader.name}`}
+              className={`leader-pagination-dot ${activeIndex === idx ? 'is-active' : ''}`}
+              onClick={() => scrollToCard(idx)}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="section-link-wrap">
         <Button variant="link" href="/leadership">
