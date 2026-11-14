@@ -88,7 +88,8 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
           )}
           <div className="project-hero-actions">
             <Button solid href="/contact">
-              Discuss a similar project
+              <span>Discuss a similar project</span>
+              <ArrowRight size={15} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
             </Button>
             <a
               href="#challenge"
@@ -207,7 +208,8 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
           </p>
           <div className="actions">
             <Button solid href="/contact">
-              Book a consultation
+              <span>Book a consultation</span>
+              <ArrowRight size={15} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
             </Button>
             <Button href="/projects">View more case studies</Button>
           </div>

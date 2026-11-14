@@ -449,7 +449,7 @@ export default function StartProject() {
                     </>
                   ) : (
                     <>
-                      Submit Project Brief <ArrowRight size={16} />
+                      Submit Project Brief <ArrowRight size={16} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
                     </>
                   )}
                 </button>

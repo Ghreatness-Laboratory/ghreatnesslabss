@@ -14,7 +14,6 @@ import {
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
-  Pause,
   Target,
   Eye,
   Telescope,
@@ -461,13 +460,7 @@ export function Capabilities({ limit }: { limit?: number }) {
               </div>
               <p className="practice-row-desc">{item.description}</p>
               {item.tags?.length > 0 && (
-                <div className="practice-tags-row">
-                  {item.tags.map((tag) => (
-                    <span key={tag} className="practice-tag-chip">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <p className="practice-meta-line">{item.tags.join(' · ')}</p>
               )}
             </div>
           </article>
@@ -535,7 +528,6 @@ export function Ventures({ limit }: { limit?: number }) {
               className="venture-visual"
               aria-label={`View ${item.title} case study`}
             >
-              <span className="venture-badge">{item.category_tag}</span>
               <ResilientCoverImage
                 src={coverImage}
                 alt={`${item.title} preview`}
@@ -546,6 +538,9 @@ export function Ventures({ limit }: { limit?: number }) {
             </a>
 
             <div className="venture-body">
+              {item.category_tag && (
+                <span className="venture-kicker">{item.category_tag}</span>
+              )}
               <h3>
                 <a href={projectHref} className="venture-title-link">
                   {item.title}
@@ -562,7 +557,7 @@ export function Ventures({ limit }: { limit?: number }) {
                   aria-label={`Visit ${item.title} website (opens in a new tab)`}
                 >
                   <span>Visit site</span>
-                  <ArrowUpRight size={14} strokeWidth={1.8} aria-hidden="true" />
+                  <ArrowUpRight size={14} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
                 </a>
 
                 <a
@@ -630,14 +625,12 @@ export function InfoCard({
 }) {
   const Icon = icons[iconName || ''] || icons[fallbackIcon] || icons['target'];
   return (
-    <article className="info-card">
-      <div className="info-card-header">
-        <span className="info-card-icon-tile" aria-hidden="true">
-          <Icon size={20} strokeWidth={1.8} />
-        </span>
-        <h3 className="info-card-title">{title}</h3>
-      </div>
-      <p className="info-card-body">{description}</p>
+    <article className="compact-about-card">
+      <span className="compact-icon-tile" aria-hidden="true">
+        <Icon size={17} strokeWidth={1.8} />
+      </span>
+      <h3>{title}</h3>
+      <p>{description}</p>
     </article>
   );
 }
@@ -650,7 +643,7 @@ export function AboutPreview() {
   const visionCard = sortedCards.find((c) => c.type === 'vision' || c.title.toLowerCase().includes('vision'));
   const coreValuesCard = sortedCards.find((c) => c.type === 'core_values' || c.title.toLowerCase().includes('value'));
 
-  const infoCards = [missionCard, visionCard, coreValuesCard].filter(Boolean) as typeof sortedCards;
+  const pairCards = [missionCard, visionCard].filter(Boolean) as typeof sortedCards;
 
   return (
     <section className="section about-preview" aria-label="About the studio">
@@ -661,17 +654,28 @@ export function AboutPreview() {
         copy="Ghreatness Labs (Ghreatness Lab / GhreatnessLabs) is an independent digital and IT solutions studio founded in Lagos in 2024 to build high-impact systems, software, and brand infrastructure."
       />
 
-      {infoCards.length > 0 && (
-        <div className="about-info-stack">
-          {infoCards.map((item) => (
+      {pairCards.length > 0 && (
+        <div className="mission-vision-grid">
+          {pairCards.map((item) => (
             <InfoCard
               key={item.id || item.title}
               iconName={item.icon_name}
               title={item.title}
               description={item.description}
-              fallbackIcon={item.type === 'core_values' ? 'shield-check' : 'target'}
+              fallbackIcon="target"
             />
           ))}
+        </div>
+      )}
+
+      {coreValuesCard && (
+        <div className="about-core-values-card">
+          <InfoCard
+            iconName={coreValuesCard.icon_name}
+            title={coreValuesCard.title}
+            description={coreValuesCard.description}
+            fallbackIcon="shield-check"
+          />
         </div>
       )}
 
@@ -753,7 +757,7 @@ export function LeadershipPreview() {
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  const cardStep = 310 + 12; // 310px card + 12px gap
+  const cardStep = 292 + 12; // 292px card + 12px gap
   const maxIndex = Math.max(0, sortedLeaders.length - 1);
 
   useEffect(() => {
@@ -923,53 +927,9 @@ export function LeadershipPreview() {
   );
 }
 
-function MarqueeClientCard({ client }: { client: ClientItem }) {
-  const [imgFailed, setImgFailed] = useState(!client.logo_url);
-
-  useEffect(() => {
-    setImgFailed(!client.logo_url);
-  }, [client.logo_url]);
-
-  return (
-    <div className="partners-marquee-card" title={client.name}>
-      {client.logo_url && !imgFailed ? (
-        <img
-          src={client.logo_url}
-          alt={`${client.name} logo`}
-          className="partners-marquee-img"
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          onLoad={(e) => {
-            if (e.currentTarget.naturalWidth === 0) setImgFailed(true);
-          }}
-          onError={() => setImgFailed(true)}
-        />
-      ) : (
-        <span className="partners-marquee-text">{client.name}</span>
-      )}
-    </div>
-  );
-}
-
 export function Partners() {
   const { data } = useCms();
   const sortedClients = [...data.clients].sort((a, b) => a.sort_order - b.sort_order);
-  const [isPaused, setIsPaused] = useState(false);
-  const [pausedRowIndex, setPausedRowIndex] = useState<number | null>(null);
-
-  // Guarantee each loop copy is at least as wide as desktop & mobile viewports (>= 10 items * 160px = 1600px)
-  const buildRowItems = (source: ClientItem[]) => {
-    if (source.length === 0) return [];
-    const repeatCount = Math.max(1, Math.ceil(10 / source.length));
-    const expanded: ClientItem[] = [];
-    for (let i = 0; i < repeatCount; i += 1) {
-      expanded.push(...source);
-    }
-    return expanded;
-  };
-
-  const row1Items = buildRowItems(sortedClients);
-  const row2Items = buildRowItems([...sortedClients].reverse());
 
   return (
     <section className="section partners-section" aria-label="Partners and clients">
@@ -980,62 +940,10 @@ export function Partners() {
         copy="Ambitious teams and ventures we are proud to work alongside."
       />
 
-      <div
-        className="partners-marquee-shell"
-        data-paused={isPaused ? 'true' : 'false'}
-      >
-        <div className="partners-marquee-stack">
-          {[row1Items, row2Items].map((items, rowIndex) => (
-            <div
-              key={rowIndex}
-              className={`partners-marquee-row ${rowIndex === 1 ? 'is-reverse' : ''}`}
-              data-touch-paused={pausedRowIndex === rowIndex ? 'true' : 'false'}
-              onPointerDown={() => setPausedRowIndex(rowIndex)}
-              onPointerUp={() => setPausedRowIndex(null)}
-              onPointerCancel={() => setPausedRowIndex(null)}
-              onTouchStart={() => setPausedRowIndex(rowIndex)}
-              onTouchEnd={() => setPausedRowIndex(null)}
-            >
-              <div className="partners-marquee-track">
-                <div className="partners-marquee-group">
-                  {items.map((client, idx) => (
-                    <MarqueeClientCard
-                      key={`r${rowIndex}-a-${client.id || client.name}-${idx}`}
-                      client={client}
-                    />
-                  ))}
-                </div>
-                <div className="partners-marquee-group" aria-hidden="true">
-                  {items.map((client, idx) => (
-                    <MarqueeClientCard
-                      key={`r${rowIndex}-b-${client.id || client.name}-${idx}`}
-                      client={client}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="partners-marquee-controls">
-        <span className="partners-marquee-caption">
-          {isPaused ? 'Partner showcase paused' : 'Trusted partners & ventures'}
-        </span>
-        <button
-          type="button"
-          className="partners-pause-btn"
-          aria-pressed={isPaused}
-          aria-label={isPaused ? 'Play partners marquee' : 'Pause partners marquee'}
-          onClick={() => setIsPaused((prev) => !prev)}
-        >
-          {isPaused ? (
-            <Play size={13} strokeWidth={2.2} aria-hidden="true" />
-          ) : (
-            <Pause size={13} strokeWidth={2.2} aria-hidden="true" />
-          )}
-        </button>
+      <div className="clients-chip-grid">
+        {sortedClients.map((client) => (
+          <ClientLogoChip key={client.id || client.name} client={client} />
+        ))}
       </div>
     </section>
   );

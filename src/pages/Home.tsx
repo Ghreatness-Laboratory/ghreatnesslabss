@@ -37,7 +37,10 @@ export default function Home() {
             copy={settings.heroBody}
           />
           <div className="actions hero-actions">
-            <Button solid>Book a consultation</Button>
+            <Button solid>
+              <span>Book a consultation</span>
+              <ArrowRight size={15} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
+            </Button>
             <Button href="/projects">Case studies</Button>
           </div>
         </div>
@@ -75,7 +78,10 @@ export default function Home() {
             <div className="dispatch-card">
               <div className="dispatch-row">
                 <span>Current availability</span>
-                <strong>{settings.availabilityText}</strong>
+                <strong className="dispatch-status-value">
+                  <span className="dispatch-status-dot" aria-hidden="true" />
+                  <span>{settings.availabilityText}</span>
+                </strong>
               </div>
               <div className="dispatch-row">
                 <span>Based in</span>
@@ -101,11 +107,11 @@ export default function Home() {
           copy="Cross-disciplinary expertise for organizations that need a system, not just a surface."
         />
         <Capabilities limit={3} />
-        <div className="practice-link-wrap">
-          <a href="/services" className="practice-view-all-btn">
+        <div className="section-link-wrap">
+          <Button variant="link" href="/services">
             <span>View all services</span>
             <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
-          </a>
+          </Button>
         </div>
       </section>
 

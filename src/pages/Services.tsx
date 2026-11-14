@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 import { SectionHead, ServiceList, Button } from '../components/SharedSections';
 
@@ -67,7 +68,10 @@ export default function Services() {
       </div>
 
       <div className="center-action">
-        <Button solid>Book a consultation</Button>
+        <Button solid>
+          <span>Book a consultation</span>
+          <ArrowRight size={15} strokeWidth={2.2} className="btn-arrow-green" aria-hidden="true" />
+        </Button>
       </div>
     </section>
   );
