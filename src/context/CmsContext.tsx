@@ -68,6 +68,27 @@ interface CmsContextValue {
 
 const CmsContext = createContext<CmsContextValue | null>(null);
 
+const STALE_PARTNER_WALLPAPERS = new Set([
+  'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80',
+  'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?auto=format&fit=crop&w=300&q=80',
+]);
+
+function isInvalidPartnerWallpaper(url?: string): boolean {
+  if (!url) return false;
+  return (
+    STALE_PARTNER_WALLPAPERS.has(url) ||
+    url.includes('images.unsplash.com/photo-') ||
+    url.includes('/assets/aistudio/') ||
+    /\.(jpe?g)(\?|$)/i.test(url)
+  );
+}
+
+function sanitizeClientList(clients: ClientItem[]): ClientItem[] {
+  return clients.map((c) =>
+    isInvalidPartnerWallpaper(c.logo_url) ? { ...c, logo_url: undefined } : c
+  );
+}
+
 function loadLocalCache(): CmsData {
   try {
     const cached = localStorage.getItem(CMS_STORAGE_KEY);
@@ -92,16 +113,8 @@ function loadLocalCache(): CmsData {
       ) {
         settings.copyrightText = defaultCmsData.settings.copyrightText;
       }
-      const stalePartnerWallpapers = new Set([
-        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80',
-        'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?auto=format&fit=crop&w=300&q=80',
-      ]);
       const sanitizedClients = Array.isArray(parsed.clients)
-        ? parsed.clients.map((c: ClientItem) =>
-            c.logo_url && stalePartnerWallpapers.has(c.logo_url)
-              ? { ...c, logo_url: undefined }
-              : c
-          )
+        ? sanitizeClientList(parsed.clients)
         : defaultCmsData.clients;
 
       return {
@@ -126,7 +139,7 @@ function loadLocalCache(): CmsData {
         faqs: Array.isArray(parsed.faqs) ? parsed.faqs : defaultCmsData.faqs,
         pages: Array.isArray(parsed.pages) ? parsed.pages : defaultCmsData.pages,
         media: Array.isArray(parsed.media)
-          ? parsed.media.filter((m: MediaItem) => !stalePartnerWallpapers.has(m.url))
+          ? parsed.media.filter((m: MediaItem) => !STALE_PARTNER_WALLPAPERS.has(m.url))
           : defaultCmsData.media,
       };
     }
@@ -211,7 +224,7 @@ export function CmsProvider({ children }: { children: React.ReactNode }) {
                 : prev.leadership,
             clients:
               remote.clients && remote.clients.length > 0
-                ? (remote.clients as ClientItem[])
+                ? sanitizeClientList(remote.clients as ClientItem[])
                 : prev.clients,
             testimonials:
               remote.testimonials && remote.testimonials.length > 0

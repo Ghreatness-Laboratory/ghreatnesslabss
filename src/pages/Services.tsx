@@ -1,11 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 import { SectionHead, ServiceList, Button } from '../components/SharedSections';
 
+function readTabFromUrl(): 'digital' | 'it' {
+  if (typeof window === 'undefined') return 'digital';
+  const hash = window.location.hash.replace('#', '').toLowerCase();
+  const queryTab = new URLSearchParams(window.location.search).get('tab')?.toLowerCase();
+  const raw = hash || queryTab;
+  return raw === 'it' || raw === 'technology' ? 'it' : 'digital';
+}
+
 export default function Services() {
   const { data } = useCms();
-  const [activeTab, setActiveTab] = useState<'digital' | 'it'>('digital');
+  const [activeTab, setActiveTab] = useState<'digital' | 'it'>(readTabFromUrl);
+
+  useEffect(() => {
+    const syncTabFromUrl = () => {
+      setActiveTab(readTabFromUrl());
+    };
+    window.addEventListener('hashchange', syncTabFromUrl);
+    window.addEventListener('popstate', syncTabFromUrl);
+    return () => {
+      window.removeEventListener('hashchange', syncTabFromUrl);
+      window.removeEventListener('popstate', syncTabFromUrl);
+    };
+  }, []);
+
+  const handleSelectTab = (tab: 'digital' | 'it') => {
+    setActiveTab(tab);
+    if (typeof window !== 'undefined') {
+      const nextUrl = `${window.location.pathname}${window.location.search}#${tab}`;
+      window.history.replaceState(null, '', nextUrl);
+    }
+  };
 
   const pageCopy = data.pages.find((p) => p.page_slug === 'services' && p.section_key === 'hero');
 
@@ -26,7 +54,7 @@ export default function Services() {
   const activeItems = activeTab === 'digital' ? digitalServices : technologyServices;
 
   return (
-    <section className="section page-intro">
+    <section className="section page-intro services-page-section">
       <SectionHead
         as="h1"
         label="Practice areas"
@@ -41,7 +69,7 @@ export default function Services() {
           role="tab"
           aria-selected={activeTab === 'digital'}
           className={`segmented-tab ${activeTab === 'digital' ? 'is-active' : ''}`}
-          onClick={() => setActiveTab('digital')}
+          onClick={() => handleSelectTab('digital')}
         >
           Digital ({digitalServices.length})
         </button>
@@ -50,7 +78,7 @@ export default function Services() {
           role="tab"
           aria-selected={activeTab === 'it'}
           className={`segmented-tab ${activeTab === 'it' ? 'is-active' : ''}`}
-          onClick={() => setActiveTab('it')}
+          onClick={() => handleSelectTab('it')}
         >
           IT ({technologyServices.length})
         </button>

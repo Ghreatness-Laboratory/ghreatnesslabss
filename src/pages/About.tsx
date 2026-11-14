@@ -21,7 +21,7 @@ export default function About() {
 
   return (
     <>
-      <section className="section page-intro" aria-label="About Ghreatness Labs">
+      <section className="section page-intro about-page-section" aria-label="About Ghreatness Labs">
         <SectionHead
           as="h1"
           label="About"
@@ -50,17 +50,17 @@ export default function About() {
         )}
 
         {listCards.length > 0 && (
-          <div className="grouped-list-card about-core-values-card">
+          <div className="about-compact-stack">
             {listCards.map((card) => {
               const Icon = icons[card.icon_name] || icons['building-2'];
               return (
-                <article key={card.id || card.title} className="service-grouped-row">
-                  <span className="service-row-icon" aria-hidden="true">
+                <article key={card.id || card.title} className="about-horizontal-card">
+                  <span className="about-horizontal-icon" aria-hidden="true">
                     <Icon size={16} strokeWidth={2} />
                   </span>
-                  <div className="service-row-copy">
+                  <div className="about-horizontal-body">
                     <h2>{card.title}</h2>
-                    <p className="about-list-row-desc">{card.description}</p>
+                    <p>{card.description}</p>
                   </div>
                 </article>
               );

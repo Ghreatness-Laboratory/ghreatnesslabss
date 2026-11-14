@@ -4,6 +4,7 @@ import { pages, Link } from './SharedSections';
 import { GhreatnessMark } from './GhreatnessLogo';
 import { SearchModal } from './SearchModal';
 import { useSmoothScroll } from '../context/SmoothScrollContext';
+import { PWAInstallButton } from './PWAInstallButton';
 
 const DESKTOP_NAV_ITEMS = [
   { to: '/', label: 'Home', match: (p: string) => p === '/' },
@@ -153,6 +154,7 @@ export function Header({
                 </a>
               ))}
             </div>
+            <PWAInstallButton variant="drawer" />
           </div>
         </>
       )}

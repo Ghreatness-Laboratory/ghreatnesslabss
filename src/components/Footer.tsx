@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MapPin, Shield, ArrowUpRight, ArrowRight } from 'lucide-react';
+import { MapPin, Shield, ArrowUpRight, ArrowRight, Mail } from 'lucide-react';
 import { pages, Label, Button, Link } from './SharedSections';
 import { useCms } from '../context/CmsContext';
 import { GhreatnessMark } from './GhreatnessLogo';
@@ -44,8 +44,9 @@ export function Footer() {
             <span>Book a consultation</span>
             <ArrowRight size={16} strokeWidth={2} className="btn-arrow-green" aria-hidden="true" />
           </Button>
-          <a className="button" href={`mailto:${settings.contactEmail}`}>
-            {settings.contactEmail}
+          <a className="button button-email-outline" href={`mailto:${settings.contactEmail}`}>
+            <Mail size={15} strokeWidth={2} aria-hidden="true" />
+            <span>{settings.contactEmail}</span>
           </a>
         </div>
       </section>

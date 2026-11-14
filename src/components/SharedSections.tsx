@@ -173,14 +173,16 @@ export function ResilientCoverImage({
 
   if (failed || !src) {
     return (
-      <div className={`cover-fallback-gradient ${className}`} aria-label={alt}>
+      <div className={`cover-fallback-gradient is-compact ${className}`} aria-label={alt}>
         <div className="cover-fallback-grid" aria-hidden="true" />
-        <div className="cover-fallback-content" aria-hidden="true">
+        <div className="cover-fallback-content is-horizontal" aria-hidden="true">
           <span className="cover-fallback-monogram">
-            {initials || <Layers size={18} strokeWidth={2} />}
+            {initials || <Layers size={16} strokeWidth={2} />}
           </span>
-          <span className="cover-fallback-title">{title}</span>
-          {category && <span className="cover-fallback-sub">{category}</span>}
+          <span className="cover-fallback-text-group">
+            <span className="cover-fallback-title">{title}</span>
+            {category && <span className="cover-fallback-sub">{category}</span>}
+          </span>
         </div>
       </div>
     );
@@ -192,6 +194,8 @@ export function ResilientCoverImage({
       <img
         src={src}
         alt={alt}
+        width={640}
+        height={360}
         loading="lazy"
         decoding="async"
         referrerPolicy="no-referrer"
@@ -209,34 +213,130 @@ export function ResilientCoverImage({
   );
 }
 
-/**
- * Resilient 64px client tile with monochrome logo/wordmark (~22px tall) that turns full colour on tap.
- */
-export function ClientLogoChip({ client }: { client: ClientItem }) {
-  const [imgFailed, setImgFailed] = useState(!client.logo_url);
-  const [loaded, setLoaded] = useState(false);
-  const [revealed, setRevealed] = useState(false);
+function isPartnerWallpaperUrl(url?: string): boolean {
+  if (!url) return false;
+  return (
+    url.includes('images.unsplash.com/photo-') ||
+    url.includes('/assets/aistudio/') ||
+    /\.(jpe?g)(\?|$)/i.test(url)
+  );
+}
 
-  useEffect(() => {
-    setImgFailed(!client.logo_url);
-    setLoaded(false);
-  }, [client.logo_url]);
+function PartnerMonochromeMark({ name }: { name: string }) {
+  const key = name.trim().toLowerCase();
+
+  if (key.includes('vertex')) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M3 4.5L10 16.5L17 4.5H13.6L10 10.8L6.4 4.5H3Z" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (key.includes('duct')) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <rect x="3" y="4" width="14" height="4" rx="1.5" fill="currentColor" />
+        <rect x="3" y="12" width="14" height="4" rx="1.5" fill="currentColor" opacity="0.55" />
+      </svg>
+    );
+  }
+  if (key.includes('mora')) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="7" cy="10" r="4" stroke="currentColor" strokeWidth="2.2" />
+        <circle cx="13" cy="10" r="4" stroke="currentColor" strokeWidth="2.2" opacity="0.55" />
+      </svg>
+    );
+  }
+  if (key.includes('athle')) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M10 2.5L16.5 6.2V13.8L10 17.5L3.5 13.8V6.2L10 2.5Z" stroke="currentColor" strokeWidth="2" />
+        <path d="M7.2 12.5L10 6.8L12.8 12.5H7.2Z" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (key.includes('civyn')) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M15.2 6.8A6 6 0 1 0 15.2 13.2" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+        <circle cx="14.5" cy="10" r="2" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (key.includes('univyx')) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <rect x="3.5" y="3.5" width="5.5" height="5.5" rx="1.5" fill="currentColor" />
+        <rect x="11" y="3.5" width="5.5" height="5.5" rx="1.5" fill="currentColor" opacity="0.45" />
+        <rect x="3.5" y="11" width="5.5" height="5.5" rx="1.5" fill="currentColor" opacity="0.45" />
+        <rect x="11" y="11" width="5.5" height="5.5" rx="1.5" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (key.includes('kora')) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <rect x="3.5" y="3.5" width="3" height="13" rx="1.2" fill="currentColor" />
+        <path d="M8.5 10L15 3.5H17.2L11.2 9.8L17.2 16.5H15L8.5 10Z" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (key.includes('northstar')) {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M10 2L12.1 7.9L18 10L12.1 12.1L10 18L7.9 12.1L2 10L7.9 7.9L10 2Z" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join('');
 
   return (
-    <button
-      type="button"
-      className={`client-chip ${revealed ? 'is-revealed' : ''}`}
+    <span className="client-chip-monogram" aria-hidden="true">
+      {initials || 'GL'}
+    </span>
+  );
+}
+
+/**
+ * 52px partner chip with crisp monochrome 20px logo/monogram + 13.5px bold name.
+ */
+export function ClientLogoChip({
+  client,
+  className = '',
+}: {
+  client: ClientItem;
+  className?: string;
+}) {
+  const validLogoUrl = client.logo_url && !isPartnerWallpaperUrl(client.logo_url) ? client.logo_url : undefined;
+  const [imgFailed, setImgFailed] = useState(!validLogoUrl);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setImgFailed(!validLogoUrl);
+    setLoaded(false);
+  }, [validLogoUrl]);
+
+  return (
+    <div
+      className={`client-chip ${className}`}
       title={client.name}
-      aria-pressed={revealed}
-      aria-label={`${client.name} partner logo`}
-      onClick={() => setRevealed((prev) => !prev)}
+      aria-label={`${client.name} partner`}
     >
-      {client.logo_url && !imgFailed ? (
-        <span className="client-chip-media">
+      {validLogoUrl && !imgFailed ? (
+        <span className="client-chip-mark-img">
           {!loaded && <span className="image-skeleton" aria-hidden="true" />}
           <img
-            src={client.logo_url}
-            alt={`${client.name} logo`}
+            src={validLogoUrl}
+            alt=""
+            width={22}
+            height={22}
             className={`client-chip-img img-fade-in ${loaded ? 'is-loaded' : ''}`}
             loading="lazy"
             decoding="async"
@@ -252,12 +352,12 @@ export function ClientLogoChip({ client }: { client: ClientItem }) {
           />
         </span>
       ) : (
-        <span className="client-chip-wordmark">
-          <span className="client-chip-dot" aria-hidden="true" />
-          <span className="client-chip-text">{client.name}</span>
+        <span className="client-chip-mark">
+          <PartnerMonochromeMark name={client.name} />
         </span>
       )}
-    </button>
+      <span className="client-chip-text">{client.name}</span>
+    </div>
   );
 }
 
@@ -298,6 +398,8 @@ export function ResilientAvatar({
       <img
         src={src}
         alt={name}
+        width={48}
+        height={48}
         loading="lazy"
         decoding="async"
         referrerPolicy="no-referrer"
@@ -559,12 +661,13 @@ export function Ventures({ limit }: { limit?: number }) {
 
         const coverImage = item.image_url || item.hero_image_url;
         const liveSiteUrl = item.live_url || item.project_url || '#';
+        const hasNoPhoto = !coverImage;
 
         return (
           <article className={`venture v${i}`} key={item.id || item.title}>
             <a
               href={projectHref}
-              className="venture-visual"
+              className={`venture-visual ${hasNoPhoto ? 'is-fallback' : ''}`}
               aria-label={`View ${item.title} case study`}
             >
               <ResilientCoverImage
@@ -764,11 +867,15 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
         className="leader-snap-main"
         aria-label={`View full profile of ${leader.name}, ${leader.role}`}
       >
-        <span className="leader-snap-avatar">
-          <ResilientAvatar src={leader.avatar_url} name={leader.name} />
-        </span>
-        <h3 className="leader-snap-name">{leader.name}</h3>
-        <small className="leader-snap-role">{leader.role}</small>
+        <div className="leader-snap-top">
+          <span className="leader-snap-avatar">
+            <ResilientAvatar src={leader.avatar_url} name={leader.name} />
+          </span>
+          <div className="leader-snap-identity">
+            <h3 className="leader-snap-name">{leader.name}</h3>
+            <small className="leader-snap-role">{leader.role}</small>
+          </div>
+        </div>
         <p className="leader-snap-bio">{leader.bio}</p>
       </a>
 
@@ -781,7 +888,7 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
             rel="noopener noreferrer"
             className="leader-snap-social-btn"
           >
-            <Linkedin size={16} strokeWidth={2} aria-hidden="true" />
+            <Linkedin size={14} strokeWidth={2} aria-hidden="true" />
           </a>
         )}
         {leader.social_links?.twitter && (
@@ -792,7 +899,7 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
             rel="noopener noreferrer"
             className="leader-snap-social-btn"
           >
-            <Twitter size={16} strokeWidth={2} aria-hidden="true" />
+            <Twitter size={14} strokeWidth={2} aria-hidden="true" />
           </a>
         )}
         <a
@@ -801,7 +908,7 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
           aria-label={`Profile of ${leader.name}`}
         >
           <span>Profile</span>
-          <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
+          <ArrowUpRight size={13} strokeWidth={2} aria-hidden="true" />
         </a>
       </div>
     </article>
@@ -811,21 +918,28 @@ export function LeaderSnapCard({ leader }: { leader: LeaderItem }) {
 export function LeadershipPreview() {
   const { data } = useCms();
   const sortedLeaders = [...data.leadership].sort((a, b) => a.sort_order - b.sort_order);
+  const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const resumeTimerRef = useRef<number | null>(null);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHoverOrFocusPaused, setIsHoverOrFocusPaused] = useState(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [isUserPaused, setIsUserPaused] = useState(false);
+  const [isInViewport, setIsInViewport] = useState(true);
+  const [isTabHidden, setIsTabHidden] = useState(
+    typeof document !== 'undefined' ? document.hidden : false
+  );
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   const maxIndex = Math.max(0, sortedLeaders.length - 1);
 
   const getCardStep = () => {
     const track = trackRef.current;
-    if (!track) return 320;
+    if (!track) return 246;
     const firstCard = track.querySelector<HTMLElement>('.leader-snap-card');
-    if (!firstCard) return 320;
+    if (!firstCard) return 246;
     const trackStyle = getComputedStyle(track);
-    const gap = parseFloat(trackStyle.columnGap || trackStyle.gap || '12') || 12;
+    const gap = parseFloat(trackStyle.columnGap || trackStyle.gap || '10') || 10;
     return firstCard.getBoundingClientRect().width + gap;
   };
 
@@ -837,6 +951,41 @@ export function LeadershipPreview() {
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
+  useEffect(() => {
+    const handleVisibility = () => setIsTabHidden(document.hidden);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, []);
+
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInViewport(entry.isIntersecting),
+      { threshold: 0.15 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current !== null) {
+        window.clearTimeout(resumeTimerRef.current);
+      }
+    };
+  }, []);
+
+  const pauseWithAutoResume = () => {
+    setIsUserPaused(true);
+    if (resumeTimerRef.current !== null) {
+      window.clearTimeout(resumeTimerRef.current);
+    }
+    resumeTimerRef.current = window.setTimeout(() => {
+      setIsUserPaused(false);
+    }, 5000);
+  };
+
   const scrollToCard = (index: number, behavior: ScrollBehavior = 'smooth') => {
     const track = trackRef.current;
     if (!track || sortedLeaders.length === 0) return;
@@ -846,7 +995,14 @@ export function LeadershipPreview() {
   };
 
   useEffect(() => {
-    if (prefersReducedMotion || hasUserInteracted || isHoverOrFocusPaused || sortedLeaders.length <= 1) {
+    if (
+      prefersReducedMotion ||
+      isUserPaused ||
+      isHoverOrFocusPaused ||
+      !isInViewport ||
+      isTabHidden ||
+      sortedLeaders.length <= 1
+    ) {
       return;
     }
 
@@ -859,10 +1015,18 @@ export function LeadershipPreview() {
         }
         return next;
       });
-    }, 5000);
+    }, 4000);
 
     return () => window.clearInterval(timer);
-  }, [prefersReducedMotion, hasUserInteracted, isHoverOrFocusPaused, sortedLeaders.length, maxIndex]);
+  }, [
+    prefersReducedMotion,
+    isUserPaused,
+    isHoverOrFocusPaused,
+    isInViewport,
+    isTabHidden,
+    sortedLeaders.length,
+    maxIndex,
+  ]);
 
   const handleScroll = () => {
     const track = trackRef.current;
@@ -881,33 +1045,25 @@ export function LeadershipPreview() {
   };
 
   const handlePrev = () => {
-    setHasUserInteracted(true);
-    if (activeIndex <= 0) return;
-    scrollToCard(activeIndex - 1);
+    pauseWithAutoResume();
+    const targetIdx = activeIndex <= 0 ? maxIndex : activeIndex - 1;
+    scrollToCard(targetIdx);
   };
 
   const handleNext = () => {
-    setHasUserInteracted(true);
-    if (activeIndex >= maxIndex) return;
-    scrollToCard(activeIndex + 1);
+    pauseWithAutoResume();
+    const targetIdx = activeIndex >= maxIndex ? 0 : activeIndex + 1;
+    scrollToCard(targetIdx);
   };
 
   const handleDotClick = (idx: number) => {
-    setHasUserInteracted(true);
+    pauseWithAutoResume();
     scrollToCard(idx);
   };
 
-  const stopAutoplayOnUserInput = () => {
-    if (!hasUserInteracted) {
-      setHasUserInteracted(true);
-    }
-  };
-
-  const atStart = activeIndex <= 0;
-  const atEnd = activeIndex >= maxIndex;
-
   return (
     <section
+      ref={sectionRef}
       className="section leadership-preview"
       aria-label="Leadership team"
       onMouseEnter={() => setIsHoverOrFocusPaused(true)}
@@ -921,9 +1077,16 @@ export function LeadershipPreview() {
     >
       <div className="section-head-block">
         <Label>Leadership</Label>
-        <h2 className="section-heading">
-          The brains behind <em>the work.</em>
-        </h2>
+        <div className="leader-heading-meta-row">
+          <h2 className="section-heading">
+            The brains behind <em>the work.</em>
+          </h2>
+          {sortedLeaders.length > 1 && !prefersReducedMotion && (
+            <span className="leader-autoplay-pill" aria-hidden="true">
+              Auto-play · every 4s
+            </span>
+          )}
+        </div>
         <div className="leader-intro-controls-row">
           <p className="section-intro">
             Senior thinking stays close to the brief, the details, and the people making decisions.
@@ -934,16 +1097,14 @@ export function LeadershipPreview() {
                 type="button"
                 className="leader-nav-btn leader-nav-prev"
                 onClick={handlePrev}
-                disabled={atStart}
                 aria-label="Previous team member"
               >
                 <ChevronLeft size={16} strokeWidth={2} aria-hidden="true" />
               </button>
               <button
                 type="button"
-                className={`leader-nav-btn leader-nav-next ${!atEnd ? 'is-solid' : ''}`}
+                className="leader-nav-btn leader-nav-next is-solid"
                 onClick={handleNext}
-                disabled={atEnd}
                 aria-label="Next team member"
               >
                 <ChevronRight size={16} strokeWidth={2} aria-hidden="true" />
@@ -959,9 +1120,9 @@ export function LeadershipPreview() {
         role="list"
         aria-label="Studio leadership team"
         onScroll={handleScroll}
-        onTouchStart={stopAutoplayOnUserInput}
-        onPointerDown={stopAutoplayOnUserInput}
-        onWheel={stopAutoplayOnUserInput}
+        onTouchStart={pauseWithAutoResume}
+        onPointerDown={pauseWithAutoResume}
+        onWheel={pauseWithAutoResume}
       >
         {sortedLeaders.map((leader) => (
           <div key={leader.id || leader.name} role="listitem">
@@ -996,9 +1157,25 @@ export function LeadershipPreview() {
   );
 }
 
+function buildMarqueeRowItems(items: ClientItem[]): ClientItem[] {
+  if (items.length === 0) return [];
+  const expanded: ClientItem[] = [];
+  while (expanded.length < 8) {
+    expanded.push(...items);
+  }
+  return expanded;
+}
+
 export function Partners() {
   const { data } = useCms();
   const sortedClients = [...data.clients].sort((a, b) => a.sort_order - b.sort_order);
+
+  const midpoint = Math.ceil(sortedClients.length / 2);
+  const firstHalf = sortedClients.slice(0, midpoint);
+  const secondHalf = sortedClients.slice(midpoint);
+
+  const row1Base = buildMarqueeRowItems(firstHalf.length > 0 ? firstHalf : sortedClients);
+  const row2Base = buildMarqueeRowItems(secondHalf.length > 0 ? secondHalf : sortedClients);
 
   return (
     <section className="section partners-section" aria-label="Partners and clients">
@@ -1009,10 +1186,36 @@ export function Partners() {
         copy="Ambitious teams and ventures we are proud to work alongside."
       />
 
-      <div className="clients-chip-grid">
-        {sortedClients.map((client) => (
-          <ClientLogoChip key={client.id || client.name} client={client} />
-        ))}
+      <div className="partners-marquee-stack">
+        <div className="partners-marquee-viewport partners-marquee-row" role="region" aria-label="Featured partners row 1">
+          <div className="partners-marquee-track is-left">
+            {row1Base.map((client, idx) => (
+              <ClientLogoChip key={`r1a-${client.id || client.name}-${idx}`} client={client} />
+            ))}
+            {row1Base.map((client, idx) => (
+              <ClientLogoChip
+                key={`r1b-${client.id || client.name}-${idx}`}
+                client={client}
+                className="partners-marquee-dup"
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="partners-marquee-viewport partners-marquee-row" role="region" aria-label="Featured partners row 2">
+          <div className="partners-marquee-track is-right">
+            {row2Base.map((client, idx) => (
+              <ClientLogoChip key={`r2a-${client.id || client.name}-${idx}`} client={client} />
+            ))}
+            {row2Base.map((client, idx) => (
+              <ClientLogoChip
+                key={`r2b-${client.id || client.name}-${idx}`}
+                client={client}
+                className="partners-marquee-dup"
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

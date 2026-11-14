@@ -22,6 +22,11 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import './styles.css';
+import { registerSW } from 'virtual:pwa-register';
+
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  registerSW({ immediate: true });
+}
 
 // Lazy-loaded route pages for optimal bundle splitting
 const Home = lazy(() => import('./pages/Home'));
