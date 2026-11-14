@@ -56,7 +56,7 @@ export default function About() {
               return (
                 <article key={card.id || card.title} className="service-grouped-row">
                   <span className="service-row-icon" aria-hidden="true">
-                    <Icon size={20} strokeWidth={2} />
+                    <Icon size={16} strokeWidth={2} />
                   </span>
                   <div className="service-row-copy">
                     <h2>{card.title}</h2>

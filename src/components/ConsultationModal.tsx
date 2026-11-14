@@ -77,7 +77,7 @@ export function ConsultationModal({ isOpen, onClose, onNavigate }: ConsultationM
             onClick={onClose}
             aria-label="Close dialog"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
@@ -103,7 +103,7 @@ export function ConsultationModal({ isOpen, onClose, onNavigate }: ConsultationM
             }}
           >
             <div className="consultation-card-icon-badge badge-featured">
-              <Sparkles size={20} />
+              <Sparkles size={16} />
             </div>
             <div className="consultation-card-body">
               <div className="consultation-card-heading">
@@ -131,7 +131,7 @@ export function ConsultationModal({ isOpen, onClose, onNavigate }: ConsultationM
             }}
           >
             <div className="consultation-card-icon-badge badge-whatsapp">
-              <MessageSquare size={20} />
+              <MessageSquare size={16} />
             </div>
             <div className="consultation-card-body">
               <div className="consultation-card-heading">
@@ -155,7 +155,7 @@ export function ConsultationModal({ isOpen, onClose, onNavigate }: ConsultationM
             }}
           >
             <div className="consultation-card-icon-badge">
-              <Mail size={20} />
+              <Mail size={16} />
             </div>
             <div className="consultation-card-body">
               <div className="consultation-card-heading">

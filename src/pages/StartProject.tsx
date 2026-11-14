@@ -194,7 +194,7 @@ export default function StartProject() {
           {submittedData ? (
             <div className="intake-success-card" role="status" aria-live="polite">
               <div className="intake-success-icon">
-                <CheckCircle2 size={44} />
+                <CheckCircle2 size={20} />
               </div>
               <h2>Project brief received</h2>
               <p className="intake-success-lead">

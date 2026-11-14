@@ -418,7 +418,7 @@ export function SearchModal({ isOpen, onClose, onNavigate }: SearchModalProps) {
             onClick={onClose}
             aria-label="Close search (Esc)"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 

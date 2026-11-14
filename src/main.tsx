@@ -17,6 +17,10 @@ import { ScrollNavigation } from './components/ScrollNavigation';
 import { CmsProvider } from './context/CmsContext';
 import { SmoothScrollProvider } from './context/SmoothScrollContext';
 import { updateDocumentMeta } from './lib/ogImage';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
 import './styles.css';
 
 // Lazy-loaded route pages for optimal bundle splitting

@@ -135,7 +135,7 @@ export default function Contact() {
         {submittedData ? (
           <div className="contact-success-state" role="status" aria-live="polite">
             <div className="contact-success-icon">
-              <CheckCircle2 size={36} />
+              <CheckCircle2 size={20} />
             </div>
             <h3>Inquiry received</h3>
             <p className="contact-success-message">
@@ -309,19 +309,19 @@ export default function Contact() {
 
         <aside className="contact-details">
           <span className="icon-badge">
-            <Mail />
+            <Mail size={16} />
           </span>
           <h3>Studio contact</h3>
           <a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a>
 
           <span className="icon-badge">
-            <Phone />
+            <Phone size={16} />
           </span>
           <h3>Hotline</h3>
           <a href={`tel:${settings.hotline.replace(/\s+/g, '')}`}>{settings.hotline}</a>
 
           <span className="icon-badge">
-            <MapPin />
+            <MapPin size={16} />
           </span>
           <h3>{settings.officeCity} HQ</h3>
           <p>
@@ -338,7 +338,7 @@ export default function Contact() {
                 target="_blank"
                 rel="noreferrer"
               >
-                <Instagram />
+                <Instagram size={16} />
               </a>
             )}
             {settings.socialTwitter && (
@@ -348,7 +348,7 @@ export default function Contact() {
                 target="_blank"
                 rel="noreferrer"
               >
-                <Twitter />
+                <Twitter size={16} />
               </a>
             )}
             {settings.socialLinkedin && (
@@ -358,7 +358,7 @@ export default function Contact() {
                 target="_blank"
                 rel="noreferrer"
               >
-                <Linkedin />
+                <Linkedin size={16} />
               </a>
             )}
           </div>

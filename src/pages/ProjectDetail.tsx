@@ -122,7 +122,7 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
           {/* Pillar 1: Challenge */}
           <div className="pillar-card pillar-challenge">
             <div className="pillar-icon-badge">
-              <Target size={22} />
+              <Target size={16} />
             </div>
             <span className="pillar-eyebrow">01 · Problem Space</span>
             <h3>The Challenge</h3>
@@ -135,7 +135,7 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
           {/* Pillar 2: Approach */}
           <div className="pillar-card pillar-approach">
             <div className="pillar-icon-badge badge-dark">
-              <Cpu size={22} />
+              <Cpu size={16} />
             </div>
             <span className="pillar-eyebrow">02 · Systems Architecture</span>
             <h3>The Systems Approach</h3>
@@ -148,7 +148,7 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
           {/* Pillar 3: Result */}
           <div className="pillar-card pillar-result">
             <div className="pillar-icon-badge badge-accent">
-              <TrendingUp size={22} />
+              <TrendingUp size={16} />
             </div>
             <span className="pillar-eyebrow">03 · Verified Outcomes</span>
             <h3>The Result & Impact</h3>

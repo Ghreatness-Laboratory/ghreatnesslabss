@@ -60,7 +60,7 @@ export function Footer() {
             <div className="footer-brand-col">
               <Link to="/" className="footer-brand-lockup" aria-label="Ghreatness Labs Home">
                 <span className="footer-brand-tile" aria-hidden="true">
-                  <GhreatnessMark size={22} theme="dark" />
+                  <GhreatnessMark size={18} theme="dark" />
                 </span>
                 <span className="footer-brand-wordmark">
                   <span className="footer-brand-title">GHREATNESS</span>

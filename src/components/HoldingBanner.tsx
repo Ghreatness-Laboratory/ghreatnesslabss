@@ -50,11 +50,11 @@ export function HoldingBanner({ className = '', variant = 'banner' }: HoldingBan
                 loading="lazy"
                 referrerPolicy="no-referrer"
                 onError={() => setLogoError(true)}
-                width={28}
-                height={28}
+                width={22}
+                height={22}
               />
             ) : (
-              <Building2 size={20} strokeWidth={2} />
+              <Building2 size={16} strokeWidth={2} />
             )}
           </div>
           <span className="holding-banner-eyebrow">Parent Holding Group</span>
@@ -75,7 +75,7 @@ export function HoldingBanner({ className = '', variant = 'banner' }: HoldingBan
           aria-label={`Visit ${holdingName} official website (opens in a new tab)`}
         >
           <span>Visit {holdingName}</span>
-          <ArrowUpRight size={15} strokeWidth={2} aria-hidden="true" />
+          <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
         </a>
       </div>
     );
@@ -99,12 +99,12 @@ export function HoldingBanner({ className = '', variant = 'banner' }: HoldingBan
                 decoding="async"
                 referrerPolicy="no-referrer"
                 onError={() => setLogoError(true)}
-                width={32}
-                height={32}
+                width={22}
+                height={22}
               />
             ) : (
               <div className="holding-logo-fallback">
-                <Building2 size={18} strokeWidth={2} />
+                <Building2 size={16} strokeWidth={2} />
               </div>
             )}
           </div>

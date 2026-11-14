@@ -131,7 +131,7 @@ export function EmptyState({
   return (
     <div className="empty-state">
       <div className="icon-badge empty-state-icon">
-        <Icon size={18} strokeWidth={2} />
+        <Icon size={16} strokeWidth={2} />
       </div>
       <h3 className="empty-state-title">{title}</h3>
       <p className="empty-state-desc">{subtitle}</p>
@@ -434,7 +434,7 @@ export function Stats() {
               <div className="stat-card-header">
                 <span className="stat-card-label">{stat.label}</span>
                 <span className="stat-icon-tile" aria-hidden="true">
-                  <Icon size={15} strokeWidth={2} />
+                  <Icon size={16} strokeWidth={2} />
                 </span>
               </div>
               <div className="stat-card-number">
@@ -488,7 +488,7 @@ export function Capabilities({ limit }: { limit?: number }) {
         return (
           <article className="practice-row" key={item.id || item.title}>
             <span className="practice-row-icon" aria-hidden="true">
-              <Icon size={20} strokeWidth={2} />
+              <Icon size={16} strokeWidth={2} />
             </span>
             <div className="practice-row-content">
               <div className="practice-row-header">
@@ -525,7 +525,7 @@ export function ServiceList({
             role="listitem"
           >
             <span className="service-row-icon" aria-hidden="true">
-              <Icon size={18} strokeWidth={2} />
+              <Icon size={16} strokeWidth={2} />
             </span>
             <div className="service-row-copy">
               <h3>{item.title}</h3>
@@ -672,7 +672,7 @@ export function InfoCard({
     <article className="info-card">
       <div className="info-card-header">
         <span className="info-card-icon-tile" aria-hidden="true">
-          <Icon size={20} strokeWidth={2} />
+          <Icon size={16} strokeWidth={2} />
         </span>
         <h3 className="info-card-title">{title}</h3>
       </div>

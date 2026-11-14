@@ -32,7 +32,7 @@ function HoldingCompanyCard({
               onError={() => setLogoFailed(true)}
             />
           ) : (
-            <Icon size={18} strokeWidth={2} />
+            <Icon size={16} strokeWidth={2} />
           )}
         </span>
         <span className="service-row-index">{String(index + 1).padStart(2, '0')}</span>
