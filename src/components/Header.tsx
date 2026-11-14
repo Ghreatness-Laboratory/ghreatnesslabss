@@ -3,6 +3,7 @@ import { Search, Menu, X, ArrowUpRight } from 'lucide-react';
 import { pages, Link } from './SharedSections';
 import { GhreatnessMark } from './GhreatnessLogo';
 import { SearchModal } from './SearchModal';
+import { useSmoothScroll } from '../context/SmoothScrollContext';
 
 const DESKTOP_NAV_ITEMS = [
   { to: '/', label: 'Home', match: (p: string) => p === '/' },
@@ -21,11 +22,20 @@ export function Header({
 }) {
   const [navOpen, setNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { lockScroll, unlockScroll } = useSmoothScroll();
 
   useEffect(() => {
     setNavOpen(false);
     setSearchOpen(false);
   }, [path]);
+
+  useEffect(() => {
+    if (!navOpen) return;
+    lockScroll();
+    return () => {
+      unlockScroll();
+    };
+  }, [navOpen, lockScroll, unlockScroll]);
 
   const handleLinkClick = (to: string) => {
     if (onNavigate) onNavigate(to);

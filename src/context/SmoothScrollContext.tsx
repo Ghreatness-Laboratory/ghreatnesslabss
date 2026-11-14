@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useMemo, useCallback } from 'react';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
@@ -14,12 +14,24 @@ interface SmoothScrollContextValue {
       onComplete?: () => void;
     }
   ) => void;
+  lockScroll: () => void;
+  unlockScroll: () => void;
 }
 
 const SmoothScrollContext = createContext<SmoothScrollContextValue>({
   lenis: null,
   scrollTo: () => {},
+  lockScroll: () => {},
+  unlockScroll: () => {},
 });
+
+function clearAllScrollLocks() {
+  if (typeof document === 'undefined') return;
+  document.documentElement.classList.remove('lenis-stopped', 'no-scroll');
+  document.body.classList.remove('no-scroll');
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
+}
 
 export function SmoothScrollProvider({
   children,
@@ -30,29 +42,33 @@ export function SmoothScrollProvider({
 }) {
   const lenisRef = useRef<Lenis | null>(null);
 
+  const lockScroll = useCallback(() => {
+    lenisRef.current?.stop();
+  }, []);
+
+  const unlockScroll = useCallback(() => {
+    lenisRef.current?.start();
+    clearAllScrollLocks();
+  }, []);
+
   useEffect(() => {
     // Respect accessibility settings
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Initialize Lenis with refined studio dynamics:
-    // - Silky exponential decay easing
-    // - Smooth trackpad & mouse wheel normalization
-    // - Responsive touch momentum on mobile devices
     const lenis = new Lenis({
       duration: prefersReducedMotion ? 0.01 : 1.15,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Natural inertial deceleration
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: !prefersReducedMotion,
       wheelMultiplier: 0.95,
       touchMultiplier: 1.5,
       infinite: false,
-      autoRaf: false, // We control requestAnimationFrame for precise timing
+      autoRaf: false,
     });
 
     lenisRef.current = lenis;
 
-    // High performance RAF loop
     let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
@@ -60,7 +76,6 @@ export function SmoothScrollProvider({
     }
     rafId = requestAnimationFrame(raf);
 
-    // Smooth anchor link click interception (#hash)
     const handleAnchorClick = (e: MouseEvent) => {
       const anchor = (e.target as Element).closest('a[href^="#"]') as HTMLAnchorElement | null;
       if (!anchor) return;
@@ -70,7 +85,7 @@ export function SmoothScrollProvider({
         if (targetEl) {
           e.preventDefault();
           lenis.scrollTo(targetEl as HTMLElement, {
-            offset: -80, // account for header clearance
+            offset: -80,
             duration: 1.2,
           });
         }
@@ -79,7 +94,6 @@ export function SmoothScrollProvider({
 
     document.addEventListener('click', handleAnchorClick);
 
-    // Refresh Lenis on window resize or DOM updates
     const resizeObserver = new ResizeObserver(() => {
       lenis.resize();
     });
@@ -91,21 +105,25 @@ export function SmoothScrollProvider({
       resizeObserver.disconnect();
       lenis.destroy();
       lenisRef.current = null;
+      clearAllScrollLocks();
     };
   }, []);
 
-  // When path changes, immediately scroll smoothly to the top of the new page
+  // When path changes, unlock any modal/menu scroll lock and scroll smoothly to the top
   useEffect(() => {
+    unlockScroll();
     if (lenisRef.current) {
       lenisRef.current.scrollTo(0, { immediate: true });
     } else {
       window.scrollTo(0, 0);
     }
-  }, [currentPath]);
+  }, [currentPath, unlockScroll]);
 
   const value = useMemo(
     () => ({
-      lenis: lenisRef.current,
+      get lenis() {
+        return lenisRef.current;
+      },
       scrollTo: (
         target: number | string | HTMLElement,
         options?: {
@@ -129,8 +147,10 @@ export function SmoothScrollProvider({
           }
         }
       },
+      lockScroll,
+      unlockScroll,
     }),
-    []
+    [lockScroll, unlockScroll]
   );
 
   return (
@@ -144,3 +164,4 @@ export function useSmoothScroll() {
   return useContext(SmoothScrollContext);
 }
 export default SmoothScrollProvider;
+

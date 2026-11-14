@@ -18,6 +18,10 @@ const TAB_ITEMS = [
 export function BottomTabBar({ path, onNavigate }: BottomTabBarProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
+  useEffect(() => {
+    setModalOpen(false);
+  }, [path]);
+
   // Global listener so any "Book a consultation" button opens the ConsultationModal
   useEffect(() => {
     const handleTrigger = (e: MouseEvent) => {

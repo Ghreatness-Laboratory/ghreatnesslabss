@@ -3,6 +3,7 @@ import { Mail, MessageSquare, ArrowRight, X, PhoneCall, Sparkles } from 'lucide-
 import { useCms } from '../context/CmsContext';
 import { trackConsultationClick } from '../lib/analytics';
 import { GhreatnessMark } from './GhreatnessLogo';
+import { useSmoothScroll } from '../context/SmoothScrollContext';
 
 interface ConsultationModalProps {
   isOpen: boolean;
@@ -12,18 +13,23 @@ interface ConsultationModalProps {
 
 export function ConsultationModal({ isOpen, onClose, onNavigate }: ConsultationModalProps) {
   const { data } = useCms();
+  const { lockScroll, unlockScroll } = useSmoothScroll();
   const { settings } = data;
 
   useEffect(() => {
     if (!isOpen) return;
 
+    lockScroll();
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      unlockScroll();
+    };
+  }, [isOpen, onClose, lockScroll, unlockScroll]);
 
   if (!isOpen) return null;
 

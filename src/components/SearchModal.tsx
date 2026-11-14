@@ -17,6 +17,7 @@ import { getSupabaseClient } from '../lib/supabase';
 import { pages } from './SharedSections';
 import { trackSearchUsage } from '../lib/analytics';
 import { GhreatnessMark } from './GhreatnessLogo';
+import { useSmoothScroll } from '../context/SmoothScrollContext';
 
 export interface SearchResultItem {
   id: string;
@@ -35,6 +36,7 @@ interface SearchModalProps {
 
 export function SearchModal({ isOpen, onClose, onNavigate }: SearchModalProps) {
   const { data } = useCms();
+  const { lockScroll, unlockScroll } = useSmoothScroll();
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [results, setResults] = useState<SearchResultItem[]>([]);
@@ -58,6 +60,7 @@ export function SearchModal({ isOpen, onClose, onNavigate }: SearchModalProps) {
   useEffect(() => {
     if (!isOpen) return;
 
+    lockScroll();
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -65,8 +68,11 @@ export function SearchModal({ isOpen, onClose, onNavigate }: SearchModalProps) {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      unlockScroll();
+    };
+  }, [isOpen, onClose, lockScroll, unlockScroll]);
 
   // Debounce query input (~200ms)
   useEffect(() => {
