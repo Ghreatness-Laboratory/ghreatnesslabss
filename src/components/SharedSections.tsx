@@ -12,6 +12,9 @@ import {
   ShieldCheck,
   UsersRound,
   ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
   Target,
   Eye,
   Telescope,
@@ -746,42 +749,136 @@ export function LeadershipPreview() {
   const sortedLeaders = [...data.leadership].sort((a, b) => a.sort_order - b.sort_order);
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isHoverOrFocusPaused, setIsHoverOrFocusPaused] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  const cardStep = 310 + 12; // 310px card + 12px gap
+  const maxIndex = Math.max(0, sortedLeaders.length - 1);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  const scrollToCard = (index: number, behavior: ScrollBehavior = 'smooth') => {
+    const track = trackRef.current;
+    if (!track || sortedLeaders.length === 0) return;
+    const clamped = Math.max(0, Math.min(maxIndex, index));
+    track.scrollTo({ left: clamped * cardStep, behavior });
+    setActiveIndex(clamped);
+  };
+
+  useEffect(() => {
+    if (prefersReducedMotion || hasUserInteracted || isHoverOrFocusPaused || sortedLeaders.length <= 1) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((prev) => {
+        const next = prev >= maxIndex ? 0 : prev + 1;
+        const track = trackRef.current;
+        if (track) {
+          track.scrollTo({ left: next * cardStep, behavior: 'smooth' });
+        }
+        return next;
+      });
+    }, 5000);
+
+    return () => window.clearInterval(timer);
+  }, [prefersReducedMotion, hasUserInteracted, isHoverOrFocusPaused, sortedLeaders.length, maxIndex, cardStep]);
 
   const handleScroll = () => {
     const track = trackRef.current;
     if (!track || sortedLeaders.length === 0) return;
-    const cardStep = 310 + 12; // 310px card width + 12px gap
     const maxScroll = track.scrollWidth - track.clientWidth;
     if (maxScroll <= 0) {
       setActiveIndex(0);
       return;
     }
     if (track.scrollLeft >= maxScroll - 8) {
-      setActiveIndex(sortedLeaders.length - 1);
+      setActiveIndex(maxIndex);
       return;
     }
-    const nextIdx = Math.min(
-      sortedLeaders.length - 1,
-      Math.max(0, Math.round(track.scrollLeft / cardStep))
-    );
+    const nextIdx = Math.min(maxIndex, Math.max(0, Math.round(track.scrollLeft / cardStep)));
     setActiveIndex(nextIdx);
   };
 
-  const scrollToCard = (index: number) => {
-    const track = trackRef.current;
-    if (!track) return;
-    const cardStep = 310 + 12;
-    track.scrollTo({ left: index * cardStep, behavior: 'smooth' });
-    setActiveIndex(index);
+  const handlePrev = () => {
+    setHasUserInteracted(true);
+    if (activeIndex <= 0) return;
+    scrollToCard(activeIndex - 1);
   };
 
+  const handleNext = () => {
+    setHasUserInteracted(true);
+    if (activeIndex >= maxIndex) return;
+    scrollToCard(activeIndex + 1);
+  };
+
+  const handleDotClick = (idx: number) => {
+    setHasUserInteracted(true);
+    scrollToCard(idx);
+  };
+
+  const stopAutoplayOnUserInput = () => {
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+    }
+  };
+
+  const atStart = activeIndex <= 0;
+  const atEnd = activeIndex >= maxIndex;
+
   return (
-    <section className="section leadership-preview" aria-label="Leadership team">
-      <SectionHead
-        label="Leadership"
-        title="The brains behind"
-        accent="the work."
-      />
+    <section
+      className="section leadership-preview"
+      aria-label="Leadership team"
+      onMouseEnter={() => setIsHoverOrFocusPaused(true)}
+      onMouseLeave={() => setIsHoverOrFocusPaused(false)}
+      onFocus={() => setIsHoverOrFocusPaused(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          setIsHoverOrFocusPaused(false);
+        }
+      }}
+    >
+      <div className="section-head-block">
+        <Label>Leadership</Label>
+        <h2 className="section-heading">
+          The brains behind <em>the work.</em>
+        </h2>
+        <div className="leader-intro-controls-row">
+          <p className="section-intro">
+            Senior thinking stays close to the brief, the details, and the people making decisions.
+          </p>
+          {sortedLeaders.length > 1 && (
+            <div className="leader-controls" role="group" aria-label="Leadership carousel navigation">
+              <button
+                type="button"
+                className="leader-nav-btn leader-nav-prev"
+                onClick={handlePrev}
+                disabled={atStart}
+                aria-label="Previous team member"
+              >
+                <ChevronLeft size={18} strokeWidth={2.1} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className={`leader-nav-btn leader-nav-next ${!atEnd ? 'is-solid' : ''}`}
+                onClick={handleNext}
+                disabled={atEnd}
+                aria-label="Next team member"
+              >
+                <ChevronRight size={18} strokeWidth={2.1} aria-hidden="true" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       <div
         ref={trackRef}
@@ -789,6 +886,9 @@ export function LeadershipPreview() {
         role="list"
         aria-label="Studio leadership team"
         onScroll={handleScroll}
+        onTouchStart={stopAutoplayOnUserInput}
+        onPointerDown={stopAutoplayOnUserInput}
+        onWheel={stopAutoplayOnUserInput}
       >
         {sortedLeaders.map((leader) => (
           <div key={leader.id || leader.name} role="listitem">
@@ -807,7 +907,7 @@ export function LeadershipPreview() {
               aria-selected={activeIndex === idx}
               aria-label={`Show ${leader.name}`}
               className={`leader-pagination-dot ${activeIndex === idx ? 'is-active' : ''}`}
-              onClick={() => scrollToCard(idx)}
+              onClick={() => handleDotClick(idx)}
             />
           ))}
         </div>
@@ -816,16 +916,60 @@ export function LeadershipPreview() {
       <div className="section-link-wrap">
         <Button variant="link" href="/leadership">
           <span>View full leadership team</span>
-          <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+          <ArrowUpRight size={14} strokeWidth={2} aria-hidden="true" />
         </Button>
       </div>
     </section>
   );
 }
 
+function MarqueeClientCard({ client }: { client: ClientItem }) {
+  const [imgFailed, setImgFailed] = useState(!client.logo_url);
+
+  useEffect(() => {
+    setImgFailed(!client.logo_url);
+  }, [client.logo_url]);
+
+  return (
+    <div className="partners-marquee-card" title={client.name}>
+      {client.logo_url && !imgFailed ? (
+        <img
+          src={client.logo_url}
+          alt={`${client.name} logo`}
+          className="partners-marquee-img"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onLoad={(e) => {
+            if (e.currentTarget.naturalWidth === 0) setImgFailed(true);
+          }}
+          onError={() => setImgFailed(true)}
+        />
+      ) : (
+        <span className="partners-marquee-text">{client.name}</span>
+      )}
+    </div>
+  );
+}
+
 export function Partners() {
   const { data } = useCms();
   const sortedClients = [...data.clients].sort((a, b) => a.sort_order - b.sort_order);
+  const [isPaused, setIsPaused] = useState(false);
+  const [pausedRowIndex, setPausedRowIndex] = useState<number | null>(null);
+
+  // Guarantee each loop copy is at least as wide as desktop & mobile viewports (>= 10 items * 160px = 1600px)
+  const buildRowItems = (source: ClientItem[]) => {
+    if (source.length === 0) return [];
+    const repeatCount = Math.max(1, Math.ceil(10 / source.length));
+    const expanded: ClientItem[] = [];
+    for (let i = 0; i < repeatCount; i += 1) {
+      expanded.push(...source);
+    }
+    return expanded;
+  };
+
+  const row1Items = buildRowItems(sortedClients);
+  const row2Items = buildRowItems([...sortedClients].reverse());
 
   return (
     <section className="section partners-section" aria-label="Partners and clients">
@@ -836,10 +980,62 @@ export function Partners() {
         copy="Ambitious teams and ventures we are proud to work alongside."
       />
 
-      <div className="clients-chip-grid">
-        {sortedClients.map((client) => (
-          <ClientLogoChip key={client.id || client.name} client={client} />
-        ))}
+      <div
+        className="partners-marquee-shell"
+        data-paused={isPaused ? 'true' : 'false'}
+      >
+        <div className="partners-marquee-stack">
+          {[row1Items, row2Items].map((items, rowIndex) => (
+            <div
+              key={rowIndex}
+              className={`partners-marquee-row ${rowIndex === 1 ? 'is-reverse' : ''}`}
+              data-touch-paused={pausedRowIndex === rowIndex ? 'true' : 'false'}
+              onPointerDown={() => setPausedRowIndex(rowIndex)}
+              onPointerUp={() => setPausedRowIndex(null)}
+              onPointerCancel={() => setPausedRowIndex(null)}
+              onTouchStart={() => setPausedRowIndex(rowIndex)}
+              onTouchEnd={() => setPausedRowIndex(null)}
+            >
+              <div className="partners-marquee-track">
+                <div className="partners-marquee-group">
+                  {items.map((client, idx) => (
+                    <MarqueeClientCard
+                      key={`r${rowIndex}-a-${client.id || client.name}-${idx}`}
+                      client={client}
+                    />
+                  ))}
+                </div>
+                <div className="partners-marquee-group" aria-hidden="true">
+                  {items.map((client, idx) => (
+                    <MarqueeClientCard
+                      key={`r${rowIndex}-b-${client.id || client.name}-${idx}`}
+                      client={client}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="partners-marquee-controls">
+        <span className="partners-marquee-caption">
+          {isPaused ? 'Partner showcase paused' : 'Trusted partners & ventures'}
+        </span>
+        <button
+          type="button"
+          className="partners-pause-btn"
+          aria-pressed={isPaused}
+          aria-label={isPaused ? 'Play partners marquee' : 'Pause partners marquee'}
+          onClick={() => setIsPaused((prev) => !prev)}
+        >
+          {isPaused ? (
+            <Play size={13} strokeWidth={2.2} aria-hidden="true" />
+          ) : (
+            <Pause size={13} strokeWidth={2.2} aria-hidden="true" />
+          )}
+        </button>
       </div>
     </section>
   );
