@@ -55,8 +55,11 @@ export default function ProjectDetail({ slug: propSlug }: ProjectDetailProps) {
           accent="found."
           copy="The requested system architecture brief could not be located."
         />
-        <div className="mt-6">
-          <Button href="/projects">← Back to all projects</Button>
+        <div className="section-link-wrap">
+          <Button variant="link" href="/projects">
+            <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
+            <span>Back to all projects</span>
+          </Button>
         </div>
       </section>
     );

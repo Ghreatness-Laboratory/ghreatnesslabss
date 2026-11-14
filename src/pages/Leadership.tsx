@@ -32,7 +32,7 @@ export default function Leadership() {
           subtitle="Studio leadership team profiles will appear here."
         />
       ) : (
-        <div className="leader-snap-row mt-5" role="list" aria-label="Studio leadership team">
+        <div className="leader-snap-row" role="list" aria-label="Studio leadership team">
           {sortedLeaders.map((leader) => (
             <div key={leader.id || leader.name} role="listitem">
               <LeaderSnapCard leader={leader} />

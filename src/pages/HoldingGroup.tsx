@@ -17,7 +17,7 @@ function HoldingCompanyCard({
 
   return (
     <article className="holding-card-item">
-      <div className="flex items-center justify-between mb-3">
+      <div className="holding-card-top">
         <span className="service-row-icon overflow-hidden">
           {company.logo_url && !logoFailed ? (
             <img
@@ -79,7 +79,7 @@ export default function HoldingGroup() {
         copy={intro}
       />
 
-      <div className="my-5">
+      <div className="holding-banner-wrap">
         <HoldingBanner variant="banner" />
       </div>
 

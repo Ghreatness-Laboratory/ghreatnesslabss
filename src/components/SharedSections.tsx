@@ -21,6 +21,7 @@ import {
   Linkedin,
   Twitter,
   Layers,
+  ArrowRight,
   type LucideIcon,
 } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
@@ -59,8 +60,20 @@ export const pages = [
   ['/admin', 'Admin CMS'],
 ] as const;
 
-export const Label = ({ children }: { children: React.ReactNode }) => (
-  <p className="label">{children}</p>
+export const Label = ({
+  children,
+  variant = 'section',
+}: {
+  children: React.ReactNode;
+  variant?: 'section' | 'hero';
+}) => (
+  <p className={`label ${variant === 'hero' ? 'label-hero' : 'label-section'}`}>
+    <span
+      className={variant === 'hero' ? 'eyebrow-line' : 'eyebrow-square'}
+      aria-hidden="true"
+    />
+    <span className="eyebrow-text">{children}</span>
+  </p>
 );
 
 export const Link = ({
@@ -82,16 +95,27 @@ export const Link = ({
 export const Button = ({
   children,
   solid = false,
+  variant,
   href = '/contact',
 }: {
   children: React.ReactNode;
   solid?: boolean;
+  variant?: 'primary' | 'secondary' | 'link';
   href?: string;
-}) => (
-  <Link to={href} className={`button ${solid ? 'button-solid' : ''}`}>
-    {children}
-  </Link>
-);
+}) => {
+  const resolvedVariant = variant ?? (solid ? 'primary' : 'secondary');
+  const variantClass =
+    resolvedVariant === 'primary'
+      ? 'button-solid'
+      : resolvedVariant === 'link'
+      ? 'button-link'
+      : 'button-secondary';
+  return (
+    <Link to={href} className={`button ${variantClass}`}>
+      {children}
+    </Link>
+  );
+};
 
 export function EmptyState({
   icon: Icon,
@@ -390,17 +414,19 @@ export function SectionHead({
   accent,
   copy,
   as = 'h2',
+  eyebrowVariant = 'section',
 }: {
   label: string;
   title: string;
   accent?: string;
   copy?: string;
   as?: 'h1' | 'h2';
+  eyebrowVariant?: 'section' | 'hero';
 }) {
   const HeadingTag = as;
   return (
-    <div className="section-head-block">
-      <Label>{label}</Label>
+    <div className={`section-head-block ${eyebrowVariant === 'hero' ? 'is-hero' : ''}`}>
+      <Label variant={eyebrowVariant}>{label}</Label>
       <HeadingTag className={as === 'h1' ? 'page-hero-heading' : 'section-heading'}>
         {title} {accent && <em>{accent}</em>}
       </HeadingTag>
@@ -621,12 +647,12 @@ export function AboutPreview() {
       )}
 
       {coreValuesCard && (
-        <div className="grouped-list-card mt-3">
+        <div className="grouped-list-card about-core-values-card">
           <article className="service-grouped-row">
             <span className="service-row-icon" aria-hidden="true">
               {React.createElement(icons[coreValuesCard.icon_name] || icons['shield-check'], {
-                size: 17,
-                strokeWidth: 1.7,
+                size: 18,
+                strokeWidth: 1.8,
               })}
             </span>
             <div className="service-row-copy">
@@ -637,14 +663,15 @@ export function AboutPreview() {
         </div>
       )}
 
-      <div className="mt-4">
+      <div className="about-holding-wrap">
         <HoldingBanner variant="card" />
       </div>
 
-      <div className="mt-4">
-        <Link to="/about" className="button">
-          Learn more about us <ArrowUpRight size={14} strokeWidth={1.7} className="ml-1.5 inline" />
-        </Link>
+      <div className="section-link-wrap">
+        <Button variant="link" href="/about">
+          <span>Learn more about us</span>
+          <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+        </Button>
       </div>
     </section>
   );
@@ -725,10 +752,11 @@ export function LeadershipPreview() {
         ))}
       </div>
 
-      <div className="mt-4">
-        <Link to="/leadership" className="button">
-          View full leadership team <ArrowUpRight size={14} strokeWidth={1.7} className="ml-1.5 inline" />
-        </Link>
+      <div className="section-link-wrap">
+        <Button variant="link" href="/leadership">
+          <span>View full leadership team</span>
+          <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+        </Button>
       </div>
     </section>
   );

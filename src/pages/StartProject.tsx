@@ -454,7 +454,7 @@ export default function StartProject() {
                   )}
                 </button>
                 <span className="intake-sla-note">
-                  ⚡ Response guaranteed within 1 business day · Lagos, UTC+1
+                  Response guaranteed within 1 business day · Lagos, UTC+1
                 </span>
               </div>
             </form>

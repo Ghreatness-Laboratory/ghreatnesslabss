@@ -31,13 +31,13 @@ export default function About() {
         />
 
         {pairCards.length > 0 && (
-          <div className="mission-vision-grid mt-5">
+          <div className="mission-vision-grid">
             {pairCards.map((card) => {
               const Icon = icons[card.icon_name] || icons['target'];
               return (
                 <article key={card.id || card.title} className="compact-about-card">
                   <span className="compact-icon-tile" aria-hidden="true">
-                    <Icon size={16} strokeWidth={1.7} />
+                    <Icon size={17} strokeWidth={1.8} />
                   </span>
                   <h2>{card.title}</h2>
                   <p>{card.description}</p>
@@ -48,13 +48,13 @@ export default function About() {
         )}
 
         {listCards.length > 0 && (
-          <div className="grouped-list-card mt-3">
+          <div className="grouped-list-card about-core-values-card">
             {listCards.map((card) => {
               const Icon = icons[card.icon_name] || icons['building-2'];
               return (
                 <article key={card.id || card.title} className="service-grouped-row">
                   <span className="service-row-icon" aria-hidden="true">
-                    <Icon size={17} strokeWidth={1.7} />
+                    <Icon size={18} strokeWidth={1.8} />
                   </span>
                   <div className="service-row-copy">
                     <h2>{card.title}</h2>
@@ -66,7 +66,7 @@ export default function About() {
           </div>
         )}
 
-        <div className="mt-4">
+        <div className="about-holding-wrap">
           <HoldingBanner variant="card" />
         </div>
       </section>

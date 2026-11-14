@@ -33,7 +33,9 @@ export function Header({
           to="/"
           aria-label="Ghreatness Laboratory — Return to homepage"
         >
-          <GhreatnessMark size={24} theme="dark" />
+          <span className="app-brand-tile" aria-hidden="true">
+            <GhreatnessMark size={18} theme="light" />
+          </span>
           <span className="app-brand-wordmark">
             <span className="app-brand-title">GHREATNESS</span>
             <span className="app-brand-sub">LABORATORY</span>
@@ -51,7 +53,7 @@ export function Header({
               setNavOpen(false);
             }}
           >
-            <Search size={16} strokeWidth={1.7} aria-hidden="true" />
+            <Search size={18} strokeWidth={1.8} aria-hidden="true" />
           </button>
 
           <button
@@ -65,9 +67,9 @@ export function Header({
             }}
           >
             {navOpen ? (
-              <X size={16} strokeWidth={1.7} aria-hidden="true" />
+              <X size={18} strokeWidth={1.8} aria-hidden="true" />
             ) : (
-              <Menu size={16} strokeWidth={1.7} aria-hidden="true" />
+              <Menu size={18} strokeWidth={1.8} aria-hidden="true" />
             )}
           </button>
         </div>

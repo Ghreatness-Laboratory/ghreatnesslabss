@@ -125,7 +125,7 @@ export function GhreatnessLogo({
         viewBox="0 296 1080 224"
         width={targetWidth}
         height={effectiveHeight}
-        className="ghreatness-sub-logo-svg block max-w-full h-auto transition-opacity duration-200 hover:opacity-90"
+        className="ghreatness-sub-logo-svg block max-w-full h-auto"
         style={{
           mixBlendMode: isLight ? 'screen' : 'multiply',
           filter: isLight ? 'invert(1)' : undefined,

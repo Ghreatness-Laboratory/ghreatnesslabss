@@ -65,7 +65,8 @@ export function BottomTabBar({ path, onNavigate }: BottomTabBarProps) {
                 onClick={() => setModalOpen(true)}
                 aria-label="Open consultation and studio chat"
               >
-                <Icon size={20} strokeWidth={1.8} aria-hidden="true" />
+                <Icon size={22} strokeWidth={1.9} aria-hidden="true" />
+                <span className="bottom-tab-badge" aria-hidden="true" />
               </button>
             );
           }
@@ -79,8 +80,12 @@ export function BottomTabBar({ path, onNavigate }: BottomTabBarProps) {
               className={`bottom-tab-item ${isActive ? 'is-active' : ''}`}
               aria-current={isActive ? 'page' : undefined}
             >
-              <Icon size={19} strokeWidth={1.7} aria-hidden="true" />
+              <Icon size={20} strokeWidth={1.8} aria-hidden="true" />
               <span>{item.label}</span>
+              <span
+                className={`bottom-tab-active-bar ${isActive ? 'is-visible' : ''}`}
+                aria-hidden="true"
+              />
             </a>
           );
         })}

@@ -32,7 +32,7 @@ export default function Clients() {
           subtitle="Partners and client ventures will be featured here."
         />
       ) : (
-        <div className="clients-chip-grid mt-5">
+        <div className="clients-chip-grid">
           {sortedClients.map((client) => (
             <ClientLogoChip key={client.id || client.name} client={client} />
           ))}

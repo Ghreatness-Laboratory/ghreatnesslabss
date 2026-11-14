@@ -174,6 +174,64 @@ function App() {
     }
   }, [path, isAdminRoute, isProjectDetail, isLeadershipDetail]);
 
+  // Subtle fade-up on scroll reveal for below-the-fold sections
+  useEffect(() => {
+    if (isAdminRoute) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let observer: IntersectionObserver | null = null;
+
+    const setupTimer = window.setTimeout(() => {
+      const targets = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          'main .section:not(.hero):not(.page-intro), main .stats-section, .app-footer .cta'
+        )
+      );
+
+      if (targets.length === 0) return;
+
+      if (prefersReducedMotion || typeof IntersectionObserver === 'undefined') {
+        targets.forEach((el) => {
+          el.classList.remove('scroll-reveal-pending');
+          el.classList.add('scroll-reveal-visible');
+        });
+        return;
+      }
+
+      const viewportH = window.innerHeight || 800;
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const target = entry.target as HTMLElement;
+              target.classList.remove('scroll-reveal-pending');
+              target.classList.add('scroll-reveal-visible');
+              observer?.unobserve(target);
+            }
+          });
+        },
+        { threshold: 0.05, rootMargin: '0px 0px -16px 0px' }
+      );
+
+      targets.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < viewportH * 0.96) {
+          el.classList.remove('scroll-reveal-pending');
+          el.classList.add('scroll-reveal-visible');
+        } else {
+          el.classList.add('scroll-reveal-pending');
+          observer?.observe(el);
+        }
+      });
+    }, 60);
+
+    return () => {
+      window.clearTimeout(setupTimer);
+      observer?.disconnect();
+    };
+  }, [path, isAdminRoute]);
+
   const ActivePage = routes[path] || Home;
 
   if (isAdminRoute) {

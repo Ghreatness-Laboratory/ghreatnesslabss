@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { useCms } from '../context/CmsContext';
 import {
   SectionHead,
@@ -29,6 +30,7 @@ export default function Home() {
         <div className="hero-copy">
           <SectionHead
             as="h1"
+            eyebrowVariant="hero"
             label={settings.heroEyebrow}
             title={settings.heroTitlePrimary}
             accent={settings.heroTitleSecondary}
@@ -68,17 +70,22 @@ export default function Home() {
             <span className="infrastructure-badge">INFRASTRUCTURE</span>
           </div>
 
-          <div className="dispatch">
-            <b>Studio at a glance</b>
-            <p>
-              Current availability <strong>{settings.availabilityText}</strong>
-            </p>
-            <p>
-              Based in <strong>{settings.officeCity}</strong>
-            </p>
-            <p>
-              Working with <strong>Global teams</strong>
-            </p>
+          <div className="glance-block">
+            <h2 className="glance-heading">Studio at a glance</h2>
+            <div className="dispatch-card">
+              <div className="dispatch-row">
+                <span>Current availability</span>
+                <strong>{settings.availabilityText}</strong>
+              </div>
+              <div className="dispatch-row">
+                <span>Based in</span>
+                <strong>{settings.officeCity}</strong>
+              </div>
+              <div className="dispatch-row">
+                <span>Working with</span>
+                <strong>Global teams</strong>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -94,8 +101,11 @@ export default function Home() {
           copy="Cross-disciplinary expertise for organizations that need a system, not just a surface."
         />
         <Capabilities limit={3} />
-        <div className="mt-4">
-          <Button href="/services">View all services</Button>
+        <div className="section-link-wrap">
+          <Button variant="link" href="/services">
+            <span>View all services</span>
+            <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+          </Button>
         </div>
       </section>
 
@@ -110,8 +120,11 @@ export default function Home() {
           copy="Proprietary platforms, client software, and operational systems built to scale."
         />
         <Ventures limit={3} />
-        <div className="mt-4">
-          <Button href="/projects">View all projects</Button>
+        <div className="section-link-wrap">
+          <Button variant="link" href="/projects">
+            <span>View all projects</span>
+            <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+          </Button>
         </div>
       </section>
 
@@ -122,8 +135,11 @@ export default function Home() {
           accent="around the world."
         />
         <Testimonials limit={2} />
-        <div className="mt-4">
-          <Button href="/clients">Read all perspectives</Button>
+        <div className="section-link-wrap">
+          <Button variant="link" href="/clients">
+            <span>Read all perspectives</span>
+            <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+          </Button>
         </div>
       </section>
 

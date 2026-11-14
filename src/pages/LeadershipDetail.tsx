@@ -158,7 +158,7 @@ export default function LeadershipDetail({ slug: propSlug }: LeadershipDetailPro
                 </div>
               )}
               <div className="leader-photo-badge">
-                <ShieldCheck size={14} className="text-emerald-500" />
+                <ShieldCheck size={14} className="leader-verified-icon" aria-hidden="true" />
                 <span>Verified Studio Principal</span>
               </div>
             </div>
@@ -260,14 +260,11 @@ export default function LeadershipDetail({ slug: propSlug }: LeadershipDetailPro
             })}
           </div>
 
-          <div className="mt-8 text-center">
-            <a
-              href="/leadership"
-              className="button"
-              aria-label="View entire leadership team directory"
-            >
-              ← View full leadership directory
-            </a>
+          <div className="section-link-wrap">
+            <Button variant="link" href="/leadership">
+              <span>View full leadership directory</span>
+              <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
+            </Button>
           </div>
         </section>
       )}

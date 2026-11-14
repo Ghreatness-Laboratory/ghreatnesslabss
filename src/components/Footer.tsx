@@ -31,8 +31,10 @@ export function Footer() {
 
       <div className="footer-grid">
         <div className="footer-brand-col">
-          <Link to="/" className="app-brand-lockup mb-3" aria-label="Ghreatness Labs Home">
-            <GhreatnessMark size={24} theme="dark" />
+          <Link to="/" className="app-brand-lockup" aria-label="Ghreatness Labs Home">
+            <span className="app-brand-tile" aria-hidden="true">
+              <GhreatnessMark size={18} theme="light" />
+            </span>
             <span className="app-brand-wordmark">
               <span className="app-brand-title">GHREATNESS</span>
               <span className="app-brand-sub">LABORATORY</span>
